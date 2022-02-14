@@ -13,7 +13,7 @@ namespace HeroesAPI.Controllers
             _logger = logger;
         }
 
-        private static List<Hero> heroes = new List<Hero>
+        private static List<Hero> heroes = new()
         {
             new Hero
             {
@@ -45,7 +45,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogInformation(exception.Message);
+                _logger.LogInformation("Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
@@ -66,7 +66,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogInformation(exception.Message);
+                _logger.LogInformation("Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
@@ -75,8 +75,16 @@ namespace HeroesAPI.Controllers
         [HttpPost]
         public ActionResult<List<Hero>> AddHero(Hero newHero)
         {
-            heroes.Add(newHero);
-            return Ok(newHero);
+            try
+            {
+                heroes.Add(newHero);
+                return Ok(newHero);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogInformation("Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                return BadRequest();
+            }
         }
 
         [HttpPut]
@@ -100,7 +108,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogInformation(exception.Message);
+                _logger.LogInformation("Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
@@ -123,7 +131,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogInformation(exception.Message);
+                _logger.LogInformation("Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
 
