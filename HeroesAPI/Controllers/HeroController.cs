@@ -7,6 +7,11 @@ namespace HeroesAPI.Controllers
     [ApiController]
     public class HeroController : ControllerBase
     {
+        private readonly ILogger<HeroController> _logger;
+        public HeroController(ILogger<HeroController> logger)
+        {
+            _logger = logger;
+        }
 
         private static List<Hero> heroes = new List<Hero>
         {
@@ -32,7 +37,7 @@ namespace HeroesAPI.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<Hero>>> GetAllHeroes()
+        public ActionResult<List<Hero>> GetAllHeroes()
         {
             try
             {
@@ -40,12 +45,13 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                return BadRequest(exception.Message);
+                _logger.LogInformation(exception.Message);
+                return BadRequest();
             }
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<List<Hero>>> GetOneHero(int id)
+        public ActionResult<Hero> GetOneHero(int id)
         {
             try
             {
@@ -60,49 +66,66 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                return BadRequest(exception.Message);
+                _logger.LogInformation(exception.Message);
+                return BadRequest();
             }
         }
 
 
         [HttpPost]
-        public async Task<ActionResult<List<Hero>>> AddHero(Hero newHero)
+        public ActionResult<List<Hero>> AddHero(Hero newHero)
         {
             heroes.Add(newHero);
             return Ok(newHero);
         }
 
         [HttpPut]
-        public async Task<ActionResult<Hero>> UpdateHero(Hero requestedHero)
+        public ActionResult<Hero> UpdateHero(Hero requestedHero)
         {
-            var hero = heroes.FirstOrDefault(h => h.Id == requestedHero.Id);
-
-            if (hero is null)
+            try
             {
-                return BadRequest("Hero not found");
+                var hero = heroes.FirstOrDefault(h => h.Id == requestedHero.Id);
+
+                if (hero is null)
+                {
+                    return BadRequest("Hero not found");
+                }
+
+                hero.Name = requestedHero.Name;
+                hero.FirstName = requestedHero.FirstName;
+                hero.LastName = requestedHero.LastName;
+                hero.Place = requestedHero.Place;
+
+                return Ok(hero);
             }
-
-            hero.Name = requestedHero.Name;
-            hero.FirstName = requestedHero.FirstName;
-            hero.LastName = requestedHero.LastName;
-            hero.Place = requestedHero.Place;
-
-            return Ok(hero);
+            catch (Exception exception)
+            {
+                _logger.LogInformation(exception.Message);
+                return BadRequest();
+            }
         }
 
         [HttpDelete]
-        public async Task<ActionResult> DeleteHero(int id)
+        public ActionResult DeleteHero(int id)
         {
-            var hero = heroes.FirstOrDefault(h => h.Id == requestedHero.Id);
-
-            if (hero is null)
+            try
             {
-                return BadRequest("Hero not found");
+                var hero = heroes.FirstOrDefault(h => h.Id == id);
+
+                if (hero is null)
+                {
+                    return BadRequest("Hero not found");
+                }
+
+                heroes.Remove(hero);
+
+                return Ok();
             }
-
-            heroes.Remove(hero);
-
-            return Ok();
+            catch (Exception exception)
+            {
+                _logger.LogInformation(exception.Message);
+                return BadRequest();
+            }
 
         }
 
