@@ -36,6 +36,8 @@ namespace HeroesAPI.Controllers
 
 
 
+
+
         [HttpGet]
         public ActionResult<List<Hero>> GetAllHeroes()
         {
@@ -73,7 +75,7 @@ namespace HeroesAPI.Controllers
 
 
         [HttpPost]
-        public ActionResult<List<Hero>> AddHero(Hero newHero)
+        public ActionResult<Hero> AddHero(Hero newHero)
         {
             try
             {
@@ -88,7 +90,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpPut]
-        public ActionResult<Hero> UpdateHero(Hero requestedHero)
+        public ActionResult<Hero> UpdateHero([FromBody] Hero requestedHero)
         {
             try
             {
