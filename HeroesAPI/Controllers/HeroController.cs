@@ -1,5 +1,7 @@
 ﻿using HeroesAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace HeroesAPI.Controllers
 {
@@ -8,56 +10,35 @@ namespace HeroesAPI.Controllers
     public class HeroController : ControllerBase
     {
         private readonly ILogger<HeroController> _logger;
-        public HeroController(ILogger<HeroController> logger)
+        private readonly DataContext _dataContext;
+
+        public HeroController(DataContext dataContext, ILogger<HeroController> logger)
         {
+            _dataContext = dataContext;
             _logger = logger;
         }
 
-        private static List<Hero> heroes = new()
-        {
-            new Hero
-            {
-                Id = 1,
-                Name = "Spider Man",
-                FirstName = "Peter",
-                LastName = "Parker",
-                Place = "New York"
-            },
-
-            new Hero
-            {
-                Id = 2,
-                Name = "Ironman",
-                FirstName = "Tony",
-                LastName = "Stark",
-                Place = "Las Vegas"
-            }
-        };
-
-
-
-
 
         [HttpGet]
-        public ActionResult<List<Hero>> GetAllHeroes()
+        public async Task<ActionResult<List<Hero>>> GetAllHeroes()
         {
             try
             {
-                return Ok(heroes);
+                return Ok(await _dataContext.Heroes.ToListAsync());
             }
             catch (Exception exception)
             {
-                _logger.LogInformation("Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogInformation($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Hero> GetOneHero(int id)
+        public async Task<ActionResult<Hero>> GetOneHero(int id)
         {
             try
             {
-                var hero = heroes.FirstOrDefault(h => h.Id == id);
+                var hero = await _dataContext.Heroes.FindAsync(id);
 
                 if (hero is null)
                 {
@@ -68,33 +49,35 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogInformation("Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogInformation($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
 
 
         [HttpPost]
-        public ActionResult<Hero> AddHero(Hero newHero)
+        public async Task<ActionResult<Hero>> AddHero(Hero newHero)
         {
             try
             {
-                heroes.Add(newHero);
+                _dataContext.Heroes.Add(newHero);
+                await _dataContext.SaveChangesAsync();
+
                 return Ok(newHero);
             }
             catch (Exception exception)
             {
-                _logger.LogInformation("Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogInformation($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
 
         [HttpPut]
-        public ActionResult<Hero> UpdateHero([FromBody] Hero requestedHero)
+        public async Task<ActionResult<Hero>> UpdateHero([FromBody] Hero requestedHero)
         {
             try
             {
-                var hero = heroes.FirstOrDefault(h => h.Id == requestedHero.Id);
+                var hero = await _dataContext.Heroes.FindAsync(requestedHero.Id);
 
                 if (hero is null)
                 {
@@ -106,34 +89,36 @@ namespace HeroesAPI.Controllers
                 hero.LastName = requestedHero.LastName;
                 hero.Place = requestedHero.Place;
 
+                await _dataContext.SaveChangesAsync();
+
                 return Ok(hero);
             }
             catch (Exception exception)
             {
-                _logger.LogInformation("Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogInformation($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
 
         [HttpDelete]
-        public ActionResult DeleteHero(int id)
+        public async Task<ActionResult> DeleteHero(int id)
         {
             try
             {
-                var hero = heroes.FirstOrDefault(h => h.Id == id);
+                var hero = await _dataContext.Heroes.FindAsync(id);
 
                 if (hero is null)
                 {
                     return BadRequest("Hero not found");
                 }
 
-                heroes.Remove(hero);
+                _dataContext.Heroes.Remove(hero);
 
                 return Ok();
             }
             catch (Exception exception)
             {
-                _logger.LogInformation("Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogInformation($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
 
