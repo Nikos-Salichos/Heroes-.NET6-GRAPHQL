@@ -4,7 +4,7 @@ namespace HeroesAPI.Logging
 {
     public static class SerilogWriteToFile
     {
-        public static void Logger LogingMethod(string message)
+        public static void LogingMethod(string message)
         {
             string fullPath = Environment.CurrentDirectory + @"\logs.txt";
             Serilog.Core.Logger? log = new LoggerConfiguration()
