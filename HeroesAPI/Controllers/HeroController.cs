@@ -1,8 +1,6 @@
 ﻿using HeroesAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
-using Serilog.Core;
 using System.Reflection;
 
 namespace HeroesAPI.Controllers
@@ -29,28 +27,14 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Logger log = LogginMethod();
-                log.Information("skata");
-
                 return Ok(await _dataContext.Heroes.ToListAsync());
 
             }
             catch (Exception exception)
             {
-
-                log.LogInformation($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
-        }
-
-        private static Logger LogginMethod()
-        {
-            string fullPath = Environment.CurrentDirectory + @"\logs.txt";
-            Serilog.Core.Logger? log = new LoggerConfiguration()
-                     .MinimumLevel.Debug()
-                     .WriteTo.File(fullPath, rollingInterval: RollingInterval.Day)
-                     .CreateLogger();
-            return log;
         }
 
         [HttpGet("{id}")]
@@ -69,7 +53,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogInformation($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
@@ -87,7 +71,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogInformation($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
@@ -115,7 +99,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogInformation($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
@@ -138,7 +122,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogInformation($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
 
