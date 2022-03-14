@@ -1,4 +1,6 @@
 ﻿using HeroesAPI.Models;
+using HeroesAPI.Paging;
+using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -12,23 +14,34 @@ namespace HeroesAPI.Controllers
         private readonly ILogger<HeroController> _logger;
         private readonly DataContext _dataContext;
 
-
         public HeroController(DataContext dataContext, ILogger<HeroController> logger)
         {
             _dataContext = dataContext;
             _logger = logger;
         }
 
-
-
-
         [HttpGet]
-        public async Task<ActionResult<List<Hero>>> GetAllHeroes()
+        public async Task<ActionResult<List<Hero>>> GetAllHeroes(string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
             {
-                return Ok(await _dataContext.Heroes.ToListAsync());
-
+                if (sortBy is not null)
+                {
+                    PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
+                    List<Hero>? allHeroes = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+                                                                     .Take(validFilter.PageSize)
+                                                                     .ToListAsync();
+                    IEnumerable<Hero>? allHeroesSortBy = allHeroes.OrderByProperty(sortBy);
+                    return Ok(new PagedResponse<IEnumerable<Hero>>(allHeroesSortBy, validFilter.PageNumber, validFilter.PageSize));
+                }
+                else
+                {
+                    PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
+                    List<Hero>? allHeroes = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+                                                                     .Take(validFilter.PageSize)
+                                                                     .ToListAsync();
+                    return Ok(new PagedResponse<List<Hero>>(allHeroes, validFilter.PageNumber, validFilter.PageSize));
+                }
             }
             catch (Exception exception)
             {
@@ -36,6 +49,8 @@ namespace HeroesAPI.Controllers
                 return BadRequest();
             }
         }
+
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Hero>> GetOneHero(int id)
