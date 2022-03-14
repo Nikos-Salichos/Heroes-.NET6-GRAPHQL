@@ -74,7 +74,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                var hero = await _dataContext.Heroes.FindAsync(id);
+                Hero? hero = await _dataContext.Heroes.FindAsync(id);
 
                 if (hero is null)
                 {
@@ -121,7 +121,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                var hero = await _dataContext.Heroes.FindAsync(requestedHero.Id);
+                Hero? hero = await _dataContext.Heroes.FindAsync(requestedHero.Id);
 
                 if (hero is null)
                 {
@@ -149,7 +149,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                var hero = await _dataContext.Heroes.FindAsync(id);
+                Hero? hero = await _dataContext.Heroes.FindAsync(id);
 
                 if (hero is null)
                 {
