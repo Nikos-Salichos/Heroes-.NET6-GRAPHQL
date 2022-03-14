@@ -97,7 +97,7 @@ namespace HeroesAPI.Controllers
             try
             {
                 _dataContext.Heroes.Add(newHero);
-                await _dataContext.SaveChangesAsync();
+                _dataContext.SaveChangesAsync().Wait();
 
                 return Ok(newHero);
             }
@@ -136,7 +136,7 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteHero(int id)
         {
             try
@@ -149,6 +149,7 @@ namespace HeroesAPI.Controllers
                 }
 
                 _dataContext.Heroes.Remove(hero);
+                _dataContext.SaveChangesAsync().Wait();
 
                 return Ok();
             }
