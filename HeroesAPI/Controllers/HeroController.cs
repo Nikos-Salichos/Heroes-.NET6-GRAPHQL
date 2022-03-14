@@ -21,25 +21,33 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Hero>>> GetAllHeroes(string? sortBy, [FromQuery] PaginationFilter filter)
+        public async Task<ActionResult<List<Hero>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
             {
                 if (sortBy is not null)
                 {
                     PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
-                    List<Hero>? allHeroes = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+                    List<Hero> allHeroes = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
                                                                      .Take(validFilter.PageSize)
                                                                      .ToListAsync();
-                    IEnumerable<Hero>? allHeroesSortBy = allHeroes.OrderByProperty(sortBy);
+                    List<Hero> allHeroesSortBy = allHeroes.OrderByProperty(sortBy).ToList();
+
+                    if (searchString is not null)
+                    {
+                        allHeroesSortBy = HeroesFiltering(searchString, allHeroesSortBy);
+                    }
+
                     return Ok(new PagedResponse<IEnumerable<Hero>>(allHeroesSortBy, validFilter.PageNumber, validFilter.PageSize));
                 }
                 else
                 {
                     PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
-                    List<Hero>? allHeroes = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+                    List<Hero> allHeroes = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
                                                                      .Take(validFilter.PageSize)
                                                                      .ToListAsync();
+
+                    allHeroes = HeroesFiltering(searchString, allHeroes);
                     return Ok(new PagedResponse<List<Hero>>(allHeroes, validFilter.PageNumber, validFilter.PageSize));
                 }
             }
@@ -50,7 +58,16 @@ namespace HeroesAPI.Controllers
             }
         }
 
+        private static List<Hero> HeroesFiltering(string? searchString, List<Hero> allHeroes)
+        {
+            if (searchString is not null)
+            {
+                allHeroes = allHeroes.Where(h => h.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
+                                                 .ToList();
+            }
 
+            return allHeroes;
+        }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Hero>> GetOneHero(int id)
