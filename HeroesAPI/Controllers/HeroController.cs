@@ -96,9 +96,17 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                _dataContext.Heroes.Add(newHero);
-                _dataContext.SaveChangesAsync().Wait();
+                Task<Hero?>? heroExist = _dataContext.Heroes.FirstOrDefaultAsync(h => h.Name == newHero.Name
+                                                                                 && h.FirstName == newHero.FirstName
+                                                                                 && h.LastName == newHero.LastName
+                                                                                 && h.Place == newHero.Place);
+                if (heroExist is null)
+                {
+                    return Conflict(new { message = "An existing record with same Name/FirstName/LastName/Place was already found." });
+                }
 
+                _dataContext.Heroes.Add(newHero);
+                await _dataContext.SaveChangesAsync();
                 return Ok(newHero);
             }
             catch (Exception exception)
@@ -149,7 +157,7 @@ namespace HeroesAPI.Controllers
                 }
 
                 _dataContext.Heroes.Remove(hero);
-                _dataContext.SaveChangesAsync().Wait();
+                await _dataContext.SaveChangesAsync();
 
                 return Ok();
             }
