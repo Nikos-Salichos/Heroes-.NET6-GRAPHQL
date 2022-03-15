@@ -1,4 +1,4 @@
-﻿namespace HeroesAPI.Models
+﻿namespace HeroesAPI.Entities.Models
 {
     public class FileLoggingOptions
     {

@@ -1,4 +1,4 @@
-﻿using HeroesAPI.Models;
+﻿using HeroesAPI.Entities.Models;
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +21,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpGet]
+
         public async Task<ActionResult<List<Hero>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try

@@ -1,4 +1,4 @@
-﻿using HeroesAPI.Models;
+﻿using HeroesAPI.Entities.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HeroesAPI.Data
