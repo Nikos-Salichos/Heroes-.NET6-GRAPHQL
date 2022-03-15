@@ -1,4 +1,5 @@
 ﻿using HeroesAPI.Entities.Models;
+using HeroesAPI.Interfaces;
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +15,23 @@ namespace HeroesAPI.Controllers
         private readonly ILogger<HeroController> _logger;
         private readonly DataContext _dataContext;
 
-        public HeroController(DataContext dataContext, ILogger<HeroController> logger)
+        private readonly IHeroRepository _heroRepository;
+
+        public HeroController(IHeroRepository heroRepository, ILogger<HeroController> logger, DataContext dataContext)
         {
-            _dataContext = dataContext;
+            _heroRepository = heroRepository;
             _logger = logger;
+            _dataContext = dataContext;
         }
 
-        [HttpGet]
+        /* [HttpGet]
+         public IEnumerable<Hero> Get()
+         {
+             return _heroRepository.GetAll();
+         }*/
 
+
+        [HttpGet]
         public async Task<ActionResult<List<Hero>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
@@ -29,6 +39,7 @@ namespace HeroesAPI.Controllers
                 if (sortBy is not null)
                 {
                     PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
+
                     List<Hero> allHeroes = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
                                                                      .Take(validFilter.PageSize)
                                                                      .ToListAsync();
