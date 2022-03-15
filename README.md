@@ -8,3 +8,13 @@ I have use the following technologies:
 - C#
 - .NET 6
 - Entity Framework Core
+
+In addition i have implement the following:
+- Pagination (both page number and page size)
+- Sorting based on property (using dynamic LINQ)
+- Filtering
+- API throttling
+- Enable Cors
+- Serilog (write to log file in project directory)
+
+Within the next days i will implement generic repository pattern to seperate my database layer from business logic.
