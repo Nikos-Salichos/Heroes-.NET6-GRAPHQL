@@ -12,38 +12,32 @@ namespace HeroesAPI.Controllers
     [ApiController]
     public class HeroController : ControllerBase
     {
-        private readonly ILogger<HeroController> _logger;
         private readonly DataContext _dataContext;
 
         private readonly IHeroRepository _heroRepository;
 
-        public HeroController(IHeroRepository heroRepository, ILogger<HeroController> logger, DataContext dataContext)
+        public HeroController(IHeroRepository heroRepository, DataContext dataContext)
         {
             _heroRepository = heroRepository;
-            _logger = logger;
             _dataContext = dataContext;
         }
 
-        /* [HttpGet]
-         public IEnumerable<Hero> Get()
-         {
-             return _heroRepository.GetAll();
-         }*/
-
-
         [HttpGet]
-        public async Task<ActionResult<List<Hero>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
+        public async Task<IActionResult> GetAllOwners(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
             {
+                PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
                 if (sortBy is not null)
                 {
-                    PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
 
-                    List<Hero> allHeroes = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
-                                                                     .Take(validFilter.PageSize)
-                                                                     .ToListAsync();
-                    List<Hero> allHeroesSortBy = allHeroes.OrderByProperty(sortBy).ToList();
+                    IEnumerable<Hero>? allHeroes = await _heroRepository.GetAllHeroesAsync();
+
+                    List<Hero> allHeroesByPageSizeAndNumber = allHeroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+                                                                       .Take(validFilter.PageSize)
+                                                                       .ToList();
+
+                    List<Hero> allHeroesSortBy = allHeroesByPageSizeAndNumber.OrderByProperty(sortBy).ToList();
 
                     if (searchString is not null)
                     {
@@ -51,10 +45,10 @@ namespace HeroesAPI.Controllers
                     }
 
                     return Ok(new PagedResponse<IEnumerable<Hero>>(allHeroesSortBy, validFilter.PageNumber, validFilter.PageSize));
+
                 }
                 else
                 {
-                    PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
                     List<Hero> allHeroes = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
                                                                      .Take(validFilter.PageSize)
                                                                      .ToListAsync();

@@ -1,34 +1,37 @@
 ﻿using HeroesAPI.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace HeroesAPI.Repository.GenericRepository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected readonly DataContext _dataContext;
-        public GenericRepository(DataContext dbcontext)
+        protected DataContext DataContext { get; set; }
+        public GenericRepository(DataContext dataContext)
         {
-            _dataContext = dbcontext;
+            DataContext = dataContext;
         }
 
-        public void Add(T entity)
+        public IQueryable<T> FindAll()
         {
-            _dataContext.Set<T>().Add(entity);
+            return DataContext.Set<T>().AsNoTracking();
         }
-        public T GetById(int id)
+        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
-            return _dataContext.Set<T>().Find(id);
+            return DataContext.Set<T>().Where(expression).AsNoTracking();
         }
-        public void Remove(T entity)
+        public void Create(T entity)
         {
-            _dataContext.Set<T>().Remove(entity);
+            DataContext.Set<T>().Add(entity);
         }
-        public IEnumerable<T> GetAll()
+        public void Update(T entity)
         {
-            return _dataContext.Set<T>().ToList();
+            DataContext.Set<T>().Update(entity);
         }
-        public int Complete()
+        public void Delete(T entity)
         {
-            return _dataContext.SaveChanges();
+            DataContext.Set<T>().Remove(entity);
         }
+
     }
 }
