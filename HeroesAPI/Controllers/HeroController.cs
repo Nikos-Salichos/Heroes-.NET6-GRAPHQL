@@ -66,6 +66,109 @@ namespace HeroesAPI.Controllers
             }
         }
 
+        [HttpGet("{heroId}", Name = "HeroById")]
+        public async Task<ActionResult<Hero>> GetOneHero(int heroId)
+        {
+            try
+            {
+                Hero? hero = await _heroRepository.GetHeroByIdAsync(heroId);
+
+                if (hero is null)
+                {
+                    return BadRequest("Hero not found");
+                }
+
+                return Ok(hero);
+            }
+            catch (Exception exception)
+            {
+                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddHero(Hero newHero)
+        {
+            try
+            {
+                Hero? heroExist = await HeroAlreadyExists(newHero);
+
+                if (heroExist is not null)
+                {
+                    return Conflict(new { message = "An existing record with same Name/FirstName/LastName/Place was already found." });
+                }
+
+                _heroRepository.CreateHero(newHero);
+
+                await _heroRepository.SaveAsync();
+
+                return Ok(newHero);
+            }
+            catch (Exception exception)
+            {
+                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateHero([FromBody] Hero requestedHero)
+        {
+            try
+            {
+                Hero? hero = await _heroRepository.GetHeroByIdAsync(requestedHero.Id);
+
+                if (hero is null)
+                {
+                    return BadRequest("Hero not found");
+                }
+
+                hero.Name = requestedHero.Name;
+                hero.FirstName = requestedHero.FirstName;
+                hero.LastName = requestedHero.LastName;
+                hero.Place = requestedHero.Place;
+
+                await _heroRepository.SaveAsync();
+
+                return Ok(hero);
+            }
+            catch (Exception exception)
+            {
+                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete("{heroId}")]
+        public async Task<IActionResult> DeleteHero(int heroId)
+        {
+            try
+            {
+                Hero? hero = await _heroRepository.GetHeroByIdAsync(heroId);
+
+                if (hero is null)
+                {
+                    return BadRequest("Hero not found");
+                }
+
+                _dataContext.Heroes.Remove(hero);
+
+                await _heroRepository.SaveAsync();
+
+                return Ok();
+            }
+            catch (Exception exception)
+            {
+                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                return BadRequest();
+            }
+
+        }
+
+
+
+
         private async Task<IActionResult> HeroesWithSorting(string? searchString, string sortBy, PaginationFilter validFilter)
         {
             IEnumerable<Hero>? allHeroes = await _heroRepository.GetAllHeroesAsync();
@@ -105,109 +208,17 @@ namespace HeroesAPI.Controllers
             return allHeroes;
         }
 
-        [HttpGet("{heroId}", Name = "HeroById")]
-        public async Task<ActionResult<Hero>> GetOneHero(int heroId)
+        private async Task<Hero> HeroAlreadyExists(Hero newHero)
         {
-            try
-            {
-                Hero? hero = await _heroRepository.GetHeroByIdAsync(heroId);
+            IEnumerable<Hero>? allheroes = await _heroRepository.GetAllHeroesAsync();
 
-                if (hero is null)
-                {
-                    return BadRequest("Hero not found");
-                }
-
-                return Ok(hero);
-            }
-            catch (Exception exception)
-            {
-                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
-                return BadRequest();
-            }
+            Hero? heroExist = allheroes.AsEnumerable().FirstOrDefault(h => h.Name == newHero.Name
+                                                             && h.FirstName == newHero.FirstName
+                                                             && h.LastName == newHero.LastName
+                                                             && h.Place == newHero.Place);
+            return heroExist;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddHero(Hero newHero)
-        {
-            try
-            {
-                IEnumerable<Hero>? allheroes = await _heroRepository.GetAllHeroesAsync();
-
-                Hero? heroExist = allheroes.AsEnumerable().FirstOrDefault(h => h.Name == newHero.Name
-                                                                 && h.FirstName == newHero.FirstName
-                                                                 && h.LastName == newHero.LastName
-                                                                 && h.Place == newHero.Place);
-
-                if (heroExist is not null)
-                {
-                    return Conflict(new { message = "An existing record with same Name/FirstName/LastName/Place was already found." });
-                }
-
-                _heroRepository.CreateHero(newHero);
-
-                await _heroRepository.SaveAsync();
-
-                return Ok(newHero);
-            }
-            catch (Exception exception)
-            {
-                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
-                return BadRequest();
-            }
-        }
-
-        [HttpPut]
-        public async Task<ActionResult<Hero>> UpdateHero([FromBody] Hero requestedHero)
-        {
-            try
-            {
-                Hero? hero = await _dataContext.Heroes.FindAsync(requestedHero.Id);
-
-                if (hero is null)
-                {
-                    return BadRequest("Hero not found");
-                }
-
-                hero.Name = requestedHero.Name;
-                hero.FirstName = requestedHero.FirstName;
-                hero.LastName = requestedHero.LastName;
-                hero.Place = requestedHero.Place;
-
-                await _dataContext.SaveChangesAsync();
-
-                return Ok(hero);
-            }
-            catch (Exception exception)
-            {
-                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
-                return BadRequest();
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteHero(int id)
-        {
-            try
-            {
-                Hero? hero = await _dataContext.Heroes.FindAsync(id);
-
-                if (hero is null)
-                {
-                    return BadRequest("Hero not found");
-                }
-
-                _dataContext.Heroes.Remove(hero);
-                await _dataContext.SaveChangesAsync();
-
-                return Ok();
-            }
-            catch (Exception exception)
-            {
-                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
-                return BadRequest();
-            }
-
-        }
 
     }
 }
