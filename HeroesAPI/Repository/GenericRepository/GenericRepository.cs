@@ -33,5 +33,10 @@ namespace HeroesAPI.Repository.GenericRepository
             DataContext.Set<T>().Remove(entity);
         }
 
+        public async Task SaveAsync()
+        {
+            await DataContext.SaveChangesAsync();
+        }
+
     }
 }

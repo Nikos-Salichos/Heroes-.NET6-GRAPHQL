@@ -18,7 +18,7 @@ namespace HeroesAPI.Repository
                .OrderBy(ow => ow.Name)
                .ToListAsync();
         }
-        public async Task<Hero> GetHeroByIdAsync(Guid heroId)
+        public async Task<Hero> GetHeroByIdAsync(int heroId)
         {
             return await FindByCondition(hero => hero.Id.Equals(heroId))
                 .FirstOrDefaultAsync();

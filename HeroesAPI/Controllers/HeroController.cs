@@ -4,6 +4,7 @@ using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Reflection;
 
 namespace HeroesAPI.Controllers
@@ -16,45 +17,46 @@ namespace HeroesAPI.Controllers
 
         private readonly IHeroRepository _heroRepository;
 
-        public HeroController(IHeroRepository heroRepository, DataContext dataContext)
+        private readonly IMemoryCache _memoryCache;
+
+        public HeroController(IHeroRepository heroRepository, DataContext dataContext, IMemoryCache memoryCache)
         {
             _heroRepository = heroRepository;
             _dataContext = dataContext;
+            _memoryCache = memoryCache;
         }
 
+        //TODO Replace CRUD with heroRepository(Generic pattern)
+
+        [Route("GetAllHeroes")]
         [HttpGet]
         public async Task<IActionResult> GetAllOwners(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
             {
+
+                string? cacheKey = "heroesList";
+                if (!_memoryCache.TryGetValue(cacheKey, out List<Hero> customerList))
+                {
+                    customerList = (List<Hero>)await _heroRepository.GetAllHeroesAsync();
+                    var cacheExpiryOptions = new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpiration = DateTime.Now.AddMinutes(5),
+                        Priority = CacheItemPriority.High,
+                        SlidingExpiration = TimeSpan.FromMinutes(2)
+                    };
+                    _memoryCache.Set(cacheKey, customerList, cacheExpiryOptions);
+                }
+
                 PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
                 if (sortBy is not null)
                 {
-
-                    IEnumerable<Hero>? allHeroes = await _heroRepository.GetAllHeroesAsync();
-
-                    List<Hero> allHeroesByPageSizeAndNumber = allHeroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
-                                                                       .Take(validFilter.PageSize)
-                                                                       .ToList();
-
-                    List<Hero> allHeroesSortBy = allHeroesByPageSizeAndNumber.OrderByProperty(sortBy).ToList();
-
-                    if (searchString is not null)
-                    {
-                        allHeroesSortBy = HeroesFiltering(searchString, allHeroesSortBy);
-                    }
-
-                    return Ok(new PagedResponse<IEnumerable<Hero>>(allHeroesSortBy, validFilter.PageNumber, validFilter.PageSize));
+                    return await HeroesWithSorting(searchString, sortBy, validFilter);
 
                 }
                 else
                 {
-                    List<Hero> allHeroes = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
-                                                                     .Take(validFilter.PageSize)
-                                                                     .ToListAsync();
-
-                    allHeroes = HeroesFiltering(searchString, allHeroes);
-                    return Ok(new PagedResponse<List<Hero>>(allHeroes, validFilter.PageNumber, validFilter.PageSize));
+                    return await HeroesWithoutSorting(searchString, validFilter);
                 }
             }
             catch (Exception exception)
@@ -62,6 +64,34 @@ namespace HeroesAPI.Controllers
                 Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
+        }
+
+        private async Task<IActionResult> HeroesWithSorting(string? searchString, string sortBy, PaginationFilter validFilter)
+        {
+            IEnumerable<Hero>? allHeroes = await _heroRepository.GetAllHeroesAsync();
+
+            List<Hero> allHeroesByPageSizeAndNumber = allHeroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+                                                               .Take(validFilter.PageSize)
+                                                               .ToList();
+
+            List<Hero> allHeroesSortBy = allHeroesByPageSizeAndNumber.OrderByProperty(sortBy).ToList();
+
+            if (searchString is not null)
+            {
+                allHeroesSortBy = HeroesFiltering(searchString, allHeroesSortBy);
+            }
+
+            return Ok(new PagedResponse<IEnumerable<Hero>>(allHeroesSortBy, validFilter.PageNumber, validFilter.PageSize));
+        }
+
+        private async Task<IActionResult> HeroesWithoutSorting(string? searchString, PaginationFilter validFilter)
+        {
+            List<Hero> allHeroesByPageSizeAndNumber = await _dataContext.Heroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+                                                             .Take(validFilter.PageSize)
+                                                             .ToListAsync();
+
+            allHeroesByPageSizeAndNumber = HeroesFiltering(searchString, allHeroesByPageSizeAndNumber);
+            return Ok(new PagedResponse<List<Hero>>(allHeroesByPageSizeAndNumber, validFilter.PageNumber, validFilter.PageSize));
         }
 
         private static List<Hero> HeroesFiltering(string? searchString, List<Hero> allHeroes)
@@ -75,12 +105,12 @@ namespace HeroesAPI.Controllers
             return allHeroes;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Hero>> GetOneHero(int id)
+        [HttpGet("{heroId}", Name = "HeroById")]
+        public async Task<ActionResult<Hero>> GetOneHero(int heroId)
         {
             try
             {
-                Hero? hero = await _dataContext.Heroes.FindAsync(id);
+                Hero? hero = await _heroRepository.GetHeroByIdAsync(heroId);
 
                 if (hero is null)
                 {
@@ -96,23 +126,27 @@ namespace HeroesAPI.Controllers
             }
         }
 
-
         [HttpPost]
-        public async Task<ActionResult<Hero>> AddHero(Hero newHero)
+        public async Task<IActionResult> AddHero(Hero newHero)
         {
             try
             {
-                Task<Hero?>? heroExist = _dataContext.Heroes.FirstOrDefaultAsync(h => h.Name == newHero.Name
-                                                                                 && h.FirstName == newHero.FirstName
-                                                                                 && h.LastName == newHero.LastName
-                                                                                 && h.Place == newHero.Place);
-                if (heroExist is null)
+                IEnumerable<Hero>? allheroes = await _heroRepository.GetAllHeroesAsync();
+
+                Hero? heroExist = allheroes.AsEnumerable().FirstOrDefault(h => h.Name == newHero.Name
+                                                                 && h.FirstName == newHero.FirstName
+                                                                 && h.LastName == newHero.LastName
+                                                                 && h.Place == newHero.Place);
+
+                if (heroExist is not null)
                 {
                     return Conflict(new { message = "An existing record with same Name/FirstName/LastName/Place was already found." });
                 }
 
-                _dataContext.Heroes.Add(newHero);
-                await _dataContext.SaveChangesAsync();
+                _heroRepository.CreateHero(newHero);
+
+                await _heroRepository.SaveAsync();
+
                 return Ok(newHero);
             }
             catch (Exception exception)

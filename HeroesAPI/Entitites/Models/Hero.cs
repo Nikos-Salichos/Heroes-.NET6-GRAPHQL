@@ -21,5 +21,7 @@ namespace HeroesAPI.Entities.Models
         [Required(ErrorMessage = "Place is Required")]
         [StringLength(50, ErrorMessage = "Name can't be longer than 50 characters")]
         public string Place { get; set; } = string.Empty;
+
+
     }
 }
