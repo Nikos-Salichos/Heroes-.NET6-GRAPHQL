@@ -4,8 +4,23 @@ using HeroesAPI.Interfaces;
 using HeroesAPI.Repository;
 using HeroesAPI.Repository.GenericRepository;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Sinks.MSSqlServer;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
+
+#region Serilog Logging
+string fullPath = Environment.CurrentDirectory + @"\logs.txt";
+builder.Host.UseSerilog((ctx, lc) => lc.MinimumLevel.Error()
+                                       .WriteTo.File(fullPath, rollingInterval: RollingInterval.Day)
+                                       .WriteTo.MSSqlServer("server=localhost\\sqlexpress;database=superherodb;trusted_connection=true",
+                                        new MSSqlServerSinkOptions
+                                        {
+                                            TableName = "Logs",
+                                            SchemaName = "dbo",
+                                            AutoCreateSqlTable = true
+                                        }));
+#endregion Serilog Logging
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DataContext>(options =>
@@ -51,7 +66,9 @@ builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>()
 #region Repositories
 builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddTransient<IHeroRepository, HeroRepository>();
-#endregion
+#endregion Repositories
+
+
 
 WebApplication? app = builder.Build();
 

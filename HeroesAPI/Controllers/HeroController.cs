@@ -34,7 +34,6 @@ namespace HeroesAPI.Controllers
 
                 string? cacheKey = "heroesList";
 
-                Serilog.Log.Information($"Logging ");
                 _logger.LogInformation("lalala");
 
 
