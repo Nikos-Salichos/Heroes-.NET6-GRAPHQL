@@ -31,11 +31,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-
                 string? cacheKey = "heroesList";
-
-                _logger.LogInformation("lalala");
-
 
                 if (!_memoryCache.TryGetValue(cacheKey, out List<Hero> customerList))
                 {
@@ -62,12 +58,12 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
 
-        [HttpGet("{heroId}", Name = "HeroById")]
+        [HttpGet("/heroDetails", Name = "HeroById")]
         public async Task<ActionResult<Hero>> GetOneHero(int heroId)
         {
             try
@@ -76,20 +72,68 @@ namespace HeroesAPI.Controllers
 
                 if (hero is null)
                 {
-                    return BadRequest("Hero not found");
+                    return NotFound("Hero not found");
+                }
+
+                string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Resources", "Images"));
+                string? imagePath = $"{pathToSave}\\{hero.Name}.png";
+
+                if (System.IO.File.Exists(imagePath))
+                {
+                    byte[] byteArray = System.IO.File.ReadAllBytes(imagePath);
+                    using (MemoryStream? stream = new MemoryStream(byteArray))
+                    {
+                        IFormFile file = new FormFile(stream, 0, stream.Length, hero.Name, hero.Name + ".png")
+                        {
+                            Headers = new HeaderDictionary(),
+                            ContentType = "image.png"
+                        };
+
+                        hero.Image = file;
+                    }
                 }
 
                 return Ok(hero);
             }
             catch (Exception exception)
             {
-                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("/heroImage", Name = "HeroByIdImage")]
+        public async Task<ActionResult<Hero>> GetHeroImage(int heroId)
+        {
+            try
+            {
+                Hero? hero = await _heroRepository.GetHeroByIdAsync(heroId);
+
+                if (hero is null)
+                {
+                    return NotFound("Hero not found");
+                }
+
+                string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Resources", "Images"));
+                string? imagePath = $"{pathToSave}\\{hero.Name}.png";
+
+                if (System.IO.File.Exists(imagePath))
+                {
+                    byte[] byteArray = System.IO.File.ReadAllBytes(imagePath);
+                    return File(byteArray, "image/png");
+                }
+
+                return NotFound("Hero not found");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddHero(Hero newHero)
+        public async Task<IActionResult> AddHero([FromForm] Hero newHero)
         {
             try
             {
@@ -100,6 +144,33 @@ namespace HeroesAPI.Controllers
                     return Conflict(new { message = "An existing record with same Name/FirstName/LastName/Place was already found." });
                 }
 
+                if (newHero.Image?.Length > 0)
+                {
+                    if (!newHero.Image.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                    // || !newHero.Image.FileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                    // || !newHero.Image.FileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                       )
+                    {
+                        return BadRequest(new { message = "This file is not image" });
+                    }
+
+                    string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Resources", "Images"));
+                    if (!Directory.Exists(pathToSave))
+                    {
+                        Directory.CreateDirectory(pathToSave);
+                    }
+
+                    string imageName = newHero.Image.Name.Replace(newHero.Image.Name, newHero.Name);
+                    string? fullPath = Path.Combine(pathToSave, imageName);
+                    string extension = Path.GetExtension(newHero.Image.FileName);
+
+                    using (FileStream fileStream = System.IO.File.Create(fullPath + imageName + extension))
+                    {
+                        newHero.Image.CopyTo(fileStream);
+                        fileStream.Flush();
+                    }
+                }
+
                 _heroRepository.CreateHero(newHero);
 
                 await _heroRepository.SaveAsync();
@@ -108,7 +179,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
@@ -136,7 +207,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
@@ -150,16 +221,17 @@ namespace HeroesAPI.Controllers
 
                 if (hero is null)
                 {
-                    return BadRequest("Hero not found");
+                    return NotFound("Hero not found");
                 }
 
+                _heroRepository.DeleteHero(hero);
                 await _heroRepository.SaveAsync();
 
                 return Ok();
             }
             catch (Exception exception)
             {
-                Serilog.Log.Information($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
         }
@@ -211,10 +283,7 @@ namespace HeroesAPI.Controllers
         {
             IEnumerable<Hero>? allheroes = await _heroRepository.GetAllHeroesAsync();
 
-            Hero? heroExist = allheroes.AsEnumerable().FirstOrDefault(h => h.Name == newHero.Name
-                                                             && h.FirstName == newHero.FirstName
-                                                             && h.LastName == newHero.LastName
-                                                             && h.Place == newHero.Place);
+            Hero? heroExist = allheroes.AsEnumerable().FirstOrDefault(h => h.Name.Equals(newHero.Name, StringComparison.InvariantCultureIgnoreCase));
             return heroExist;
         }
 

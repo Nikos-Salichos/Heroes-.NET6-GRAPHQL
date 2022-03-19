@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HeroesAPI.Entities.Models
 {
     public class Hero
     {
+        [Key]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Name is Required")]
@@ -22,6 +24,10 @@ namespace HeroesAPI.Entities.Models
         [StringLength(50, ErrorMessage = "Name can't be longer than 50 characters")]
         public string Place { get; set; } = string.Empty;
 
+        [NotMapped]
+        public IFormFile? Image { get; set; }
+
+        public string? ImageUrl { get; set; }
 
     }
 }
