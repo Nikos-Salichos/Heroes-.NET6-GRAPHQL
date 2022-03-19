@@ -4,10 +4,11 @@
 In this project i have create a CRUD web api for heroes.
 You can create,read,update,delete a hero. In addition i have use Entity Framework Core and Code First technique.
 
-I have use the following technologies:
+I have use the following technologies and packages:
 - C#
 - .NET 6
 - Entity Framework Core
+- Serilog
 
 In addition i have implement the following:
 - Pagination (both page number and page size)
@@ -15,6 +16,6 @@ In addition i have implement the following:
 - Filtering
 - API throttling
 - Enable Cors
-- Serilog (write to log file in project directory)
+- Logging (log to txt file in project directory and in database)
 
 Within the next days i will implement generic repository pattern to seperate my database layer from business logic.
