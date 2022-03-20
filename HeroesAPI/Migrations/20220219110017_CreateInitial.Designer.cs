@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HeroesAPI.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(MsSql))]
     [Migration("20220219110017_CreateInitial")]
     partial class CreateInitial
     {

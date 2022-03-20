@@ -75,24 +75,6 @@ namespace HeroesAPI.Controllers
                     return NotFound("Hero not found");
                 }
 
-                string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Resources", "Images"));
-                string? imagePath = $"{pathToSave}\\{hero.Name}.png";
-
-                if (System.IO.File.Exists(imagePath))
-                {
-                    byte[] byteArray = System.IO.File.ReadAllBytes(imagePath);
-                    using (MemoryStream? stream = new MemoryStream(byteArray))
-                    {
-                        IFormFile file = new FormFile(stream, 0, stream.Length, hero.Name, hero.Name + ".png")
-                        {
-                            Headers = new HeaderDictionary(),
-                            ContentType = "image.png"
-                        };
-
-                        hero.Image = file;
-                    }
-                }
-
                 return Ok(hero);
             }
             catch (Exception exception)
@@ -114,16 +96,14 @@ namespace HeroesAPI.Controllers
                     return NotFound("Hero not found");
                 }
 
-                string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Resources", "Images"));
-                string? imagePath = $"{pathToSave}\\{hero.Name}.png";
-
-                if (System.IO.File.Exists(imagePath))
+                string? imageUrl = hero.ImageUrl;
+                if (imageUrl != null && System.IO.File.Exists(imageUrl))
                 {
-                    byte[] byteArray = System.IO.File.ReadAllBytes(imagePath);
+                    byte[] byteArray = System.IO.File.ReadAllBytes(imageUrl);
                     return File(byteArray, "image/png");
                 }
 
-                return NotFound("Hero not found");
+                return NotFound("Hero image not found");
             }
             catch (Exception exception)
             {
@@ -147,28 +127,16 @@ namespace HeroesAPI.Controllers
                 if (newHero.Image?.Length > 0)
                 {
                     if (!newHero.Image.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
-                    // || !newHero.Image.FileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
-                    // || !newHero.Image.FileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                     && !newHero.Image.FileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                     && !newHero.Image.FileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
                        )
                     {
                         return BadRequest(new { message = "This file is not image" });
                     }
 
-                    string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Resources", "Images"));
-                    if (!Directory.Exists(pathToSave))
-                    {
-                        Directory.CreateDirectory(pathToSave);
-                    }
-
-                    string imageName = newHero.Image.Name.Replace(newHero.Image.Name, newHero.Name);
-                    string? fullPath = Path.Combine(pathToSave, imageName);
-                    string extension = Path.GetExtension(newHero.Image.FileName);
-
-                    using (FileStream fileStream = System.IO.File.Create(fullPath + imageName + extension))
-                    {
-                        newHero.Image.CopyTo(fileStream);
-                        fileStream.Flush();
-                    }
+                    string pathToSave = CreateImageDirectory();
+                    SaveImageInDir(newHero, pathToSave, out string fullPath, out string extension);
+                    newHero.ImageUrl = fullPath + extension;
                 }
 
                 _heroRepository.CreateHero(newHero);
@@ -184,8 +152,20 @@ namespace HeroesAPI.Controllers
             }
         }
 
+        private static void SaveImageInDir(Hero newHero, string pathToSave, out string fullPath, out string extension)
+        {
+            string imageName = Guid.NewGuid().ToString();
+            fullPath = Path.Combine(pathToSave, imageName);
+            extension = Path.GetExtension(newHero.Image.FileName);
+            using (FileStream fileStream = System.IO.File.Create(fullPath + imageName + extension))
+            {
+                newHero.Image.CopyTo(fileStream);
+                fileStream.Flush();
+            }
+        }
+
         [HttpPut]
-        public async Task<IActionResult> UpdateHero([FromBody] Hero requestedHero)
+        public async Task<IActionResult> UpdateHero([FromForm] Hero requestedHero)
         {
             try
             {
@@ -196,20 +176,42 @@ namespace HeroesAPI.Controllers
                     return BadRequest("Hero not found");
                 }
 
-                hero.Name = requestedHero.Name;
-                hero.FirstName = requestedHero.FirstName;
-                hero.LastName = requestedHero.LastName;
-                hero.Place = requestedHero.Place;
+                if (requestedHero.Image?.Length > 0)
+                {
+                    if (!requestedHero.Image.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                     && !requestedHero.Image.FileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                     && !requestedHero.Image.FileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                       )
+                    {
+                        return BadRequest(new { message = "This file is not image" });
+                    }
 
+                    string pathToSave = CreateImageDirectory();
+                    SaveImageInDir(requestedHero, pathToSave, out string fullPath, out string extension);
+                    requestedHero.ImageUrl = fullPath + extension;
+                }
+
+                _heroRepository.UpdateHero(requestedHero);
                 await _heroRepository.SaveAsync();
 
-                return Ok(hero);
+                return Ok(requestedHero);
             }
             catch (Exception exception)
             {
                 _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
                 return BadRequest();
             }
+        }
+
+        private static string CreateImageDirectory()
+        {
+            string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Resources", "Images"));
+            if (!Directory.Exists(pathToSave))
+            {
+                Directory.CreateDirectory(pathToSave);
+            }
+
+            return pathToSave;
         }
 
         [HttpDelete("{heroId}")]
@@ -236,12 +238,17 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        private async Task<List<Hero>> GetHeroesPagination(PaginationFilter validFilter)
+
+
+
+
+
+        private async Task<List<Hero>> GetHeroesPagination(PaginationFilter paginationFilter)
         {
             IEnumerable<Hero>? allHeroes = await _heroRepository.GetAllHeroesAsync();
 
-            List<Hero> allHeroesByPageSizeAndNumber = allHeroes.Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
-                                                             .Take(validFilter.PageSize)
+            List<Hero> allHeroesByPageSizeAndNumber = allHeroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                                                             .Take(paginationFilter.PageSize)
                                                              .ToList();
             return allHeroesByPageSizeAndNumber;
         }

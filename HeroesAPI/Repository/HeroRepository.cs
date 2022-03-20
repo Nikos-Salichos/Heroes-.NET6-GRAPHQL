@@ -7,16 +7,14 @@ namespace HeroesAPI.Repository
 {
     public class HeroRepository : GenericRepository<Hero>, IHeroRepository
     {
-        public HeroRepository(DataContext dataContext)
-               : base(dataContext)
+        public HeroRepository(MsSql msSql, SqLite sqLite)
+               : base(msSql, sqLite)
         {
         }
 
         public async Task<IEnumerable<Hero>> GetAllHeroesAsync()
         {
-            return await FindAll()
-               .OrderBy(ow => ow.Name)
-               .ToListAsync();
+            return await FindAll().ToListAsync();
         }
         public async Task<Hero> GetHeroByIdAsync(int heroId)
         {

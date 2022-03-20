@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HeroesAPI.Data
 {
-    public class DataContext : DbContext
+    public class MsSql : DbContext
     {
-        public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+        public MsSql(DbContextOptions<MsSql> options) : base(options)
+        {
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

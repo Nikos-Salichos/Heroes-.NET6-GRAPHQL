@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HeroesAPI.Migrations
 {
     [DbContext(typeof(MsSql))]
-    [Migration("20220319062418_HeroSeeding")]
-    partial class HeroSeeding
+    [Migration("20220319133841_HeroImageUrl")]
+    partial class HeroImageUrl
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,6 +35,9 @@ namespace HeroesAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .IsRequired()

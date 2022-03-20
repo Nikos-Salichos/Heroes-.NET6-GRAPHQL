@@ -23,9 +23,26 @@ builder.Host.UseSerilog((ctx, lc) => lc.MinimumLevel.Error()
 #endregion Serilog Logging
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<DataContext>(options =>
+
+
+IWebHostEnvironment? env = builder.Environment;
+if (env.IsProduction())
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    builder.Services.AddDbContext<MsSql>();
+}
+else
+{
+    builder.Services.AddDbContext<SqLite>();
+}
+
+builder.Services.AddDbContext<MsSql>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"));
+});
+
+builder.Services.AddDbContext<MsSql>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 
@@ -68,9 +85,8 @@ builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericReposi
 builder.Services.AddTransient<IHeroRepository, HeroRepository>();
 #endregion Repositories
 
-
-
 WebApplication? app = builder.Build();
+
 
 app.UseClientRateLimiting();
 

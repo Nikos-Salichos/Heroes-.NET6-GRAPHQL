@@ -6,36 +6,39 @@ namespace HeroesAPI.Repository.GenericRepository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected DataContext DataContext { get; set; }
-        public GenericRepository(DataContext dataContext)
+        protected MsSql MsSql { get; set; }
+        protected SqLite SqLite { get; set; }
+
+        public GenericRepository(MsSql msSql, SqLite sqLite)
         {
-            DataContext = dataContext;
+            MsSql = msSql;
+            SqLite = sqLite;
         }
 
         public IQueryable<T> FindAll()
         {
-            return DataContext.Set<T>().AsNoTracking();
+            return MsSql.Set<T>().AsNoTracking();
         }
         public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
-            return DataContext.Set<T>().Where(expression).AsNoTracking();
+            return MsSql.Set<T>().Where(expression).AsNoTracking();
         }
         public void Create(T entity)
         {
-            DataContext.Set<T>().Add(entity);
+            MsSql.Set<T>().Add(entity);
         }
         public void Update(T entity)
         {
-            DataContext.Set<T>().Update(entity);
+            MsSql.Set<T>().Update(entity);
         }
         public void Delete(T entity)
         {
-            DataContext.Set<T>().Remove(entity);
+            MsSql.Set<T>().Remove(entity);
         }
 
         public async Task SaveAsync()
         {
-            await DataContext.SaveChangesAsync();
+            await MsSql.SaveChangesAsync();
         }
 
     }
