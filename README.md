@@ -8,14 +8,15 @@ I have use the following technologies and packages:
 - C#
 - .NET 6
 - Entity Framework Core
+- Microsoft SQL Server
 - Serilog
 
 In addition i have implement the following:
+- Generic Repository Pattern
 - Pagination (both page number and page size)
-- Sorting based on property (using dynamic LINQ)
-- Filtering
+- Web Api sorting based on property (using dynamic LINQ)
+- Web Api filtering
 - API throttling
 - Enable Cors
 - Logging (log to txt file in project directory and in database)
-
-Within the next days i will implement generic repository pattern to seperate my database layer from business logic.
+- File upload in directory and retrieve file from path
