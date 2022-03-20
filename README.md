@@ -8,6 +8,7 @@ I have use the following technologies and packages:
 - C#
 - .NET 6
 - Entity Framework Core
+- Microsoft SQL Server
 - Serilog
 
 In addition i have implement the following:
@@ -17,5 +18,7 @@ In addition i have implement the following:
 - API throttling
 - Enable Cors
 - Logging (log to txt file in project directory and in database)
+- File upload in directory and retrieve file from path
+
 
 Within the next days i will implement generic repository pattern to seperate my database layer from business logic.
