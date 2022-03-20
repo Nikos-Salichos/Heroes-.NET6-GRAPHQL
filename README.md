@@ -20,3 +20,4 @@ In addition i have implement the following:
 - Enable Cors
 - Logging (log to txt file in project directory and in database)
 - File upload in directory and retrieve file from path
+- Controllers for hero model and logs
