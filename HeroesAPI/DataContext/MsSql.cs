@@ -1,7 +1,7 @@
 ﻿using HeroesAPI.Entities.Models;
-using Microsoft.EntityFrameworkCore;
+using HeroesAPI.Entitites.Models;
 
-namespace HeroesAPI.Data
+namespace HeroesAPI.DataContext
 {
     public class MsSql : DbContext
     {
@@ -18,9 +18,10 @@ namespace HeroesAPI.Data
 
         //EF Commands
         // cd C:\Users\Nikos\source\repos\HeroesAPI\HeroesAPI
-        // dotnet ef migrations add HeroSeeding
-        // dotnet ef database update
+        // dotnet ef migrations add HeroSeeding --context MsSql
+        // dotnet ef database update --context MsSql
 
         public DbSet<Hero> Heroes { get; set; }
+        public DbSet<SeriLogModel> Logs { get; set; }
     }
 }

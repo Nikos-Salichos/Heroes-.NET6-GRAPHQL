@@ -1,11 +1,11 @@
-global using HeroesAPI.Data;
-using AspNetCoreRateLimit;
-using HeroesAPI.Interfaces;
-using HeroesAPI.Repository;
-using HeroesAPI.Repository.GenericRepository;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
-using Serilog.Sinks.MSSqlServer;
+global using AspNetCoreRateLimit;
+global using HeroesAPI.DataContext;
+global using HeroesAPI.Interfaces;
+global using HeroesAPI.Repository;
+global using HeroesAPI.Repository.GenericRepository;
+global using Microsoft.EntityFrameworkCore;
+global using Serilog;
+global using Serilog.Sinks.MSSqlServer;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -83,6 +83,7 @@ builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>()
 #region Repositories
 builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddTransient<IHeroRepository, HeroRepository>();
+builder.Services.AddTransient<ISeriLogRepository, SeriLogRepository>();
 #endregion Repositories
 
 WebApplication? app = builder.Build();

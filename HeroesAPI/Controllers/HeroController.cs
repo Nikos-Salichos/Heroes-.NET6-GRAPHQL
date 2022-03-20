@@ -38,9 +38,9 @@ namespace HeroesAPI.Controllers
                     customerList = (List<Hero>)await _heroRepository.GetAllHeroesAsync();
                     var cacheExpiryOptions = new MemoryCacheEntryOptions
                     {
-                        AbsoluteExpiration = DateTime.Now.AddMinutes(5),
-                        Priority = CacheItemPriority.High,
-                        SlidingExpiration = TimeSpan.FromMinutes(2)
+                        AbsoluteExpiration = DateTime.Now.AddMinutes(2),
+                        Priority = CacheItemPriority.Normal,
+                        SlidingExpiration = TimeSpan.FromSeconds(30)
                     };
                     _memoryCache.Set(cacheKey, customerList, cacheExpiryOptions);
                 }
