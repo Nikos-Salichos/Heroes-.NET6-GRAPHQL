@@ -37,7 +37,5 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        //TODO IMPLEMENT
-
     }
 }
