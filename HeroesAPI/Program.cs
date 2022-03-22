@@ -45,7 +45,6 @@ builder.Services.AddDbContext<MsSql>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-
 // Add memory cache dependencies 
 builder.Services.AddMemoryCache();
 
@@ -56,17 +55,16 @@ builder.Services.AddSwaggerGen();
 //services cors
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CorsPolicy",
-        builder => builder.AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
+    options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
 // Load configuration from appsettings.json
 builder.Services.AddOptions();
 
 // Store rate limit counters and ip rules
-builder.Services.AddMemoryCache();
+builder.Services.AddResponseCaching();
+
+builder.Services.AddControllers(options => options.CacheProfiles.Add("30SecondsDuration", new Microsoft.AspNetCore.Mvc.CacheProfile { Duration = 30 }));
 
 // Load general configuration from appsettings.json
 builder.Services.Configure<ClientRateLimitOptions>(builder.Configuration.GetSection("ClientRateLimiting"));
@@ -98,11 +96,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
+
 app.UseCors(x => x.AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowAnyOrigin());
 
-app.UseHttpsRedirection();
+app.UseResponseCaching();
 
 app.UseAuthorization();
 

@@ -1,5 +1,4 @@
 ﻿using HeroesAPI.Entities.Models;
-using HeroesAPI.Interfaces;
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Mvc;
@@ -27,24 +26,11 @@ namespace HeroesAPI.Controllers
 
         [Route("GetAllHeroes")]
         [HttpGet]
+        [ResponseCache(CacheProfileName = "60SecondsDuration")]
         public async Task<IActionResult> GetAllOwners(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
             {
-                string? cacheKey = "heroesList";
-
-                if (!_memoryCache.TryGetValue(cacheKey, out List<Hero> customerList))
-                {
-                    customerList = (List<Hero>)await _heroRepository.GetAllHeroesAsync();
-                    var cacheExpiryOptions = new MemoryCacheEntryOptions
-                    {
-                        AbsoluteExpiration = DateTime.Now.AddMinutes(2),
-                        Priority = CacheItemPriority.Normal,
-                        SlidingExpiration = TimeSpan.FromSeconds(30)
-                    };
-                    _memoryCache.Set(cacheKey, customerList, cacheExpiryOptions);
-                }
-
                 PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
                 if (sortBy is not null)
                 {
