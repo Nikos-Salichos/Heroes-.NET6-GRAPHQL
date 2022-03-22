@@ -18,6 +18,6 @@ In addition i have implement the following:
 - Web Api filtering
 - API throttling
 - Enable Cors
-- Logging (log to txt file in project directory and in database)
-- File upload in directory and retrieve file from path
-- Controllers for hero model and logs
+- Logging (log to txt file in project directory and write in database)
+- File uploade in directory and retrieve file from directory
+- Cache Profiles
