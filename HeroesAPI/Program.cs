@@ -25,15 +25,6 @@ builder.Host.UseSerilog((ctx, lc) => lc.MinimumLevel.Error()
 builder.Services.AddControllers();
 
 
-IWebHostEnvironment? env = builder.Environment;
-if (env.IsProduction())
-{
-    builder.Services.AddDbContext<MsSql>();
-}
-else
-{
-    builder.Services.AddDbContext<SqLite>();
-}
 
 builder.Services.AddDbContext<MsSql>(options =>
 {

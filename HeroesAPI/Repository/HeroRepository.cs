@@ -1,13 +1,10 @@
 ﻿using HeroesAPI.Entities.Models;
-using HeroesAPI.Interfaces;
-using HeroesAPI.Repository.GenericRepository;
-using Microsoft.EntityFrameworkCore;
 
 namespace HeroesAPI.Repository
 {
     public class HeroRepository : GenericRepository<Hero>, IHeroRepository
     {
-        public HeroRepository(MsSql msSql, SqLite sqLite) : base(msSql, sqLite)
+        public HeroRepository(MsSql msSql) : base(msSql)
         {
         }
 

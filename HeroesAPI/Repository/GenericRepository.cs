@@ -1,18 +1,14 @@
-﻿using HeroesAPI.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace HeroesAPI.Repository.GenericRepository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected MsSql MsSql { get; set; }
-        protected SqLite SqLite { get; set; }
 
-        public GenericRepository(MsSql msSql, SqLite sqLite)
+        public GenericRepository(MsSql msSql)
         {
             MsSql = msSql;
-            SqLite = sqLite;
         }
 
         public IQueryable<T> FindAll()
