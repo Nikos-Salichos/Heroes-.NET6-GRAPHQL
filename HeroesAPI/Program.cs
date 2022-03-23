@@ -45,7 +45,7 @@ builder.Services.AddDbContext<MsSql>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// Add memory cache dependencies 
+// Add memory cache dependencies for api throttling
 builder.Services.AddMemoryCache();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -64,7 +64,7 @@ builder.Services.AddOptions();
 // Store rate limit counters and ip rules
 builder.Services.AddResponseCaching();
 
-builder.Services.AddControllers(options => options.CacheProfiles.Add("30SecondsDuration", new Microsoft.AspNetCore.Mvc.CacheProfile { Duration = 30 }));
+builder.Services.AddControllers(options => options.CacheProfiles.Add("60SecondsDuration", new Microsoft.AspNetCore.Mvc.CacheProfile { Duration = 30 }));
 
 // Load general configuration from appsettings.json
 builder.Services.Configure<ClientRateLimitOptions>(builder.Configuration.GetSection("ClientRateLimiting"));

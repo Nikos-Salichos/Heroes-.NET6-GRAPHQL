@@ -2,7 +2,6 @@
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using System.Reflection;
 
 namespace HeroesAPI.Controllers
@@ -15,12 +14,9 @@ namespace HeroesAPI.Controllers
 
         private readonly IHeroRepository _heroRepository;
 
-        private readonly IMemoryCache _memoryCache;
-
-        public HeroController(IHeroRepository heroRepository, IMemoryCache memoryCache, ILogger<HeroController> logger)
+        public HeroController(IHeroRepository heroRepository, ILogger<HeroController> logger)
         {
             _heroRepository = heroRepository;
-            _memoryCache = memoryCache;
             _logger = logger;
         }
 
