@@ -73,6 +73,7 @@ builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>()
 builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddTransient<IHeroRepository, HeroRepository>();
 builder.Services.AddTransient<ISeriLogRepository, SeriLogRepository>();
+builder.Services.AddTransient<IUnitOfWorkRepository, UnitOfWorkRepository>();
 #endregion Repositories
 
 WebApplication? app = builder.Build();

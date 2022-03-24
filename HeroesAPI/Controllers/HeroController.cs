@@ -14,10 +14,13 @@ namespace HeroesAPI.Controllers
 
         private readonly IHeroRepository _heroRepository;
 
-        public HeroController(IHeroRepository heroRepository, ILogger<HeroController> logger)
+        private readonly IUnitOfWorkRepository _unitOfWorkRepository;
+
+        public HeroController(IHeroRepository heroRepository, ILogger<HeroController> logger, IUnitOfWorkRepository unitOfWorkRepository)
         {
             _heroRepository = heroRepository;
             _logger = logger;
+            _unitOfWorkRepository = unitOfWorkRepository;
         }
 
         [Route("GetAllHeroes")]
@@ -35,6 +38,10 @@ namespace HeroesAPI.Controllers
                 }
                 else
                 {
+                    // var lala = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+                    //todo use unitOfWork repository
+
+
                     return await HeroesWithoutSorting(searchString, validFilter);
                 }
             }
