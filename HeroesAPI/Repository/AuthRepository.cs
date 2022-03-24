@@ -12,7 +12,7 @@ namespace HeroesAPI.Repository
             _msSql = msSql;
         }
 
-        public Task<bool> Login(string username, string password)
+        public async Task<bool> Login(string username, string password)
         {
             var data = "token";
 
