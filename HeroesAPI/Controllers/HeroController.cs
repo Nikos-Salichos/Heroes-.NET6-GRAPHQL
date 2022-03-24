@@ -12,13 +12,10 @@ namespace HeroesAPI.Controllers
     {
         private readonly ILogger<HeroController> _logger;
 
-        private readonly IHeroRepository _heroRepository;
-
         private readonly IUnitOfWorkRepository _unitOfWorkRepository;
 
-        public HeroController(IHeroRepository heroRepository, ILogger<HeroController> logger, IUnitOfWorkRepository unitOfWorkRepository)
+        public HeroController(ILogger<HeroController> logger, IUnitOfWorkRepository unitOfWorkRepository)
         {
-            _heroRepository = heroRepository;
             _logger = logger;
             _unitOfWorkRepository = unitOfWorkRepository;
         }
@@ -38,10 +35,6 @@ namespace HeroesAPI.Controllers
                 }
                 else
                 {
-                    // var lala = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
-                    //todo use unitOfWork repository
-
-
                     return await HeroesWithoutSorting(searchString, validFilter);
                 }
             }
@@ -57,7 +50,8 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Hero? hero = await _heroRepository.GetHeroByIdAsync(heroId);
+
+                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(heroId);
 
                 if (hero is null)
                 {
@@ -78,7 +72,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Hero? hero = await _heroRepository.GetHeroByIdAsync(heroId);
+                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(heroId);
 
                 if (hero is null)
                 {
@@ -128,9 +122,9 @@ namespace HeroesAPI.Controllers
                     newHero.ImageUrl = fullPath + extension;
                 }
 
-                _heroRepository.CreateHero(newHero);
+                _unitOfWorkRepository.HeroRepository.CreateHero(newHero);
 
-                await _heroRepository.SaveAsync();
+                await _unitOfWorkRepository.HeroRepository.SaveAsync();
 
                 return Ok(newHero);
             }
@@ -158,7 +152,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Hero? hero = await _heroRepository.GetHeroByIdAsync(requestedHero.Id);
+                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(requestedHero.Id);
 
                 if (hero is null)
                 {
@@ -180,8 +174,8 @@ namespace HeroesAPI.Controllers
                     requestedHero.ImageUrl = fullPath + extension;
                 }
 
-                _heroRepository.UpdateHero(requestedHero);
-                await _heroRepository.SaveAsync();
+                _unitOfWorkRepository.HeroRepository.UpdateHero(requestedHero);
+                await _unitOfWorkRepository.HeroRepository.SaveAsync();
 
                 return Ok(requestedHero);
             }
@@ -208,15 +202,15 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Hero? hero = await _heroRepository.GetHeroByIdAsync(heroId);
+                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(heroId);
 
                 if (hero is null)
                 {
                     return NotFound("Hero not found");
                 }
 
-                _heroRepository.DeleteHero(hero);
-                await _heroRepository.SaveAsync();
+                _unitOfWorkRepository.HeroRepository.DeleteHero(hero);
+                await _unitOfWorkRepository.HeroRepository.SaveAsync();
 
                 return Ok();
             }
@@ -234,7 +228,7 @@ namespace HeroesAPI.Controllers
 
         private async Task<List<Hero>> GetHeroesPagination(PaginationFilter paginationFilter)
         {
-            IEnumerable<Hero>? allHeroes = await _heroRepository.GetAllHeroesAsync();
+            IEnumerable<Hero>? allHeroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
 
             List<Hero> allHeroesByPageSizeAndNumber = allHeroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
                                                              .Take(paginationFilter.PageSize)
@@ -277,7 +271,7 @@ namespace HeroesAPI.Controllers
 
         private async Task<Hero> HeroAlreadyExists(Hero newHero)
         {
-            IEnumerable<Hero>? allheroes = await _heroRepository.GetAllHeroesAsync();
+            IEnumerable<Hero>? allheroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
 
             Hero? heroExist = allheroes.AsEnumerable().FirstOrDefault(h => h.Name.Equals(newHero.Name, StringComparison.InvariantCultureIgnoreCase));
             return heroExist;
