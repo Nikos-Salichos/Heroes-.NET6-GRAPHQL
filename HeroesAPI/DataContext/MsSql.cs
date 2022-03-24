@@ -9,6 +9,7 @@ namespace HeroesAPI.DataContext
         {
         }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Hero>().HasData(
@@ -22,6 +23,7 @@ namespace HeroesAPI.DataContext
         // dotnet ef database update --context MsSql
 
         public DbSet<Hero> Heroes { get; set; }
-        public DbSet<SeriLogModel> Logs { get; set; }
+        public DbSet<SeriLogModel> SeriLogs { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

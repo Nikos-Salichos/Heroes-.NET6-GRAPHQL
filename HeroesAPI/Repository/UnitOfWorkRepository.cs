@@ -6,6 +6,8 @@
 
         public IHeroRepository HeroRepository { get; }
 
+        public IAuthRepository UserRepository => throw new NotImplementedException();
+
         public UnitOfWorkRepository(MsSql msSql, IHeroRepository heroRepository)
         {
             _msSql = msSql;

@@ -19,13 +19,6 @@ namespace HeroesAPI.Repository
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Hero> GetHeroWithDetailsAsync(Guid heroId)
-        {
-            return await FindByCondition(owner => owner.Id.Equals(heroId))
-                .Include(ac => ac.Name)
-                .FirstOrDefaultAsync();
-        }
-
         public void CreateHero(Hero hero)
         {
             Create(hero);
