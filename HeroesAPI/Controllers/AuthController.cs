@@ -29,7 +29,7 @@ namespace HeroesAPI.Controllers
             userRegister.Password);
 
 
-            if (!response)
+            if (string.IsNullOrWhiteSpace(response))
             {
                 return BadRequest("User already exists");
             }
@@ -41,9 +41,9 @@ namespace HeroesAPI.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> Login(UserLogin userLogin)
         {
-            var response = await _authRepository.Login(userLogin.Email, userLogin.Password);
+            string? response = await _authRepository.Login(userLogin.Email, userLogin.Password);
 
-            if (!response)
+            if (string.IsNullOrWhiteSpace(response))
             {
                 return BadRequest(response);
             }
