@@ -9,5 +9,7 @@ namespace HeroesAPI.Interfaces
         Task<bool> UserExists(string email);
 
         Task<string> Login(string email, string password);
+
+        Task<string> ChangePassword(int userId, string newPassword);
     }
 }

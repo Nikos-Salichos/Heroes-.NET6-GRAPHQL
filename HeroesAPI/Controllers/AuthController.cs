@@ -1,5 +1,7 @@
 ﻿using HeroesAPI.Entitites.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HeroesAPI.Controllers
 {
@@ -34,7 +36,7 @@ namespace HeroesAPI.Controllers
                 return BadRequest("User already exists");
             }
 
-            return Ok(userRegister);
+            return Ok("Your registration is successful " + userRegister.Email);
         }
 
 
@@ -51,7 +53,24 @@ namespace HeroesAPI.Controllers
             return Ok(response);
         }
 
-        //todo 20
+        [HttpPost("change-password"), Authorize]
+        public async Task<ActionResult> ChangePassword([FromBody] string newPassword)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return NotFound("User not found");
+            }
+
+            if (!int.TryParse(userId, out int userIdentifier))
+            {
+                return NotFound("User not found");
+            }
+
+            await _authRepository.ChangePassword(userIdentifier, newPassword);
+            return Ok("Password has been changed successfully");
+        }
 
     }
 }

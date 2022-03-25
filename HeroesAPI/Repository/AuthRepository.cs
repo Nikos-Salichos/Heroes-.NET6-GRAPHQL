@@ -30,8 +30,8 @@ namespace HeroesAPI.Repository
             user.PasswordHash = (passwordHash);
             user.PasswordSalt = (passwordSalt);
 
-            _msSql.Users.Add(user);
-            _msSql.SaveChanges();
+            await _msSql.Users.AddAsync(user);
+            await _msSql.SaveChangesAsync();
 
             return "User registered successfully";
         }
@@ -105,5 +105,23 @@ namespace HeroesAPI.Repository
 
         }
 
+        public async Task<string> ChangePassword(int userId, string newPassword)
+        {
+            User user = await _msSql.Users.FindAsync(userId);
+
+            if (user is null)
+            {
+                return "User not found";
+            }
+
+            CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+
+            await _msSql.SaveChangesAsync();
+
+            return "Password has been changed successfully";
+        }
     }
 }

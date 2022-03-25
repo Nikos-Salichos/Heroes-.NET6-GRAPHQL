@@ -59,18 +59,6 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
-            ValidateIssuer = false,
-            ValidateAudience = false,
-        };
-    });
-
 //services cors
 builder.Services.AddCors(options =>
 {
@@ -104,6 +92,21 @@ builder.Services.AddTransient<ISeriLogRepository, SeriLogRepository>();
 builder.Services.AddTransient<IUnitOfWorkRepository, UnitOfWorkRepository>();
 builder.Services.AddTransient<IAuthRepository, AuthRepository>();
 #endregion Repositories
+
+#region JWT
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+    };
+});
+#endregion JWT
+
 
 builder.Services.AddHttpContextAccessor();
 
