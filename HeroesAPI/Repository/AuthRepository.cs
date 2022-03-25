@@ -12,11 +12,22 @@ namespace HeroesAPI.Repository
             _msSql = msSql;
         }
 
-        public async Task<bool> Login(string username, string password)
+        public async Task<string> Login(string email, string password)
         {
-            var data = "token";
+            var user = await _msSql.Users.FirstOrDefaultAsync(u => u.Email.ToLower().Equals(email.ToLower(), StringComparison.InvariantCultureIgnoreCase);
 
-            return true;
+            if (user is null)
+            {
+                return "User not found;
+            }
+            else if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalkt))
+            {
+                return "Wrong password";
+            }
+            else
+            {
+                return "token";
+            }
         }
 
         public async Task<bool> Register(User user, string password)
@@ -52,6 +63,15 @@ namespace HeroesAPI.Repository
             {
                 passwordHash = hmac.Key;
                 passwordSalt = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
+        }
+
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
+                var hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                return hash.SequenceEqual(passwordHash);
             }
         }
 
