@@ -1,9 +1,6 @@
 # Heroes-API-EFC-.NET6
 .NET 6 Full CRUD with Entity Framework Core and web API.
 
-In this project i have create a CRUD web api for heroes.
-You can create,read,update,delete a hero. In addition i have use Entity Framework Core and Code First technique.
-
 I have use the following technologies and packages:
 - C#
 - .NET 6
@@ -18,6 +15,8 @@ In addition i have implement the following:
 - Web Api filtering
 - API throttling
 - Enable Cors
+- JWT Authentication (JSON Web Token)
+- Authorization Roles
 - Logging (log to txt file in project directory and write in database)
 - File uploade in directory and retrieve file from directory
 - Cache Profiles
