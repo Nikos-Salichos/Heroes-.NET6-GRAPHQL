@@ -90,6 +90,7 @@ namespace HeroesAPI.Repository
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Email.ToString()),
+                new Claim(ClaimTypes.Role, "Admin" )
             };
 
             SymmetricSecurityKey? key = new SymmetricSecurityKey(System.Text.Encoding.UTF8
@@ -97,7 +98,11 @@ namespace HeroesAPI.Repository
 
             SigningCredentials? credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            JwtSecurityToken? token = new JwtSecurityToken(claims: claims, expires: DateTime.Now.AddDays(1), signingCredentials: credentials);
+            JwtSecurityToken? token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: credentials
+                );
 
             string? jwt = new JwtSecurityTokenHandler().WriteToken(token);
 

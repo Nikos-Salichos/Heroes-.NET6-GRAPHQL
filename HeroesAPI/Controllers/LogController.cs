@@ -1,4 +1,5 @@
 ﻿using HeroesAPI.Entitites.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 
@@ -18,6 +19,7 @@ namespace HeroesAPI.Controllers
 
         [Route("GetAllLogs")]
         [HttpGet]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> GetAllLogs()
         {
             try

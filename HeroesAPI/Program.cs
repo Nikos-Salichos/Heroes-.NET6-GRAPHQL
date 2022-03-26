@@ -7,6 +7,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Serilog;
 global using Serilog.Sinks.MSSqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -30,16 +31,17 @@ builder.Host.UseSerilog((ctx, lc) => lc.MinimumLevel.Error()
 builder.Services.AddControllers();
 
 
-
 builder.Services.AddDbContext<MsSql>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"));
 });
 
-builder.Services.AddDbContext<MsSql>(options =>
-{
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<MsSql>()
+    .AddDefaultTokenProviders();
+
 
 // Add memory cache dependencies for api throttling
 builder.Services.AddMemoryCache();
@@ -55,7 +57,6 @@ builder.Services.AddSwaggerGen(options =>
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
     });
-
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
@@ -94,8 +95,13 @@ builder.Services.AddTransient<IAuthRepository, AuthRepository>();
 #endregion Repositories
 
 #region JWT
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+ .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -108,7 +114,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 #endregion JWT
 
 
+#region Authorization Roles
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdministratorRole",
+         policy => policy.RequireRole("Admin"));
+});
+
+#endregion Authorization Roles
+
+
+
+
 builder.Services.AddHttpContextAccessor();
+
 
 
 WebApplication? app = builder.Build();
@@ -124,6 +143,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseCors(x => x.AllowAnyHeader()
                   .AllowAnyMethod()
@@ -131,6 +151,7 @@ app.UseCors(x => x.AllowAnyHeader()
 
 app.UseResponseCaching();
 
+//Order matters
 app.UseAuthentication();
 
 app.UseAuthorization();
