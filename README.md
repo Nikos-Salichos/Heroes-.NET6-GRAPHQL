@@ -18,5 +18,6 @@ In addition i have implement the following:
 - JWT Authentication (JSON Web Token)
 - Authorization Roles
 - Logging (log to txt file in project directory and write in database)
-- File uploade in directory and retrieve file from directory
+- Image upload in directory and retrieve image from directory
 - Cache Profiles
+- Send Sms with Twilio
