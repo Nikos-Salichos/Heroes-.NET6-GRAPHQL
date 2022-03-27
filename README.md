@@ -20,3 +20,4 @@ In addition i have implement the following:
 - Logging (log to txt file in project directory and write in database)
 - Image upload in directory and retrieve image from directory
 - Cache Profiles
+- Send Sms with Twilio
