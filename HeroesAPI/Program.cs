@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
+using Twilio.Clients;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -123,8 +124,9 @@ builder.Services.AddAuthorization(options =>
 
 #endregion Authorization Roles
 
-
-
+#region Twilio
+builder.Services.AddHttpClient<ITwilioRestClient, TwilioRepository>();
+#endregion Twilio
 
 builder.Services.AddHttpContextAccessor();
 
