@@ -1,5 +1,6 @@
 ﻿using HeroesAPI.Entitites.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 using Twilio.Clients;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
@@ -19,13 +20,25 @@ namespace HeroesAPI.Controllers
         [HttpGet]
         public IActionResult SendSms([FromQuery] SmsMessage model)
         {
-            MessageResource? message = MessageResource.Create(
-                from: new PhoneNumber(model.From),
-                to: new PhoneNumber(model.To),
-                body: model.Message,
-                client: _client); // pass in the custom client
+            try
+            {
+                MessageResource? message = MessageResource.Create(
+                    from: new PhoneNumber(model.From),
+                    to: new PhoneNumber(model.To),
+                    body: model.Message,
+                    client: _client); // pass in the custom client
 
-            return Ok("Success");
+                if (message.From is null || message.To is null || message.Body is null)
+                {
+                    return BadRequest("You must fill all fields");
+                }
+
+                return Ok("Success");
+            }
+            catch (Exception exception)
+            {
+                return BadRequest($"{MethodBase.GetCurrentMethod()} " + exception.Message);
+            }
         }
 
     }
