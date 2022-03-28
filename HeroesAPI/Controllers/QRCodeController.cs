@@ -49,6 +49,5 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        //TODO https://ironsoftware.com/csharp/barcode/tutorials/csharp-qr-code-generator/
     }
 }
