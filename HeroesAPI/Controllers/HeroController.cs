@@ -102,7 +102,8 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Hero? heroExist = await HeroAlreadyExists(newHero);
+                IEnumerable<Hero>? allheroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+                Hero? heroExist = allheroes.AsEnumerable().FirstOrDefault(h => h.Name.Equals(newHero.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 if (heroExist is not null)
                 {
@@ -122,6 +123,7 @@ namespace HeroesAPI.Controllers
                     string pathToSave = CreateImageDirectory();
                     SaveImageInDir(newHero, pathToSave, out string fullPath, out string extension);
                     newHero.ImageUrl = fullPath + extension;
+
                 }
 
                 _unitOfWorkRepository.HeroRepository.CreateHero(newHero);
@@ -204,17 +206,25 @@ namespace HeroesAPI.Controllers
 
 
         #region Helper Methods
-        private static void SaveImageInDir(Hero newHero, string pathToSave, out string fullPath, out string extension)
+        private static void SaveImageInDir(Hero hero, string pathToSave, out string fullPath, out string extension)
         {
             string imageName = Guid.NewGuid().ToString();
             fullPath = Path.Combine(pathToSave, imageName);
-            extension = Path.GetExtension(newHero.Image.FileName);
-            using (FileStream fileStream = System.IO.File.Create(fullPath + imageName + extension))
+            if (hero.Image is not null)
             {
-                newHero.Image.CopyTo(fileStream);
-                fileStream.Flush();
+                extension = Path.GetExtension(hero.Image.FileName);
+                using (FileStream fileStream = System.IO.File.Create(fullPath + imageName + extension))
+                {
+                    hero.Image.CopyTo(fileStream);
+                    fileStream.Flush();
+                }
+            }
+            else
+            {
+                extension = string.Empty;
             }
         }
+
         private static string CreateImageDirectory()
         {
             string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Resources", "Images"));
@@ -268,13 +278,7 @@ namespace HeroesAPI.Controllers
             return Ok(new PagedResponse<List<Hero>>(allHeroesByPageSizeAndNumber, validFilter.PageNumber, validFilter.PageSize));
         }
 
-        private async Task<Hero> HeroAlreadyExists(Hero newHero)
-        {
-            IEnumerable<Hero>? allheroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
 
-            Hero? heroExist = allheroes.AsEnumerable().FirstOrDefault(h => h.Name.Equals(newHero.Name, StringComparison.InvariantCultureIgnoreCase));
-            return heroExist;
-        }
         #endregion Helper Methods
 
     }

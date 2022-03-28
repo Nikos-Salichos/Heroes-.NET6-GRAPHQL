@@ -18,6 +18,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpGet]
+        [Route("sendSms")]
         public IActionResult SendSms([FromQuery] SmsMessage model)
         {
             try
