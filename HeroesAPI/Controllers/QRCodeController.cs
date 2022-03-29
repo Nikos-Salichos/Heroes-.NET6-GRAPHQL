@@ -15,9 +15,11 @@ namespace HeroesAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+
+
+        [HttpPost]
         [Route("qenerateQRCode/{qrText}")]
-        public BarcodeResult? GetQrCode(string fileName, string extension, string qrText)
+        public IActionResult CreateQRCode(string fileName, string extension, string qrText)
         {
             try
             {
@@ -29,23 +31,31 @@ namespace HeroesAPI.Controllers
                 {
                     qrImage.SaveAsPng(fullPath);
                 }
+                else if (extension.ToLower().Equals("jpeg", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    qrImage.SaveAsJpeg(fullPath);
+                }
+                else if (extension.ToLower().Equals("html", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    qrImage.SaveAsHtmlFile(fullPath);
+                }
                 else
                 {
-                    return null;
+                    return BadRequest();
                 }
 
                 if (fullPath is not null)
                 {
-                    BarcodeResult Result = BarcodeReader.QuicklyReadOneBarcode(@$"{fullPath}", BarcodeEncoding.QRCode);
-                    return Result;
+                    byte[] byteArray = System.IO.File.ReadAllBytes(fullPath);
+                    return File(byteArray, $"image/{extension}");
                 }
 
-                return null;
+                return BadRequest();
             }
             catch (Exception exception)
             {
                 _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
-                return null;
+                return BadRequest();
             }
         }
 
