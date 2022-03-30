@@ -15,7 +15,28 @@ namespace HeroesAPI.Controllers
             _logger = logger;
         }
 
+        [HttpGet]
+        [Route("retrieveImage/{fileName}")]
+        public IActionResult GetQRImage(string fileName, string extension)
+        {
+            try
+            {
+                string fullPath = $"{Environment.CurrentDirectory}\\{fileName}" + "." + $"{extension}";
 
+                if (!string.IsNullOrWhiteSpace(fileName) && System.IO.File.Exists(fullPath))
+                {
+                    byte[] byteArray = System.IO.File.ReadAllBytes(fullPath);
+                    return File(byteArray, $"image/{extension}");
+                }
+
+                return NotFound("Image not found");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                return BadRequest();
+            }
+        }
 
         [HttpPost]
         [Route("qenerateQRCode/{qrText}")]
