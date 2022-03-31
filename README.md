@@ -21,3 +21,4 @@ In addition i have implement the following:
 - Image upload in directory and retrieve image from directory
 - Cache Profiles
 - Send Sms with Twilio
+- Web api to generate QR code in 3 different extensions (png/jpeg/html)
