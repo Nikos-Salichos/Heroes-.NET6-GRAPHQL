@@ -2,23 +2,25 @@
 .NET 6 Full CRUD with Entity Framework Core and web API.
 
 I have use the following technologies and packages:
-- C#
-- .NET 6
-- Entity Framework Core
-- Microsoft SQL Server
-- Serilog
+- C#.
+- .NET 6.
+- Entity Framework Core.
+- Microsoft SQL Server.
+- Serilog.
 
 In addition i have implement the following:
-- Generic Repository Pattern
-- Pagination (both page number and page size)
-- Web Api sorting based on property (using dynamic LINQ)
-- Web Api filtering
-- API throttling
-- Enable Cors
-- JWT Authentication (JSON Web Token)
-- Authorization Roles
-- Logging (log to txt file in project directory and write in database)
-- Image upload in directory and retrieve image from directory
-- Cache Profiles
-- Send Sms with Twilio
-- Web api to generate QR code in 3 different extensions (png/jpeg/html)
+- Generic Repository Pattern.
+- Pagination.
+- Web Api sorting based on property (using dynamic LINQ).
+- Web Api filtering.
+- API throttling.
+- Logging both txt file and database table.
+- Enable Cors.
+- JWT Authentication (JSON Web Token).
+- Authorization Roles.
+- Logging (log to txt file in project directory and write in database).
+- Image upload in project directory and retrieve image from directory.
+- Cache Profiles.
+- Send Sms with Twilio.
+- Web api to generate QR code in 3 different extensions (png/jpeg/html).
+- Web api to retrieve QR code based on filename.
