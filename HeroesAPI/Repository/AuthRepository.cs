@@ -46,6 +46,10 @@ namespace HeroesAPI.Repository
             {
                 return "User not found";
             }
+            else if (user.IsEmailConfirmed == 0)
+            {
+                return "User is not confirmed";
+            }
             else if (!VerifyPasswordHash(password, (user.PasswordHash), (user.PasswordSalt)))
             {
                 return "Wrong password";

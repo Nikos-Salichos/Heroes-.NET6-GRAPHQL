@@ -1,4 +1,5 @@
-﻿using IronBarCode;
+﻿using HeroesAPI.Entitites.Models;
+using IronBarCode;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 
@@ -15,67 +16,77 @@ namespace HeroesAPI.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        [Route("retrieveImage/{fileName}")]
-        public IActionResult GetQRImage(string fileName, string extension)
-        {
-            try
-            {
-                string fullPath = $"{Environment.CurrentDirectory}\\{fileName}" + "." + $"{extension}";
-
-                if (!string.IsNullOrWhiteSpace(fileName) && System.IO.File.Exists(fullPath))
-                {
-                    byte[] byteArray = System.IO.File.ReadAllBytes(fullPath);
-                    return File(byteArray, $"image/{extension}");
-                }
-
-                return NotFound("Image not found");
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
-                return BadRequest();
-            }
-        }
-
         [HttpPost]
-        [Route("qenerateQRCode/{qrText}")]
-        public IActionResult CreateQRCode(string fileName, string extension, string qrText)
+        [Route("qenerateQRCode/qrTextWithLogo")]
+        public async Task<ActionResult> CreateQRCodeWithLogo([FromForm] QRCodeModel qrCodeModel)
         {
             try
             {
-                string fullPath = $"{Environment.CurrentDirectory}\\{fileName}" + "." + $"{extension}";
-
-                GeneratedBarcode? qrImage = QRCodeWriter.CreateQrCode(qrText, 500, QRCodeWriter.QrErrorCorrectionLevel.Medium);
-
-                if (extension.ToLower().Equals("png", StringComparison.InvariantCultureIgnoreCase))
+                if (qrCodeModel.Logo != null
+                     && !qrCodeModel.Logo.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                     && !qrCodeModel.Logo.FileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                     && !qrCodeModel.Logo.FileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                   )
                 {
-                    qrImage.SaveAsPng(fullPath);
+                    return BadRequest(new { message = "This file is not image" });
                 }
-                else if (extension.ToLower().Equals("jpeg", StringComparison.InvariantCultureIgnoreCase))
+
+                Guid imageName = Guid.NewGuid();
+                string pathToSaveImage = $"{Environment.CurrentDirectory}\\{imageName}" + ".png";
+
+                GeneratedBarcode? qrImage;
+                if (qrCodeModel.Logo != null)
                 {
-                    qrImage.SaveAsJpeg(fullPath);
-                }
-                else if (extension.ToLower().Equals("html", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    qrImage.SaveAsHtmlFile(fullPath);
+                    using (FileStream fileStream = System.IO.File.Create(pathToSaveImage))
+                    {
+                        await qrCodeModel.Logo.CopyToAsync(fileStream);
+                        fileStream.Flush();
+                    }
+                    qrImage = QRCodeWriter.CreateQrCodeWithLogo(qrCodeModel.ScannedText, pathToSaveImage, qrCodeModel.Size);
                 }
                 else
                 {
-                    return BadRequest();
+                    qrImage = QRCodeWriter.CreateQrCode(qrCodeModel.ScannedText, qrCodeModel.Size, QRCodeWriter.QrErrorCorrectionLevel.Medium);
+                }
+
+                qrImage.AddAnnotationTextAboveBarcode(qrCodeModel.TextAboveCode);
+
+                if (qrCodeModel.ShowScannedTextBelowCode)
+                {
+                    qrImage.AddBarcodeValueTextBelowBarcode();
+                }
+
+                Guid qrCodeName = Guid.NewGuid();
+                string fullPath = $"{Environment.CurrentDirectory}\\{qrCodeModel.ScannedText}" + $"{qrCodeName}" + $".{qrCodeModel.Extension}";
+
+                if (qrCodeModel.Extension.ToLower().Equals("png", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    qrImage.SaveAsPng(fullPath);
+                }
+                else if (qrCodeModel.Extension.ToLower().Equals("jpeg", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    qrImage.SaveAsJpeg(fullPath);
+                }
+                else if (qrCodeModel.Extension.ToLower().Equals("gif", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    qrImage.SaveAsGif(fullPath);
+                }
+                else
+                {
+                    return BadRequest("Failed, extension is not correct");
                 }
 
                 if (fullPath is not null)
                 {
                     byte[] byteArray = System.IO.File.ReadAllBytes(fullPath);
-                    return File(byteArray, $"image/{extension}");
+                    return File(byteArray, $"image/{qrCodeModel.Extension}");
                 }
 
-                return BadRequest();
+                return Ok("Success");
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
