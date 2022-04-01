@@ -1,0 +1,16 @@
+2022-04-01 22:50:42.254 +03:00 [ERR] Logging Void MoveNext() EmailSenderRepositoryAn error occurred while attempting to establish an SSL or TLS connection.
+
+This usually means that the SSL certificate presented by the server is not trusted by the system for one or more of
+the following reasons:
+
+1. The server is using a self-signed certificate which cannot be verified.
+2. The local system is missing a Root or Intermediate certificate needed to verify the server's certificate.
+3. A Certificate Authority CRL server for one or more of the certificates in the chain is temporarily unavailable.
+4. The certificate presented by the server is expired or invalid.
+
+Another possibility is that you are trying to connect to a port which does not support SSL/TLS.
+
+It is also possible that the set of SSL/TLS protocols supported by the client and server do not match.
+
+See https://github.com/jstedfast/MailKit/blob/master/FAQ.md#SslHandshakeException for possible solutions.
+

@@ -6,6 +6,7 @@ global using HeroesAPI.Repository.GenericRepository;
 global using Microsoft.EntityFrameworkCore;
 global using Serilog;
 global using Serilog.Sinks.MSSqlServer;
+using HeroesAPI.Entitites.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -67,6 +68,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
+
+
 // Load configuration from appsettings.json
 builder.Services.AddOptions();
 
@@ -84,8 +87,8 @@ builder.Services.Configure<ClientRateLimitPolicies>(builder.Configuration.GetSec
 // Inject counter and rules stores
 builder.Services.AddInMemoryRateLimiting();
 
-// Configuration (resolvers, counter key builders)
-builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+// Load SmtpSettings
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
 #region Repositories
 builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -93,6 +96,8 @@ builder.Services.AddTransient<IHeroRepository, HeroRepository>();
 builder.Services.AddTransient<ISeriLogRepository, SeriLogRepository>();
 builder.Services.AddTransient<IUnitOfWorkRepository, UnitOfWorkRepository>();
 builder.Services.AddTransient<IAuthRepository, AuthRepository>();
+builder.Services.AddSingleton<IEmailSenderRepository, EmailSenderRepository>();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>(); // Configuration (resolvers, counter key builders)
 #endregion Repositories
 
 #region JWT
@@ -102,16 +107,16 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
- .AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
-        ValidateIssuer = false,
-        ValidateAudience = false,
-    };
-});
+   .AddJwtBearer(options =>
+  {
+      options.TokenValidationParameters = new TokenValidationParameters
+      {
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+          ValidateIssuer = false,
+          ValidateAudience = false,
+      };
+  });
 #endregion JWT
 
 
@@ -129,7 +134,6 @@ builder.Services.AddHttpClient<ITwilioRestClient, TwilioRepository>();
 #endregion Twilio
 
 builder.Services.AddHttpContextAccessor();
-
 
 
 WebApplication? app = builder.Build();
