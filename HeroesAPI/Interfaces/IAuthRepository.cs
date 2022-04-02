@@ -11,5 +11,7 @@ namespace HeroesAPI.Interfaces
         Task<string> Login(string email, string password);
 
         Task<string> ChangePassword(int userId, string newPassword);
+
+        Task<bool> SendWelcomeEmailAsync(WelcomeRequest request);
     }
 }

@@ -26,7 +26,8 @@ namespace HeroesAPI.Controllers
 
             var response = await _authRepository.Register(new User
             {
-                Email = userRegister.Email
+                Email = userRegister.Email,
+                Username = userRegister.Username
             },
             userRegister.Password);
 
