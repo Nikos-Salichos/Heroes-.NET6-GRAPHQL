@@ -22,5 +22,6 @@ In addition i have implement the following:
 - Image upload in project directory and retrieve image from directory.
 - Cache Profiles.
 - Send Sms with Twilio.
+- Send Email with Mailkit.
 - Web api to generate QR image in 3 different extensions (png/jpeg/html).
-- Web api to retrieve QR image based on filename.
+- Web api to find hidden text in QR image.
