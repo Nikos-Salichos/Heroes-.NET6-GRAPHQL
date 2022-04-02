@@ -109,20 +109,18 @@ namespace HeroesAPI.Controllers
                 using (MemoryStream? memoryStream = new MemoryStream())
                 {
                     await qrImage.CopyToAsync(memoryStream);
+                    Bitmap bitmap = new Bitmap(memoryStream);
 
-                    using (Image? image = Image.FromStream(memoryStream))
+                    BarcodeResult barcodeResult = BarcodeReader.QuicklyReadOneBarcode(bitmap);
+
+                    if (barcodeResult is not null)
                     {
-                        BarcodeResult barcodeResult = BarcodeReader.QuicklyReadOneBarcode(image);
+                        return Ok(barcodeResult.Text);
+                    }
+                    else
+                    {
 
-                        if (barcodeResult is not null)
-                        {
-                            return Ok(barcodeResult.Text);
-                        }
-                        else
-                        {
-
-                            return Ok("Success but no text found");
-                        }
+                        return Ok("Success but no text found");
                     }
                 }
 
