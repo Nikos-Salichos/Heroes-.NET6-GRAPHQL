@@ -1,6 +1,7 @@
 ﻿using HeroesAPI.Entitites.Models;
 using IronBarCode;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
 using System.Reflection;
 
 namespace HeroesAPI.Controllers
@@ -83,6 +84,48 @@ namespace HeroesAPI.Controllers
                 }
 
                 return Ok("Success");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        [Route("readQRImage/qrImage")]
+        public async Task<ActionResult> ReadQRCode(IFormFile qrImage)
+        {
+            try
+            {
+                if (!qrImage.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                     && !qrImage.FileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                     && !qrImage.FileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                   )
+                {
+                    return BadRequest(new { message = "This file is not image" });
+                }
+
+                using (MemoryStream? memoryStream = new MemoryStream())
+                {
+                    await qrImage.CopyToAsync(memoryStream);
+
+                    using (Image? image = Image.FromStream(memoryStream))
+                    {
+                        BarcodeResult barcodeResult = BarcodeReader.QuicklyReadOneBarcode(image);
+
+                        if (barcodeResult is not null)
+                        {
+                            return Ok(barcodeResult.Text);
+                        }
+                        else
+                        {
+
+                            return Ok("Success but no text found");
+                        }
+                    }
+                }
+
             }
             catch (Exception exception)
             {
