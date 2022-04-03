@@ -12,13 +12,17 @@ namespace HeroesAPI.Controllers
     public class SmsController : ControllerBase
     {
         private readonly ITwilioRestClient _client;
-        public SmsController(ITwilioRestClient client)
+
+        private readonly ILogger<SmsController> _logger;
+
+        public SmsController(ILogger<SmsController> logger, ITwilioRestClient client)
         {
+            _logger = logger;
             _client = client;
         }
 
         [HttpGet]
-        [Route("sendSms")]
+        [Route("SendSms")]
         public IActionResult SendSms([FromQuery] SmsMessage model)
         {
             try
@@ -38,7 +42,8 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                return BadRequest($"{MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                return BadRequest();
             }
         }
 

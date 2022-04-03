@@ -4,7 +4,10 @@ using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Management;
 using System.Reflection;
+using System.Text;
 
 namespace HeroesAPI.Controllers
 {
@@ -22,13 +25,23 @@ namespace HeroesAPI.Controllers
             _unitOfWorkRepository = unitOfWorkRepository;
         }
 
-        [Route("GetAllHeroes")]
-        [HttpGet]
+
+
+        [HttpGet("GetAllHeroes")]
         [ResponseCache(CacheProfileName = "60SecondsDuration")]
-        public async Task<IActionResult> GetAllOwners(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
+        public async Task<IActionResult> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
             {
+                string hwid = CreateSerialFromHWID();
+                string HWIDList = await ValidateSerial(hwid);
+
+                if (HWIDList.Contains(hwid))
+                {
+                    return BadRequest("License not valid");
+                }
+
+
                 PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
                 if (sortBy is not null)
                 {
@@ -42,9 +55,51 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
+        }
+
+        private static async Task<string> ValidateSerial(string hwid)
+        {
+            HttpClient httpClient = new HttpClient();
+            string? json = JsonConvert.SerializeObject(hwid);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+            string? url = "https://google.com"; //valid site that you keep license
+            HttpResponseMessage? response = await httpClient.PostAsync(url, data);
+            response.EnsureSuccessStatusCode();
+
+            string? HWIDList = await httpClient.GetStringAsync(url); //Website that you have license for specific website
+            return HWIDList;
+        }
+
+        private static string CreateSerialFromHWID()
+        {
+            byte[] byteArray;
+            byte[] hashedByteArray;
+            StringBuilder stringBuilder = new StringBuilder();
+
+            ManagementObjectSearcher processor = new ManagementObjectSearcher("select * from win32_processor");
+            ManagementObjectCollection processorList = processor.Get();
+            foreach (ManagementBaseObject? managObj in processorList)
+            {
+                stringBuilder.Append(managObj.Properties["processorID"].Value.ToString());
+                break;
+            }
+
+            ManagementObjectSearcher bios = new ManagementObjectSearcher("select * from win32_bios");
+            ManagementObjectCollection biosList = bios.Get();
+            foreach (ManagementBaseObject? managObj in biosList)
+            {
+                stringBuilder.Append(managObj.Properties["version"].Value.ToString());
+                break;
+            }
+
+            byteArray = Encoding.UTF8.GetBytes(stringBuilder.ToString());
+            hashedByteArray = System.Security.Cryptography.SHA256.Create().ComputeHash(byteArray);
+            string? hwid = Convert.ToBase64String(hashedByteArray);
+            return hwid;
         }
 
         [HttpGet("/heroDetails", Name = "HeroById")]
@@ -64,7 +119,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
@@ -92,7 +147,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
@@ -135,7 +190,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
@@ -175,7 +230,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
@@ -200,7 +255,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
