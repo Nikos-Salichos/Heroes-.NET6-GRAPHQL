@@ -1,6 +1,7 @@
 ﻿using HeroesAPI.Entitites.Models;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using System.IdentityModel.Tokens.Jwt;
@@ -69,19 +70,21 @@ namespace HeroesAPI.Repository
                     return registrationResponse;
                 }
 
-                string code = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
-                string? codeHtmlVersion = HttpUtility.UrlEncode(code);
+                string emailConfirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
+
+                byte[] encodedConfirmationToken = Encoding.UTF8.GetBytes(emailConfirmationToken);
+                string emailToken = WebEncoders.Base64UrlEncode(encodedConfirmationToken);
 
                 UriBuilder? uriBuilder = new UriBuilder(identityUser.Email) { Port = -1 };
                 System.Collections.Specialized.NameValueCollection? nameValueCollection = HttpUtility.ParseQueryString(uriBuilder.Query);
                 nameValueCollection["userId"] = identityUser.Id;
-                nameValueCollection["code"] = codeHtmlVersion;
+                nameValueCollection["code"] = emailToken;
                 uriBuilder.Query = nameValueCollection.ToString();
 
                 WelcomeRequest welcomeRequest = new WelcomeRequest();
                 welcomeRequest.ToEmail = userRegister.Email;
                 welcomeRequest.UserName = userRegister.Username;
-                welcomeRequest.ConfirmationCode = codeHtmlVersion;
+                welcomeRequest.ConfirmationCode = emailToken;
                 welcomeRequest.UriBuilder = uriBuilder;
 
                 bool emailSent = await SendWelcomeEmailAsync(welcomeRequest);

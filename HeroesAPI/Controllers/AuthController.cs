@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Security.Claims;
-using System.Web;
+using System.Text;
 
 namespace HeroesAPI.Controllers
 {
@@ -49,8 +50,9 @@ namespace HeroesAPI.Controllers
                 return BadRequest();
             }
 
-            string? nonHtmlCode = HttpUtility.UrlDecode(code);
-            IdentityResult? result = await _userManager.ConfirmEmailAsync(user, nonHtmlCode);
+            byte[]? decodedToken = WebEncoders.Base64UrlDecode(code);
+            string token = Encoding.UTF8.GetString(decodedToken);
+            IdentityResult? result = await _userManager.ConfirmEmailAsync(user, token);
 
             if (result.Succeeded)
             {
