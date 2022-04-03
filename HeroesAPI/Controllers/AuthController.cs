@@ -64,6 +64,25 @@ namespace HeroesAPI.Controllers
             }
         }
 
+        [HttpPost("registerAdmin")]
+        public async Task<ActionResult> RegisterAdmin([FromBody] UserRegister userRegister)
+        {
+            if (userRegister is null)
+            {
+                return NotFound();
+            }
+
+            var response = await _authRepository.RegisterAdmin(userRegister);
+
+            if (response.Status == "999")
+            {
+                return BadRequest(response.Message);
+            }
+
+            return Ok("Your registration as admin is successful " + userRegister.Email);
+        }
+
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLogin userLogin)
         {

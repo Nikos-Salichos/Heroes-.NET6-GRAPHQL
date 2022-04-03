@@ -1,4 +1,5 @@
 ﻿using HeroesAPI.Entities.Models;
+using HeroesAPI.Entitites.Models;
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Authorization;
@@ -97,7 +98,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> AddHero([FromForm] Hero newHero)
         {
             try
@@ -140,7 +141,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> UpdateHero([FromForm] Hero requestedHero)
         {
             try
@@ -180,7 +181,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpDelete("{heroId}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> DeleteHero(int heroId)
         {
             try

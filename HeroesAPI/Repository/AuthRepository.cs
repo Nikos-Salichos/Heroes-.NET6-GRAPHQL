@@ -111,6 +111,72 @@ namespace HeroesAPI.Repository
             }
         }
 
+        public async Task<Response> RegisterAdmin(UserRegister userRegister)
+        {
+            Response registrationResponse = new Response();
+            try
+            {
+                var userExists = await _userManager.FindByNameAsync(userRegister.Username);
+
+                if (userExists != null)
+                {
+                    registrationResponse.Status = "999";
+                    registrationResponse.Message.Add("User Exists");
+                    return registrationResponse;
+                }
+
+                IdentityUser user = new()
+                {
+                    Email = userRegister.Email,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    UserName = userRegister.Username
+                };
+
+                IdentityResult? result = await _userManager.CreateAsync(user, userRegister.Password);
+
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        registrationResponse.Status = "999";
+                        registrationResponse.Message.Add(error);
+                    }
+                    return registrationResponse;
+                }
+
+                if (!await _roleManager.RoleExistsAsync(UserRole.Admin))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole(UserRole.Admin));
+                }
+
+                if (!await _roleManager.RoleExistsAsync(UserRole.User))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole(UserRole.User));
+                }
+
+                if (await _roleManager.RoleExistsAsync(UserRole.Admin))
+                {
+                    await _userManager.AddToRoleAsync(user, UserRole.Admin);
+                }
+
+                if (await _roleManager.RoleExistsAsync(UserRole.Admin))
+                {
+                    await _userManager.AddToRoleAsync(user, UserRole.User);
+                }
+
+                registrationResponse.Status = "200";
+                registrationResponse.Message.Add("User registered successfully as Admin");
+                return registrationResponse;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                registrationResponse.Status = "999";
+                registrationResponse.Message.Add(exception.Message);
+                return registrationResponse;
+            }
+        }
+
         public async Task<string> Login(UserLogin userLogin)
         {
             try
@@ -119,6 +185,7 @@ namespace HeroesAPI.Repository
 
                 if (await _signInManager.CanSignInAsync(user))
                 {
+
                     IList<string>? userRoles = await _userManager.GetRolesAsync(user);
 
                     List<Claim>? authClaims = new List<Claim>

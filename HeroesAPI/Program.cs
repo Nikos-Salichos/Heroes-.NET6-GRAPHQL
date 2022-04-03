@@ -95,7 +95,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
-
+#region Authorization Roles
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdministratorRole",
+         policy => policy.RequireRole("AdministratorRole"));
+});
+#endregion Authorization Roles
 
 // Load configuration from appsettings.json
 builder.Services.AddOptions();
@@ -151,16 +157,6 @@ builder.Services.AddAuthentication(options =>
       };
   });
 
-
-
-#region Authorization Roles
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("RequireAdministratorRole",
-         policy => policy.RequireRole("Admin"));
-});
-
-#endregion Authorization Roles
 
 #region Twilio
 builder.Services.AddHttpClient<ITwilioRestClient, TwilioRepository>();

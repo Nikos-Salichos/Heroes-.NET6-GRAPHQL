@@ -7,19 +7,19 @@ namespace HeroesAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LogController : ControllerBase
+    public class SeriLogController : ControllerBase
     {
 
         private readonly ISeriLogRepository _seriLogRepository;
 
-        public LogController(ISeriLogRepository seriLogRepository)
+        public SeriLogController(ISeriLogRepository seriLogRepository)
         {
             _seriLogRepository = seriLogRepository;
         }
 
         [Route("GetAllLogs")]
         [HttpGet]
-        [Authorize(Policy = "RequireAdministratorRole")]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> GetAllLogs()
         {
             try

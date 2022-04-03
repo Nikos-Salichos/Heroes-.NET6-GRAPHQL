@@ -7,6 +7,8 @@ namespace HeroesAPI.Interfaces
     {
         Task<Response> Register(UserRegister userRegister);
 
+        Task<Response> RegisterAdmin(UserRegister userRegister);
+
         Task<bool> UserExists(string email);
 
         Task<string> Login(UserLogin userLogin);
