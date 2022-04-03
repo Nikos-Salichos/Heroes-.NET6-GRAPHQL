@@ -1,7 +1,9 @@
 ﻿using HeroesAPI.Entitites.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Web;
 
 namespace HeroesAPI.Controllers
 {
@@ -11,40 +13,60 @@ namespace HeroesAPI.Controllers
     {
         private readonly IAuthRepository _authRepository;
 
-        public AuthController(IAuthRepository authRepository)
+        private readonly UserManager<IdentityUser> _userManager;
+
+        public AuthController(IAuthRepository authRepository, UserManager<IdentityUser> userManager)
         {
             _authRepository = authRepository;
+            _userManager = userManager;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult> Register([FromForm] UserRegister userRegister)
+        public async Task<ActionResult> Register([FromBody] UserRegister userRegister)
         {
             if (userRegister is null)
             {
                 return NotFound();
             }
 
-            var response = await _authRepository.Register(new User
-            {
-                Email = userRegister.Email,
-                Username = userRegister.Username
-            },
-            userRegister.Password);
+            var response = await _authRepository.Register(userRegister);
 
-
-            if (string.IsNullOrWhiteSpace(response))
+            if (response.Status == "999")
             {
-                return BadRequest("User already exists");
+                return BadRequest(response.Message);
             }
 
             return Ok("Your registration is successful " + userRegister.Email);
         }
 
+        [HttpPost("confirmAccount")]
+        public async Task<ActionResult> ConfirmEmailAsync(string userId, string code)
+        {
+            IdentityUser? user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return BadRequest();
+            }
+
+            string? nonHtmlCode = HttpUtility.UrlDecode(code);
+            IdentityResult? result = await _userManager.ConfirmEmailAsync(user, nonHtmlCode);
+
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
 
         [HttpPost("login")]
-        public async Task<ActionResult> Login(UserLogin userLogin)
+        public async Task<IActionResult> Login([FromBody] UserLogin userLogin)
         {
-            string? response = await _authRepository.Login(userLogin.Email, userLogin.Password);
+            string? response = await _authRepository.Login(userLogin);
+
 
             if (string.IsNullOrWhiteSpace(response))
             {
@@ -55,21 +77,19 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpPost("change-password"), Authorize]
-        public async Task<ActionResult> ChangePassword([FromBody] string newPassword)
+        public async Task<ActionResult> ChangePassword([FromBody] string oldPassword, string newPassword)
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string? userName = User.FindFirstValue(ClaimTypes.Name);
 
-            if (string.IsNullOrWhiteSpace(userId))
+            //  Nikos1234$
+            IdentityUser? user = await _userManager.FindByNameAsync(userName);
+
+            if (user is null)
             {
                 return NotFound("User not found");
             }
 
-            if (!int.TryParse(userId, out int userIdentifier))
-            {
-                return NotFound("User not found");
-            }
-
-            await _authRepository.ChangePassword(userIdentifier, newPassword);
+            await _authRepository.ChangePassword(user, oldPassword, newPassword);
             return Ok("Password has been changed successfully");
         }
 

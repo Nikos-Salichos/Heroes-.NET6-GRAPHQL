@@ -17,6 +17,8 @@ using Twilio.Clients;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
+ConfigurationManager configuration = builder.Configuration;
+
 #region Serilog Logging
 string fullPath = Environment.CurrentDirectory + @"\logs.txt";
 builder.Host.UseSerilog((ctx, lc) => lc.MinimumLevel.Error()
@@ -44,6 +46,31 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<MsSql>()
     .AddDefaultTokenProviders();
 
+//Identity Options
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // Default SignIn settings.
+    options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+});
+
+// Password settings
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 1;
+    options.Password.RequiredUniqueChars = 0;
+});
+
+
+builder.Services.ConfigureApplicationCookie(option =>
+{
+    option.ExpireTimeSpan = TimeSpan.FromDays(1);
+    option.SlidingExpiration = true;
+});
 
 // Add memory cache dependencies for api throttling
 builder.Services.AddMemoryCache();
@@ -100,24 +127,30 @@ builder.Services.AddSingleton<IEmailSenderRepository, EmailSenderRepository>();
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>(); // Configuration (resolvers, counter key builders)
 #endregion Repositories
 
-#region JWT
+
+//Authentication Settings
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-   .AddJwtBearer(options =>
+
+// JWT Settings
+    .AddJwtBearer(options =>
   {
-      options.TokenValidationParameters = new TokenValidationParameters
+      options.SaveToken = true;
+      options.RequireHttpsMetadata = false;
+      options.TokenValidationParameters = new TokenValidationParameters()
       {
-          ValidateIssuerSigningKey = true,
-          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
-          ValidateIssuer = false,
-          ValidateAudience = false,
+          ValidateIssuer = true,
+          ValidateAudience = true,
+          ValidAudience = configuration["JWT:ValidAudience"],
+          ValidIssuer = configuration["JWT:ValidIssuer"],
+          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
       };
   });
-#endregion JWT
+
 
 
 #region Authorization Roles

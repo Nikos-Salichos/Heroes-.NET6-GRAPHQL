@@ -1,18 +1,20 @@
 ﻿using HeroesAPI.Entities.Models;
 using HeroesAPI.Entitites.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace HeroesAPI.DataContext
 {
-    public class MsSql : DbContext
+    public class MsSql : IdentityDbContext
     {
         public MsSql(DbContextOptions<MsSql> options) : base(options)
         {
         }
 
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            modelBuilder.Entity<Hero>().HasData(
+            base.OnModelCreating(builder);
+
+            builder.Entity<Hero>().HasData(
                  new Hero { Id = 9, Name = "Thor", FirstName = "Thor", LastName = "Odinson", Place = "Asgard" }
                  );
         }
@@ -24,6 +26,5 @@ namespace HeroesAPI.DataContext
 
         public DbSet<Hero> Heroes { get; set; }
         public DbSet<SeriLogModel> SeriLogs { get; set; }
-        public DbSet<User> Users { get; set; }
     }
 }

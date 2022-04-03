@@ -1,12 +1,14 @@
 ﻿using HeroesAPI.Entitites.Models;
 using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Reflection;
 using System.Security.Claims;
-using System.Security.Cryptography;
+using System.Text;
+using System.Web;
 
 namespace HeroesAPI.Repository
 {
@@ -18,70 +20,148 @@ namespace HeroesAPI.Repository
 
         private readonly ILogger<EmailSenderRepository> _logger;
 
-        public AuthRepository(MsSql msSql, IConfiguration configuration, ILogger<EmailSenderRepository> logger)
+        private readonly UserManager<IdentityUser> _userManager;
+
+        private readonly SignInManager<IdentityUser> _signInManager;
+
+        private readonly RoleManager<IdentityRole> _roleManager;
+
+        public AuthRepository(MsSql msSql, IConfiguration configuration, ILogger<EmailSenderRepository> logger,
+            UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
+            RoleManager<IdentityRole> roleManager)
         {
             _msSql = msSql;
             _configuration = configuration;
             _logger = logger;
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _signInManager = signInManager;
         }
 
-        public async Task<string> Register(User user, string password)
+        public async Task<Response> Register(UserRegister userRegister)
         {
-            if (await UserExists(user.Email))
+            Response registrationResponse = new Response();
+            try
             {
-                return "User Exists";
+                if (await UserExists(userRegister.Email))
+                {
+                    registrationResponse.Status = "999";
+                    registrationResponse.Message.Add("User Exists");
+                    return registrationResponse;
+                }
+
+                IdentityUser identityUser = new()
+                {
+                    Email = userRegister.Email,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    UserName = userRegister.Username
+                };
+
+                IdentityResult? result = await _userManager.CreateAsync(identityUser, userRegister.Password);
+
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        registrationResponse.Status = "999";
+                        registrationResponse.Message.Add(error);
+                    }
+                    return registrationResponse;
+                }
+
+                string code = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
+                string? codeHtmlVersion = HttpUtility.UrlEncode(code);
+
+                UriBuilder? uriBuilder = new UriBuilder(identityUser.Email) { Port = -1 };
+                System.Collections.Specialized.NameValueCollection? nameValueCollection = HttpUtility.ParseQueryString(uriBuilder.Query);
+                nameValueCollection["userId"] = identityUser.Id;
+                nameValueCollection["code"] = codeHtmlVersion;
+                uriBuilder.Query = nameValueCollection.ToString();
+
+                WelcomeRequest welcomeRequest = new WelcomeRequest();
+                welcomeRequest.ToEmail = userRegister.Email;
+                welcomeRequest.UserName = userRegister.Username;
+                welcomeRequest.ConfirmationCode = codeHtmlVersion;
+                welcomeRequest.UriBuilder = uriBuilder;
+
+                bool emailSent = await SendWelcomeEmailAsync(welcomeRequest);
+
+                if (emailSent)
+                {
+                    registrationResponse.Status = "200";
+                    registrationResponse.Message.Add("User registered successfully and welcome email sent");
+                    return registrationResponse;
+                }
+                else
+                {
+                    registrationResponse.Status = "200";
+                    registrationResponse.Message.Add("User registered successfully but welcome email failed");
+                    return registrationResponse;
+                }
             }
-            CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
-
-            user.PasswordHash = (passwordHash);
-            user.PasswordSalt = (passwordSalt);
-
-            await _msSql.Users.AddAsync(user);
-            await _msSql.SaveChangesAsync();
-
-            WelcomeRequest welcomeRequest = new WelcomeRequest();
-            welcomeRequest.ToEmail = user.Email;
-            welcomeRequest.UserName = user.Username;
-
-            bool emailSent = await SendWelcomeEmailAsync(welcomeRequest);
-
-            if (emailSent)
+            catch (Exception exception)
             {
-                return "User registered successfully but welcome email failed";
-            }
-            else
-            {
-                return "User registered successfully and welcome email sent";
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                registrationResponse.Status = "999";
+                registrationResponse.Message.Add(exception.Message);
+                return registrationResponse;
             }
         }
 
-
-        public async Task<string> Login(string email, string password)
+        public async Task<string> Login(UserLogin userLogin)
         {
-            User? user = await _msSql.Users.FirstOrDefaultAsync(u => u.Email.ToLower()
-                                                                          .Equals(email.ToLower()));
+            try
+            {
+                IdentityUser? user = await _userManager.FindByNameAsync(userLogin.Username);
 
-            if (user is null)
-            {
-                return "User not found";
+                if (await _signInManager.CanSignInAsync(user))
+                {
+                    IList<string>? userRoles = await _userManager.GetRolesAsync(user);
+
+                    List<Claim>? authClaims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, user.UserName),
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                            new Claim(ClaimTypes.Email, user.Email),
+                            new Claim(ClaimTypes.NameIdentifier, user.Id),
+                        };
+
+                    foreach (var userRole in userRoles)
+                    {
+                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    }
+
+                    JwtSecurityToken? token = GetToken(authClaims);
+
+                    return new JwtSecurityTokenHandler().WriteToken(token);
+
+                }
+                return "Unauthorized";
             }
-            else if (user.IsEmailConfirmed == 0)
+            catch (Exception exception)
             {
-                return "User is not confirmed";
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                return exception.Message;
             }
-            else if (!VerifyPasswordHash(password, (user.PasswordHash), (user.PasswordSalt)))
-            {
-                return "Wrong password";
-            }
-            else
-            {
-                return CreateToken(user);
-            }
+        }
+
+        private JwtSecurityToken GetToken(List<Claim> authClaims)
+        {
+            SymmetricSecurityKey? authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+            JwtSecurityToken? token = new JwtSecurityToken(
+                issuer: _configuration["JWT:ValidIssuer"],
+                audience: _configuration["JWT:ValidAudience"],
+                expires: DateTime.Now.AddHours(3),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
+
+            return token;
         }
 
         public async Task<bool> SendWelcomeEmailAsync(WelcomeRequest request)
         {
-
             try
             {
                 MimeMessage mimeMessage = new MimeMessage();
@@ -94,7 +174,7 @@ namespace HeroesAPI.Repository
                 mimeMessage.Subject = "Welcome email!";
 
                 BodyBuilder builder = new BodyBuilder();
-                builder.HtmlBody = $"Dear {request.UserName} \r\n Welcome to heroes API";
+                builder.HtmlBody = $"Dear {request.UserName} \r\n Welcome to heroes API \r\n please confirm your account here <a href='{request.UriBuilder}'>link</a>";
                 mimeMessage.Body = builder.ToMessageBody();
 
                 SmtpClient smtpClient = new SmtpClient();
@@ -114,74 +194,45 @@ namespace HeroesAPI.Repository
         public async Task<bool> UserExists(string email)
         {
             bool userExists = await _msSql.Users.AnyAsync(user => user.Email.ToLower().Equals(email.ToLower()));
-            if (userExists)
+
+            if (!userExists)
             {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
 
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        public async Task<Response> ChangePassword(IdentityUser identityUser, string oldPassword, string newPassword)
         {
-            using (var hmac = new HMACSHA512())
+            Response registrationResponse = new Response();
+            try
             {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                IdentityResult result = await _userManager.ChangePasswordAsync(identityUser, oldPassword, newPassword);
+
+                if (result.Succeeded)
+                {
+                    registrationResponse.Status = "200";
+                    return registrationResponse;
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        registrationResponse.Message.Add(error);
+                    }
+                    registrationResponse.Status = "999";
+                    return registrationResponse;
+                }
+
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                registrationResponse.Status = "999";
+                registrationResponse.Message.Add(exception.Message);
+                return registrationResponse;
             }
         }
 
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            using (var hmac = new HMACSHA512(passwordSalt))
-            {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                return computedHash.SequenceEqual(passwordHash);
-            }
-        }
-
-        private string CreateToken(User user)
-        {
-            List<Claim> claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Email.ToString()),
-                new Claim(ClaimTypes.Role, "Admin" )
-            };
-
-            SymmetricSecurityKey? key = new SymmetricSecurityKey(System.Text.Encoding.UTF8
-                .GetBytes(_configuration.GetSection("AppSettings:Token").Value));
-
-            SigningCredentials? credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            JwtSecurityToken? token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: credentials
-                );
-
-            string? jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return jwt;
-
-        }
-
-        public async Task<string> ChangePassword(int userId, string newPassword)
-        {
-            User user = await _msSql.Users.FindAsync(userId);
-
-            if (user is null)
-            {
-                return "User not found";
-            }
-
-            CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
-
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
-
-            await _msSql.SaveChangesAsync();
-
-            return "Password has been changed successfully";
-        }
     }
 }

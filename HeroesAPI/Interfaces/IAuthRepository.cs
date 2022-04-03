@@ -1,16 +1,17 @@
 ﻿using HeroesAPI.Entitites.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace HeroesAPI.Interfaces
 {
     public interface IAuthRepository
     {
-        Task<string> Register(User user, string password);
+        Task<Response> Register(UserRegister userRegister);
 
         Task<bool> UserExists(string email);
 
-        Task<string> Login(string email, string password);
+        Task<string> Login(UserLogin userLogin);
 
-        Task<string> ChangePassword(int userId, string newPassword);
+        Task<Response> ChangePassword(IdentityUser identityUser, string oldPassword, string newPassword);
 
         Task<bool> SendWelcomeEmailAsync(WelcomeRequest request);
     }
