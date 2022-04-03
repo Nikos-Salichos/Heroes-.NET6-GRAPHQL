@@ -10,6 +10,7 @@ I have use the following technologies and packages:
 
 In addition i have implement the following:
 - Generic Repository Pattern.
+- ASP.NET Core Identity (membership system)
 - Pagination.
 - Web Api sorting based on property (using dynamic LINQ).
 - Web Api filtering.
