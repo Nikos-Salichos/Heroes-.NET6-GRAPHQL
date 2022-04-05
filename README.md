@@ -10,7 +10,10 @@ I have use the following technologies and packages:
 
 In addition i have implement the following:
 - Generic Repository Pattern.
-- ASP.NET Core Identity (membership system)
+- ASP.NET Core Identity (full membership system)
+    - Registration with email confirmation
+    - Login
+    - Change / Forget / Reset Password
 - Pagination.
 - Web Api sorting based on property (using dynamic LINQ).
 - Web Api filtering.
