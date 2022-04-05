@@ -10,7 +10,10 @@ I have use the following technologies and packages:
 
 In addition i have implement the following:
 - Generic Repository Pattern.
-- ASP.NET Core Identity (membership system)
+- ASP.NET Core Identity (full membership system)
+    - Registration with email confirmation
+    - Login
+    - Change / Forget / Reset Password
 - Pagination.
 - Web Api sorting based on property (using dynamic LINQ).
 - Web Api filtering.
@@ -26,3 +29,4 @@ In addition i have implement the following:
 - Send Email with Mailkit.
 - Web api to generate QR image in 3 different extensions (png/jpeg/html).
 - Web api to find hidden text in QR image.
+- Generate serial key from hardware id and online validation (only in GetAllHeroes api)
