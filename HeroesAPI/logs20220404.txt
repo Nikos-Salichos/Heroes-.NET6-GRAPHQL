@@ -1,3 +1,0 @@
-2022-04-04 00:17:04.802 +03:00 [ERR] Logging Void MoveNext() HeroControllerResponse status code does not indicate success: 404 (Not Found).
-2022-04-04 00:23:24.772 +03:00 [ERR] Logging Void MoveNext() HeroControllerResponse status code does not indicate success: 404 (Not Found).
-2022-04-04 00:30:26.119 +03:00 [ERR] Logging Void MoveNext() HeroControllerResponse status code does not indicate success: 405 (Method Not Allowed).

@@ -33,14 +33,12 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-
-
                 if (userRegister is null)
                 {
                     return NotFound();
                 }
 
-                var response = await _authRepository.Register(userRegister);
+                var response = await _authRepository.RegisterAsync(userRegister);
 
                 if (response.Status == "999")
                 {
@@ -55,7 +53,6 @@ namespace HeroesAPI.Controllers
                 return BadRequest();
             }
         }
-
 
         [HttpPost("confirmAccount")]
         public async Task<ActionResult> ConfirmEmailAsync(string userId, string code)
@@ -99,7 +96,7 @@ namespace HeroesAPI.Controllers
                     return NotFound();
                 }
 
-                var response = await _authRepository.RegisterAdmin(userRegister);
+                var response = await _authRepository.RegisterAdminAsync(userRegister);
 
                 if (response.Status == "999")
                 {
@@ -115,20 +112,21 @@ namespace HeroesAPI.Controllers
             }
         }
 
-
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserLogin userLogin)
+        public async Task<ActionResult> Login([FromBody] UserLogin userLogin)
         {
             try
             {
-                string? response = await _authRepository.Login(userLogin);
+                Response? response = await _authRepository.LoginAsync(userLogin);
 
-                if (string.IsNullOrWhiteSpace(response))
+                if (response == null)
                 {
-                    return BadRequest(response);
+                    return BadRequest("Response is null");
                 }
-
-                return Ok(response);
+                else
+                {
+                    return Ok(response.Message);
+                }
             }
             catch (Exception exception)
             {
@@ -151,8 +149,89 @@ namespace HeroesAPI.Controllers
                     return NotFound("User not found");
                 }
 
-                await _authRepository.ChangePassword(user, oldPassword, newPassword);
+                await _authRepository.ChangePasswordAsync(user, oldPassword, newPassword);
                 return Ok("Password has been changed successfully");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<ActionResult> ForgotPassword([FromForm] string email)
+        {
+            try
+            {
+                Response? response = await _authRepository.ForgotPasswordAsync(email);
+
+                if (response == null)
+                {
+                    return BadRequest("Response is null");
+                }
+                else
+                {
+                    return Ok($"Successful");
+                }
+
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<ActionResult> ResetPassword([FromForm] string email, string code, string newPassword)
+        {
+            try
+            {
+                IdentityUser? userExists = await _userManager.FindByEmailAsync(email);
+
+                if (userExists == null)
+                {
+                    return BadRequest("User do not exist");
+                }
+
+                byte[]? decodedToken = WebEncoders.Base64UrlDecode(code);
+                string normalToken = Encoding.UTF8.GetString(decodedToken);
+
+                Response? response = await _authRepository.ResetPasswordAsync(userExists, normalToken, newPassword);
+
+                if (response == null)
+                {
+                    return BadRequest("Response is null");
+                }
+                else
+                {
+                    return Ok($"Response is successful");
+                }
+
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("logout-all-users")]
+        public async Task<ActionResult> Logout()
+        {
+            try
+            {
+                Response? response = await _authRepository.LogoutAsync();
+
+                if (response == null)
+                {
+                    return BadRequest("Response is null");
+                }
+                else
+                {
+                    return Ok($"Response is successful");
+                }
             }
             catch (Exception exception)
             {

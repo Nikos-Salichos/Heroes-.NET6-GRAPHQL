@@ -38,9 +38,8 @@ namespace HeroesAPI.Controllers
 
                 if (HWIDList.Contains(hwid))
                 {
-                    return BadRequest("License not valid");
+                    return BadRequest();
                 }
-
 
                 PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
                 if (sortBy is not null)
@@ -66,7 +65,7 @@ namespace HeroesAPI.Controllers
             string? json = JsonConvert.SerializeObject(hwid);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            string? url = "https://google.com"; //valid site that you keep license
+            string? url = "https://urlofyoursite.com"; //valid site that you keep license
             HttpResponseMessage? response = await httpClient.PostAsync(url, data);
             response.EnsureSuccessStatusCode();
 

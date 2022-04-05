@@ -39,7 +39,7 @@ namespace HeroesAPI.Repository
             _signInManager = signInManager;
         }
 
-        public async Task<Response> Register(UserRegister userRegister)
+        public async Task<Response> RegisterAsync(UserRegister userRegister)
         {
             Response registrationResponse = new Response();
             try
@@ -111,7 +111,7 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public async Task<Response> RegisterAdmin(UserRegister userRegister)
+        public async Task<Response> RegisterAdminAsync(UserRegister userRegister)
         {
             Response registrationResponse = new Response();
             try
@@ -177,11 +177,19 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public async Task<string> Login(UserLogin userLogin)
+        public async Task<Response> LoginAsync(UserLogin userLogin)
         {
+            Response registrationResponse = new Response();
             try
             {
                 IdentityUser? user = await _userManager.FindByNameAsync(userLogin.Username);
+
+                if (user == null)
+                {
+                    registrationResponse.Status = "999";
+                    registrationResponse.Message.Add("User do not exist");
+                    return registrationResponse;
+                }
 
                 if (await _signInManager.CanSignInAsync(user))
                 {
@@ -203,15 +211,23 @@ namespace HeroesAPI.Repository
 
                     JwtSecurityToken? token = GetToken(authClaims);
 
-                    return new JwtSecurityTokenHandler().WriteToken(token);
-
+                    registrationResponse.Status = "200";
+                    registrationResponse.Message.Add(new JwtSecurityTokenHandler().WriteToken(token));
+                    return registrationResponse;
                 }
-                return "Unauthorized";
+                else
+                {
+                    registrationResponse.Status = "999";
+                    registrationResponse.Message.Add("Unauthorized");
+                    return registrationResponse;
+                }
             }
             catch (Exception exception)
             {
                 _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return exception.Message;
+                registrationResponse.Status = "999";
+                registrationResponse.Message.Add(exception.Message);
+                return registrationResponse;
             }
         }
 
@@ -272,7 +288,7 @@ namespace HeroesAPI.Repository
             return true;
         }
 
-        public async Task<Response> ChangePassword(IdentityUser identityUser, string oldPassword, string newPassword)
+        public async Task<Response> ChangePasswordAsync(IdentityUser identityUser, string oldPassword, string newPassword)
         {
             Response registrationResponse = new Response();
             try
@@ -304,5 +320,142 @@ namespace HeroesAPI.Repository
             }
         }
 
+        public async Task<Response> ResetPasswordAsync(IdentityUser identityUser, string code, string newPassword)
+        {
+            Response registrationResponse = new Response();
+            try
+            {
+                IdentityResult result = await _userManager.ResetPasswordAsync(identityUser, code, newPassword);
+
+                if (result.Succeeded)
+                {
+                    registrationResponse.Status = "200";
+                    return registrationResponse;
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        registrationResponse.Message.Add(error);
+                    }
+                    registrationResponse.Status = "999";
+                    return registrationResponse;
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                registrationResponse.Status = "999";
+                registrationResponse.Message.Add(exception.Message);
+                return registrationResponse;
+            }
+        }
+
+        public async Task<Response> ForgotPasswordAsync(string email)
+        {
+            Response registrationResponse = new Response();
+            try
+            {
+                IdentityUser? userExists = await _userManager.FindByEmailAsync(email);
+
+                if (userExists == null)
+                {
+                    registrationResponse.Status = "999";
+                    registrationResponse.Message.Add("User Exists");
+                    return registrationResponse;
+                }
+
+                string? passwordResetToken = await _userManager.GeneratePasswordResetTokenAsync(userExists);
+
+                byte[] encodedConfirmationToken = Encoding.UTF8.GetBytes(passwordResetToken);
+                string emailToken = WebEncoders.Base64UrlEncode(encodedConfirmationToken);
+
+                UriBuilder? uriBuilder = new UriBuilder(userExists.Email) { Port = -1 };
+                System.Collections.Specialized.NameValueCollection? nameValueCollection = HttpUtility.ParseQueryString(uriBuilder.Query);
+                nameValueCollection["userId"] = userExists.Id;
+                nameValueCollection["code"] = emailToken;
+                uriBuilder.Query = nameValueCollection.ToString();
+
+                bool emailSent = await SendForgotPasswordEmail(userExists, uriBuilder);
+
+                if (emailSent)
+                {
+                    registrationResponse.Status = "200";
+                    registrationResponse.Message.Add("Email send successfully");
+                    return registrationResponse;
+                }
+                else
+                {
+                    registrationResponse.Status = "200";
+                    registrationResponse.Message.Add("Email failed");
+                    return registrationResponse;
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                registrationResponse.Status = "999";
+                registrationResponse.Message.Add(exception.Message);
+                return registrationResponse;
+            }
+        }
+
+        public async Task<bool> SendForgotPasswordEmail(IdentityUser identityUser, UriBuilder uriBuilder)
+        {
+            try
+            {
+                MimeMessage mimeMessage = new MimeMessage();
+
+                string? senderEmail = _configuration.GetSection("SmtpSettings:SenderMail").Value;
+                mimeMessage.From.Add(MailboxAddress.Parse(senderEmail));
+
+                string? toEmail = identityUser.Email;
+                mimeMessage.To.Add(MailboxAddress.Parse(toEmail));
+                mimeMessage.Subject = "Password reset email";
+
+                BodyBuilder builder = new BodyBuilder();
+                builder.HtmlBody = $"Dear {identityUser.UserName} \r\n Welcome to heroes API \r\n please confirm your account here <a href='{uriBuilder.Query}'>link</a>";
+                mimeMessage.Body = builder.ToMessageBody();
+
+                SmtpClient smtpClient = new SmtpClient();
+                await smtpClient.ConnectAsync(_configuration.GetSection("SmtpSettings:Server").Value, Convert.ToInt32(_configuration.GetSection("SmtpSettings:Port").Value), false);
+                await smtpClient.AuthenticateAsync(new NetworkCredential(_configuration.GetSection("SmtpSettings:SenderMail").Value, _configuration.GetSection("SmtpSettings:Password").Value));
+                await smtpClient.SendAsync(mimeMessage);
+                await smtpClient.DisconnectAsync(true);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                return false;
+            }
+        }
+
+
+
+        public async Task<Response> TwoFactorAuthentication(UserLogin userLogin)
+        {
+            Response registrationResponse = new Response();
+            try
+            {
+                IdentityUser identityUser = await _userManager.FindByEmailAsync(userLogin.Username);
+
+                if (identityUser == null)
+                {
+                    registrationResponse.Status = "999";
+                    registrationResponse.Message.Add("User Exists");
+                    return registrationResponse;
+                }
+
+                return registrationResponse;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                registrationResponse.Status = "999";
+                registrationResponse.Message.Add(exception.Message);
+                return registrationResponse;
+            }
+        }
     }
 }
