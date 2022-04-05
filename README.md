@@ -29,4 +29,4 @@ In addition i have implement the following:
 - Send Email with Mailkit.
 - Web api to generate QR image in 3 different extensions (png/jpeg/html).
 - Web api to find hidden text in QR image.
-- Generate serial key from hardware id and online validation.
+- Generate serial key from hardware id and online validation (only in GetAllHeroes api)
