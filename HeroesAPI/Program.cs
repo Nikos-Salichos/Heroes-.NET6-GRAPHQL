@@ -182,6 +182,12 @@ builder.Services.AddAuthentication()
        options.ClientId = FBAuthNSection["ClientId"];
        options.ClientSecret = FBAuthNSection["ClientSecret"];
    })
+   .AddMicrosoftAccount(microsoftOptions =>
+   {
+       microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
+       microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+   })
+
 
 
 
