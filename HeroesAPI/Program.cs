@@ -167,6 +167,16 @@ builder.Services.AddHttpClient<ITwilioRestClient, TwilioRepository>();
 builder.Services.AddHttpContextAccessor();
 
 
+builder.Services.AddAuthentication()
+   .AddGoogle(options =>
+   {
+       IConfigurationSection googleAuthNSection =
+       builder.Configuration.GetSection("Authentication:Google");
+       options.ClientId = googleAuthNSection["ClientId"];
+       options.ClientSecret = googleAuthNSection["ClientSecret"];
+   });
+
+
 WebApplication? app = builder.Build();
 
 
