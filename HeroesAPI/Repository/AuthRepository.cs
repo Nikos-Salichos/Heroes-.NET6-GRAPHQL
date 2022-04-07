@@ -431,7 +431,26 @@ namespace HeroesAPI.Repository
             }
         }
 
+        public async Task<Response> LogoutAsync()
+        {
+            Response registrationResponse = new Response();
+            try
+            {
+                await _signInManager.SignOutAsync();
 
+                registrationResponse.Status = "200";
+                registrationResponse.Message.Add("All users logged out successfully");
+
+                return registrationResponse;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                registrationResponse.Status = "999";
+                registrationResponse.Message.Add(exception.Message);
+                return registrationResponse;
+            }
+        }
 
         public async Task<Response> TwoFactorAuthentication(UserLogin userLogin)
         {
