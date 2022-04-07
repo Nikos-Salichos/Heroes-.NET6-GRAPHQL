@@ -174,7 +174,15 @@ builder.Services.AddAuthentication()
        builder.Configuration.GetSection("Authentication:Google");
        options.ClientId = googleAuthNSection["ClientId"];
        options.ClientSecret = googleAuthNSection["ClientSecret"];
-   });
+   })
+   .AddFacebook(options =>
+   {
+       IConfigurationSection FBAuthNSection =
+       builder.Configuration.GetSection("Authentication:FB");
+       options.ClientId = FBAuthNSection["ClientId"];
+       options.ClientSecret = FBAuthNSection["ClientSecret"];
+   })
+
 
 
 WebApplication? app = builder.Build();
