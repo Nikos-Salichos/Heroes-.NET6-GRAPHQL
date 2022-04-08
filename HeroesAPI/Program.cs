@@ -187,7 +187,12 @@ builder.Services.AddAuthentication()
        microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
        microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
    })
-
+   .AddTwitter(twitterOptions =>
+   {
+       twitterOptions.ConsumerKey = configuration["Authentication:Twitter:ConsumerAPIKey"];
+       twitterOptions.ConsumerSecret = configuration["Authentication:Twitter:ConsumerSecret"];
+       twitterOptions.RetrieveUserDetails = true;
+   });
 
 
 
