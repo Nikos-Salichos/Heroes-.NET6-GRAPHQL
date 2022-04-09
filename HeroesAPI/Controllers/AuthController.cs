@@ -139,7 +139,28 @@ namespace HeroesAPI.Controllers
             }
         }
 
+        [HttpPost("two-factor authentication-enable"), Authorize]
+        public async Task<ActionResult> EnableTFA()
+        {
+            string? userName = User.FindFirstValue(ClaimTypes.Name);
+            IdentityUser? user = await _userManager.FindByNameAsync(userName);
 
+            if (user is null)
+            {
+                return NotFound("User not found");
+            }
+
+            IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, true);
+
+            if (userEnableTFA.Succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
 
 
         [HttpPost("change-password"), Authorize]

@@ -104,3 +104,9 @@ System.InvalidOperationException: No service for type 'Microsoft.AspNetCore.Mvc.
    at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
    at AspNetCoreRateLimit.RateLimitMiddleware`1.Invoke(HttpContext context) in C:\Users\User\Documents\Github\AspNetCoreRateLimit\src\AspNetCoreRateLimit\Middleware\RateLimitMiddleware.cs:line 124
    at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)
+2022-04-09 15:38:47.262 +03:00 [ERR] Logging Void MoveNext() HeroControllerNo such host is known. (urlofyoursite.com:443)
+2022-04-09 15:42:54.198 +03:00 [ERR] Logging Void MoveNext() HeroControllerNo such host is known. (urlofyoursite.com:443)
+2022-04-09 15:59:21.114 +03:00 [ERR] Logging Void MoveNext() HeroControllerNo such host is known. (urlofyoursite.com:443)
+2022-04-09 16:01:38.613 +03:00 [ERR] Logging Void MoveNext() HeroControllerNo such host is known. (urlofyoursite.com:443)
+2022-04-09 16:13:58.611 +03:00 [ERR] Logging Void MoveNext() HeroControllerNo such host is known. (urlofyoursite.com:443)
+2022-04-09 16:16:01.381 +03:00 [ERR] Logging Void MoveNext() HeroControllerNo such host is known. (urlofyoursite.com:443)

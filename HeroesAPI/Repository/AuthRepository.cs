@@ -190,29 +190,29 @@ namespace HeroesAPI.Repository
                     return registrationResponse;
                 }
 
-                IList<string>? providers = await _userManager.GetValidTwoFactorProvidersAsync(user);
-                string? mfaToken = await _userManager.GenerateTwoFactorTokenAsync(user, providers.FirstOrDefault());
-                byte[] encodedConfirmationToken = Encoding.UTF8.GetBytes(mfaToken);
-                string emailMFAToken = WebEncoders.Base64UrlEncode(encodedConfirmationToken);
+                /* IList<string>? providers = await _userManager.GetValidTwoFactorProvidersAsync(user);
+                 string? mfaToken = await _userManager.GenerateTwoFactorTokenAsync(user, providers.FirstOrDefault());
+                 byte[] encodedConfirmationToken = Encoding.UTF8.GetBytes(mfaToken);
+                 string emailMFAToken = WebEncoders.Base64UrlEncode(encodedConfirmationToken);
 
-                bool emailSent = await SendTwoFACodeEmail(user, emailMFAToken);
-                if (!emailSent)
-                {
-                    registrationResponse.Status = "999";
-                    registrationResponse.Message.Add("2FA code mail failed");
-                    return registrationResponse;
-                }
+                 bool emailSent = await SendTwoFACodeEmail(user, emailMFAToken);
+                 if (!emailSent)
+                 {
+                     registrationResponse.Status = "999";
+                     registrationResponse.Message.Add("2FA code mail failed");
+                     return registrationResponse;
+                 }
 
-                byte[]? decodedToken = WebEncoders.Base64UrlDecode(emailMFAToken);
-                string decodedTwoMFAToken = Encoding.UTF8.GetString(decodedToken);
-                bool result = await _userManager.VerifyTwoFactorTokenAsync(user, providers.FirstOrDefault(), decodedTwoMFAToken);
+                 byte[]? decodedToken = WebEncoders.Base64UrlDecode(emailMFAToken);
+                 string decodedTwoMFAToken = Encoding.UTF8.GetString(decodedToken);
+                 bool result = await _userManager.VerifyTwoFactorTokenAsync(user, providers.FirstOrDefault(), decodedTwoMFAToken);
 
-                if (!result)
-                {
-                    registrationResponse.Status = "999";
-                    registrationResponse.Message.Add("2FA code is wrong");
-                    return registrationResponse;
-                }
+                 if (!result)
+                 {
+                     registrationResponse.Status = "999";
+                     registrationResponse.Message.Add("2FA code is wrong");
+                     return registrationResponse;
+                 }*/
 
                 if (await _signInManager.CanSignInAsync(user))
                 {
@@ -224,7 +224,7 @@ namespace HeroesAPI.Repository
                             new Claim(ClaimTypes.Name, user.UserName),
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                             new Claim(ClaimTypes.Email, user.Email),
-                            new Claim(ClaimTypes.NameIdentifier, user.Id),
+                           new Claim(ClaimTypes.NameIdentifier, user.Id),
                         };
 
                     foreach (var userRole in userRoles)
@@ -234,8 +234,10 @@ namespace HeroesAPI.Repository
 
                     JwtSecurityToken? jwtSecurityToken = GetToken(authClaims);
 
+                    var lala = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+
                     registrationResponse.Status = "200";
-                    registrationResponse.Message.Add(new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken));
+                    registrationResponse.Message.Add(lala);
                     return registrationResponse;
                 }
                 else
@@ -256,9 +258,9 @@ namespace HeroesAPI.Repository
 
         private JwtSecurityToken GetToken(List<Claim> authClaims)
         {
-            SymmetricSecurityKey? authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
 
-            JwtSecurityToken? token = new JwtSecurityToken(
+            var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
                 expires: DateTime.Now.AddHours(3),
@@ -299,8 +301,6 @@ namespace HeroesAPI.Repository
                 return false;
             }
         }
-
-
 
         public async Task<bool> SendTwoFACodeEmail(IdentityUser identityUser, string mfaToken)
         {

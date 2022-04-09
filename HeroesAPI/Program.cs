@@ -104,7 +104,6 @@ builder.Services.AddCors(options =>
 #region Authorization Roles
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("TwoFactorEnabled", policy => policy.RequireClaim("amr", "mfa"));
     options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("AdministratorRole"));
 });
 #endregion Authorization Roles

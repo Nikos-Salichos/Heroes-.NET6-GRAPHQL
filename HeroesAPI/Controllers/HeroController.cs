@@ -25,9 +25,7 @@ namespace HeroesAPI.Controllers
             _unitOfWorkRepository = unitOfWorkRepository;
         }
 
-
-
-        [HttpGet("GetAllHeroes")]
+        [HttpGet("GetAllHeroes"), Authorize]
         [ResponseCache(CacheProfileName = "60SecondsDuration")]
         public async Task<IActionResult> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
