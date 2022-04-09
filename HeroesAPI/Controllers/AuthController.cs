@@ -19,13 +19,17 @@ namespace HeroesAPI.Controllers
 
         private readonly UserManager<IdentityUser> _userManager;
 
+        private readonly SignInManager<IdentityUser> _signInManager;
+
+
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(ILogger<AuthController> logger, IAuthRepository authRepository, UserManager<IdentityUser> userManager)
+        public AuthController(ILogger<AuthController> logger, IAuthRepository authRepository, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _logger = logger;
             _authRepository = authRepository;
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [HttpPost("register")]

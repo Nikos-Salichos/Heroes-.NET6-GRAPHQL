@@ -43,7 +43,11 @@ builder.Services.AddDbContext<MsSql>(options =>
 
 
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+})
     .AddEntityFrameworkStores<MsSql>()
     .AddDefaultTokenProviders();
 
@@ -143,21 +147,38 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-
-// JWT Settings
-    .AddJwtBearer(options =>
-  {
-      options.SaveToken = true;
-      options.RequireHttpsMetadata = false;
-      options.TokenValidationParameters = new TokenValidationParameters()
-      {
-          ValidateIssuer = true,
-          ValidateAudience = true,
-          ValidAudience = configuration["JWT:ValidAudience"],
-          ValidIssuer = configuration["JWT:ValidIssuer"],
-          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
-      };
-  });
+    /*.AddGoogle(options =>
+    {
+        IConfigurationSection googleAuthNSection =
+        builder.Configuration.GetSection("Authentication:Google");
+        options.ClientId = googleAuthNSection["ClientId"];
+        options.ClientSecret = googleAuthNSection["ClientSecret"];
+    })
+    .AddFacebook(options =>
+    {
+        IConfigurationSection FBAuthNSection =
+        builder.Configuration.GetSection("Authentication:FB");
+        options.ClientId = FBAuthNSection["ClientId"];
+        options.ClientSecret = FBAuthNSection["ClientSecret"];
+    })
+    .AddMicrosoftAccount(microsoftOptions =>
+    {
+        microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
+        microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+    })*/
+    .AddJwtBearer(options =>                // JWT Settings
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidAudience = configuration["JWT:ValidAudience"],
+            ValidIssuer = configuration["JWT:ValidIssuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+        };
+    });
 
 
 #region Twilio
@@ -167,32 +188,6 @@ builder.Services.AddHttpClient<ITwilioRestClient, TwilioRepository>();
 builder.Services.AddHttpContextAccessor();
 
 
-builder.Services.AddAuthentication()
-   .AddGoogle(options =>
-   {
-       IConfigurationSection googleAuthNSection =
-       builder.Configuration.GetSection("Authentication:Google");
-       options.ClientId = googleAuthNSection["ClientId"];
-       options.ClientSecret = googleAuthNSection["ClientSecret"];
-   })
-   .AddFacebook(options =>
-   {
-       IConfigurationSection FBAuthNSection =
-       builder.Configuration.GetSection("Authentication:FB");
-       options.ClientId = FBAuthNSection["ClientId"];
-       options.ClientSecret = FBAuthNSection["ClientSecret"];
-   })
-   .AddMicrosoftAccount(microsoftOptions =>
-   {
-       microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
-       microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
-   })
-   .AddTwitter(twitterOptions =>
-   {
-       twitterOptions.ConsumerKey = configuration["Authentication:Twitter:ConsumerAPIKey"];
-       twitterOptions.ConsumerSecret = configuration["Authentication:Twitter:ConsumerSecret"];
-       twitterOptions.RetrieveUserDetails = true;
-   });
 
 
 
