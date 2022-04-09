@@ -21,7 +21,6 @@ namespace HeroesAPI.Controllers
 
         private readonly SignInManager<IdentityUser> _signInManager;
 
-
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(ILogger<AuthController> logger, IAuthRepository authRepository, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
@@ -31,6 +30,7 @@ namespace HeroesAPI.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
         }
+
 
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] UserRegister userRegister)
@@ -142,37 +142,53 @@ namespace HeroesAPI.Controllers
         [HttpPost("validate-tfa")]
         public async Task<ActionResult> ValidateTFA(string userName, string tfaToken)
         {
-            IdentityUser? user = await _userManager.FindByNameAsync(userName);
-
-            if (user is null)
+            try
             {
-                return NotFound("User not found");
+                IdentityUser? user = await _userManager.FindByNameAsync(userName);
+
+                if (user is null)
+                {
+                    return NotFound("User not found");
+                }
+
+                Response? result = await _authRepository.ValidateTFAAsync(user, tfaToken);
+
+                return Ok(result);
             }
-
-            Response? result = await _authRepository.ValidateTFAAsync(user, tfaToken);
-
-            return Ok(result);
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                return BadRequest();
+            }
         }
 
         [HttpPost("two-factor authentication-enable"), Authorize]
         public async Task<ActionResult> EnableTFA()
         {
-            string? userName = User.FindFirstValue(ClaimTypes.Name);
-            IdentityUser? user = await _userManager.FindByNameAsync(userName);
-
-            if (user is null)
+            try
             {
-                return NotFound("User not found");
+                string? userName = User.FindFirstValue(ClaimTypes.Name);
+                IdentityUser? user = await _userManager.FindByNameAsync(userName);
+
+                if (user is null)
+                {
+                    return NotFound("User not found");
+                }
+
+                IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, true);
+
+                if (userEnableTFA.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
-
-            IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, true);
-
-            if (userEnableTFA.Succeeded)
+            catch (Exception exception)
             {
-                return Ok();
-            }
-            else
-            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
@@ -180,22 +196,30 @@ namespace HeroesAPI.Controllers
         [HttpPost("two-factor authentication-disable"), Authorize]
         public async Task<ActionResult> DisableTFA()
         {
-            string? userName = User.FindFirstValue(ClaimTypes.Name);
-            IdentityUser? user = await _userManager.FindByNameAsync(userName);
-
-            if (user is null)
+            try
             {
-                return NotFound("User not found");
+                string? userName = User.FindFirstValue(ClaimTypes.Name);
+                IdentityUser? user = await _userManager.FindByNameAsync(userName);
+
+                if (user is null)
+                {
+                    return NotFound("User not found");
+                }
+
+                IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, false);
+
+                if (userEnableTFA.Succeeded)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
             }
-
-            IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, false);
-
-            if (userEnableTFA.Succeeded)
+            catch (Exception exception)
             {
-                return Ok();
-            }
-            else
-            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
