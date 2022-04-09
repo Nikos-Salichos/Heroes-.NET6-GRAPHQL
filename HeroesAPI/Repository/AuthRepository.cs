@@ -190,29 +190,27 @@ namespace HeroesAPI.Repository
                     return registrationResponse;
                 }
 
-                /* IList<string>? providers = await _userManager.GetValidTwoFactorProvidersAsync(user);
-                 string? mfaToken = await _userManager.GenerateTwoFactorTokenAsync(user, providers.FirstOrDefault());
-                 byte[] encodedConfirmationToken = Encoding.UTF8.GetBytes(mfaToken);
-                 string emailMFAToken = WebEncoders.Base64UrlEncode(encodedConfirmationToken);
+                if (user.TwoFactorEnabled)
+                {
+                    IList<string>? providers = await _userManager.GetValidTwoFactorProvidersAsync(user);
+                    string? mfaToken = await _userManager.GenerateTwoFactorTokenAsync(user, providers.FirstOrDefault());
+                    byte[] encodedConfirmationToken = Encoding.UTF8.GetBytes(mfaToken);
+                    string emailMFAToken = WebEncoders.Base64UrlEncode(encodedConfirmationToken);
 
-                 bool emailSent = await SendTwoFACodeEmail(user, emailMFAToken);
-                 if (!emailSent)
-                 {
-                     registrationResponse.Status = "999";
-                     registrationResponse.Message.Add("2FA code mail failed");
-                     return registrationResponse;
-                 }
-
-                 byte[]? decodedToken = WebEncoders.Base64UrlDecode(emailMFAToken);
-                 string decodedTwoMFAToken = Encoding.UTF8.GetString(decodedToken);
-                 bool result = await _userManager.VerifyTwoFactorTokenAsync(user, providers.FirstOrDefault(), decodedTwoMFAToken);
-
-                 if (!result)
-                 {
-                     registrationResponse.Status = "999";
-                     registrationResponse.Message.Add("2FA code is wrong");
-                     return registrationResponse;
-                 }*/
+                    bool emailSent = await SendTwoFACodeEmail(user, emailMFAToken);
+                    if (!emailSent)
+                    {
+                        registrationResponse.Status = "999";
+                        registrationResponse.Message.Add("2FA code mail failed");
+                        return registrationResponse;
+                    }
+                    else
+                    {
+                        registrationResponse.Status = "200";
+                        registrationResponse.Message.Add("2FA code mail sent");
+                        return registrationResponse;
+                    }
+                }
 
                 if (await _signInManager.CanSignInAsync(user))
                 {
@@ -246,6 +244,33 @@ namespace HeroesAPI.Repository
                     registrationResponse.Message.Add("Unauthorized");
                     return registrationResponse;
                 }
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                registrationResponse.Status = "999";
+                registrationResponse.Message.Add(exception.Message);
+                return registrationResponse;
+            }
+        }
+
+        public async Task<Response> ValidateTFAAsync()
+        {
+            Response registrationResponse = new Response();
+            try
+            {/*
+                byte[]? decodedToken = WebEncoders.Base64UrlDecode(emailMFAToken);
+                string decodedTwoMFAToken = Encoding.UTF8.GetString(decodedToken);
+                bool result = await _userManager.VerifyTwoFactorTokenAsync(user, providers.FirstOrDefault(), decodedTwoMFAToken);
+
+                if (!result)
+                {
+                    registrationResponse.Status = "999";
+                    registrationResponse.Message.Add("2FA code is wrong");
+                    return registrationResponse;
+                }*/
+
+                return null;
             }
             catch (Exception exception)
             {

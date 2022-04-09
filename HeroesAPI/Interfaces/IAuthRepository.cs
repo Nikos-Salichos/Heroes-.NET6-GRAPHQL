@@ -24,5 +24,7 @@ namespace HeroesAPI.Interfaces
 
         Task<Response> LogoutAsync();
 
+        Task<Response> ValidateTFAAsync();
+
     }
 }
