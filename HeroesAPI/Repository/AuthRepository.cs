@@ -74,7 +74,6 @@ namespace HeroesAPI.Repository
 
                 byte[] encodedConfirmationToken = Encoding.UTF8.GetBytes(emailConfirmationToken);
                 string emailToken = WebEncoders.Base64UrlEncode(encodedConfirmationToken);
-
                 UriBuilder? uriBuilder = new UriBuilder(identityUser.Email) { Port = -1 };
                 System.Collections.Specialized.NameValueCollection? nameValueCollection = HttpUtility.ParseQueryString(uriBuilder.Query);
                 nameValueCollection["userId"] = identityUser.Id;
@@ -191,6 +190,29 @@ namespace HeroesAPI.Repository
                     return registrationResponse;
                 }
 
+                string? mfaToken = await _userManager.GenerateTwoFactorTokenAsync(user, "Email");
+                byte[] encodedConfirmationToken = Encoding.UTF8.GetBytes(mfaToken);
+                string emailMFAToken = WebEncoders.Base64UrlEncode(encodedConfirmationToken);
+
+                bool emailSent = await SendTwoFACodeEmail(user, emailMFAToken);
+                if (!emailSent)
+                {
+                    registrationResponse.Status = "999";
+                    registrationResponse.Message.Add("2FA code mail failed");
+                    return registrationResponse;
+                }
+
+                byte[]? decodedToken = WebEncoders.Base64UrlDecode(emailMFAToken);
+                string decodedTwoMFAToken = Encoding.UTF8.GetString(decodedToken);
+                SignInResult? result = await _signInManager.TwoFactorSignInAsync("Email", decodedTwoMFAToken, false, false);
+
+                if (!result.Succeeded)
+                {
+                    registrationResponse.Status = "999";
+                    registrationResponse.Message.Add("2FA code is wrong");
+                    return registrationResponse;
+                }
+
                 if (await _signInManager.CanSignInAsync(user))
                 {
 
@@ -209,10 +231,10 @@ namespace HeroesAPI.Repository
                         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                     }
 
-                    JwtSecurityToken? token = GetToken(authClaims);
+                    JwtSecurityToken? jwtSecurityToken = GetToken(authClaims);
 
                     registrationResponse.Status = "200";
-                    registrationResponse.Message.Add(new JwtSecurityTokenHandler().WriteToken(token));
+                    registrationResponse.Message.Add(new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken));
                     return registrationResponse;
                 }
                 else
@@ -261,6 +283,37 @@ namespace HeroesAPI.Repository
 
                 BodyBuilder builder = new BodyBuilder();
                 builder.HtmlBody = $"Dear {request.UserName} \r\n Welcome to heroes API \r\n please confirm your account here <a href='{request.UriBuilder}'>link</a>";
+                mimeMessage.Body = builder.ToMessageBody();
+
+                SmtpClient smtpClient = new SmtpClient();
+                await smtpClient.ConnectAsync(_configuration.GetSection("SmtpSettings:Server").Value, Convert.ToInt32(_configuration.GetSection("SmtpSettings:Port").Value), false);
+                await smtpClient.AuthenticateAsync(new NetworkCredential(_configuration.GetSection("SmtpSettings:SenderMail").Value, _configuration.GetSection("SmtpSettings:Password").Value));
+                await smtpClient.SendAsync(mimeMessage);
+                await smtpClient.DisconnectAsync(true);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> SendTwoFACodeEmail(IdentityUser identityUser, string mfaToken)
+        {
+            try
+            {
+                MimeMessage mimeMessage = new MimeMessage();
+
+                var senderEmail = _configuration.GetSection("SmtpSettings:SenderMail").Value;
+                mimeMessage.From.Add(MailboxAddress.Parse(senderEmail));
+
+                var toEmail = identityUser.Email;
+                mimeMessage.To.Add(MailboxAddress.Parse(toEmail));
+                mimeMessage.Subject = "2FA email!";
+
+                BodyBuilder builder = new BodyBuilder();
+                builder.HtmlBody = $"Dear {identityUser.UserName} your 2FA token ${mfaToken}";
                 mimeMessage.Body = builder.ToMessageBody();
 
                 SmtpClient smtpClient = new SmtpClient();
@@ -451,32 +504,6 @@ namespace HeroesAPI.Repository
                 return registrationResponse;
             }
         }
-
-        public async Task<Response> TwoFactorAuthentication(UserLogin userLogin)
-        {
-            Response registrationResponse = new Response();
-            try
-            {
-                IdentityUser identityUser = await _userManager.FindByEmailAsync(userLogin.Username);
-
-                if (identityUser == null)
-                {
-                    registrationResponse.Status = "999";
-                    registrationResponse.Message.Add("User Exists");
-                    return registrationResponse;
-                }
-
-                return registrationResponse;
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                registrationResponse.Status = "999";
-                registrationResponse.Message.Add(exception.Message);
-                return registrationResponse;
-            }
-        }
-
 
 
     }

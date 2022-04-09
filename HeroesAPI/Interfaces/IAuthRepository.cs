@@ -6,8 +6,6 @@ namespace HeroesAPI.Interfaces
     public interface IAuthRepository
     {
 
-        Task<Response> TwitterLogin();
-
         Task<Response> RegisterAsync(UserRegister userRegister);
 
         Task<Response> RegisterAdminAsync(UserRegister userRegister);
@@ -15,8 +13,6 @@ namespace HeroesAPI.Interfaces
         Task<bool> UserExists(string email);
 
         Task<Response> LoginAsync(UserLogin userLogin);
-
-        Task<Response> TwoFactorAuthentication(UserLogin userLogin);
 
         Task<Response> ForgotPasswordAsync(string email);
 
