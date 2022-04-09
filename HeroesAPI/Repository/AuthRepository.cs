@@ -275,9 +275,38 @@ namespace HeroesAPI.Repository
                 }
                 else
                 {
-                    registrationResponse.Status = "200";
-                    registrationResponse.Message.Add("Correct TFA");
-                    return registrationResponse;
+                    if (await _signInManager.CanSignInAsync(identityUser))
+                    {
+
+                        IList<string>? userRoles = await _userManager.GetRolesAsync(identityUser);
+
+                        List<Claim>? authClaims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, identityUser.UserName),
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                            new Claim(ClaimTypes.Email, identityUser.Email),
+                           new Claim(ClaimTypes.NameIdentifier, identityUser.Id),
+                        };
+
+                        foreach (var userRole in userRoles)
+                        {
+                            authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                        }
+
+                        JwtSecurityToken? jwtSecurityToken = GetToken(authClaims);
+
+                        var lala = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+
+                        registrationResponse.Status = "200";
+                        registrationResponse.Message.Add(lala);
+                        return registrationResponse;
+                    }
+                    else
+                    {
+                        registrationResponse.Status = "999";
+                        registrationResponse.Message.Add("Unauthorized");
+                        return registrationResponse;
+                    }
                 }
             }
             catch (Exception exception)
