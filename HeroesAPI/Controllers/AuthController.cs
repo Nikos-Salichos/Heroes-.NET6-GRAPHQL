@@ -139,6 +139,21 @@ namespace HeroesAPI.Controllers
             }
         }
 
+        [HttpPost("validate-tfa")]
+        public async Task<ActionResult> ValidateTFA(string userName, string tfaToken)
+        {
+            IdentityUser? user = await _userManager.FindByNameAsync(userName);
+
+            if (user is null)
+            {
+                return NotFound("User not found");
+            }
+
+            Response? result = await _authRepository.ValidateTFAAsync(user, tfaToken);
+
+            return Ok(result);
+        }
+
         [HttpPost("two-factor authentication-enable"), Authorize]
         public async Task<ActionResult> EnableTFA()
         {

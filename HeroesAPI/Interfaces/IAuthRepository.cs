@@ -24,7 +24,7 @@ namespace HeroesAPI.Interfaces
 
         Task<Response> LogoutAsync();
 
-        Task<Response> ValidateTFAAsync();
+        Task<Response> ValidateTFAAsync(IdentityUser identityUser, string tFAToken);
 
     }
 }

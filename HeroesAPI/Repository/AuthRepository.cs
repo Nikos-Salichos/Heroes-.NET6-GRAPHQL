@@ -27,6 +27,7 @@ namespace HeroesAPI.Repository
 
         private readonly RoleManager<IdentityRole> _roleManager;
 
+
         public AuthRepository(MsSql msSql, IConfiguration configuration, ILogger<EmailSenderRepository> logger,
             UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
             RoleManager<IdentityRole> roleManager)
@@ -254,23 +255,30 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public async Task<Response> ValidateTFAAsync()
+        public async Task<Response> ValidateTFAAsync(IdentityUser identityUser, string tFAToken)
         {
             Response registrationResponse = new Response();
             try
-            {/*
-                byte[]? decodedToken = WebEncoders.Base64UrlDecode(emailMFAToken);
+            {
+                IList<string>? providers = await _userManager.GetValidTwoFactorProvidersAsync(identityUser);
+
+                byte[]? decodedToken = WebEncoders.Base64UrlDecode(tFAToken);
                 string decodedTwoMFAToken = Encoding.UTF8.GetString(decodedToken);
-                bool result = await _userManager.VerifyTwoFactorTokenAsync(user, providers.FirstOrDefault(), decodedTwoMFAToken);
+
+                bool result = await _userManager.VerifyTwoFactorTokenAsync(identityUser, providers.FirstOrDefault(), decodedTwoMFAToken);
 
                 if (!result)
                 {
                     registrationResponse.Status = "999";
                     registrationResponse.Message.Add("2FA code is wrong");
                     return registrationResponse;
-                }*/
-
-                return null;
+                }
+                else
+                {
+                    registrationResponse.Status = "200";
+                    registrationResponse.Message.Add("Correct TFA");
+                    return registrationResponse;
+                }
             }
             catch (Exception exception)
             {
@@ -341,7 +349,7 @@ namespace HeroesAPI.Repository
                 mimeMessage.Subject = "2FA email!";
 
                 BodyBuilder builder = new BodyBuilder();
-                builder.HtmlBody = $"Dear {identityUser.UserName} your 2FA token ${mfaToken}";
+                builder.HtmlBody = $"Dear {identityUser.UserName} your 2FA token {mfaToken}";
                 mimeMessage.Body = builder.ToMessageBody();
 
                 SmtpClient smtpClient = new SmtpClient();
