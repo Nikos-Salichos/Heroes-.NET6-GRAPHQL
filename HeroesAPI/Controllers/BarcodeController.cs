@@ -1,7 +1,6 @@
 ﻿using HeroesAPI.Entitites.Models;
 using IronBarCode;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 
 namespace HeroesAPI.Controllers
 {
@@ -21,43 +20,38 @@ namespace HeroesAPI.Controllers
         [Route("qenerateBarcode/barcodeText")]
         public IActionResult CreateQRCode(BarcodeModel barcodeModel)
         {
-            try
+            Guid barcodeName = Guid.NewGuid();
+            string fullPath = $"{Environment.CurrentDirectory}\\{barcodeModel.Text}" + $"{barcodeName}" + $".{barcodeModel.Extension}";
+
+            GeneratedBarcode? qrImage = BarcodeWriter.CreateBarcode(barcodeModel.Text, BarcodeEncoding.Code128, barcodeModel.MaxWidth, barcodeModel.MaxHeight);
+
+            if (barcodeModel.Extension.ToLower().Equals("png", StringComparison.InvariantCultureIgnoreCase))
             {
-                Guid barcodeName = Guid.NewGuid();
-                string fullPath = $"{Environment.CurrentDirectory}\\{barcodeModel.Text}" + $"{barcodeName}" + $".{barcodeModel.Extension}";
-
-                GeneratedBarcode? qrImage = BarcodeWriter.CreateBarcode(barcodeModel.Text, BarcodeEncoding.Code128, barcodeModel.MaxWidth, barcodeModel.MaxHeight);
-
-                if (barcodeModel.Extension.ToLower().Equals("png", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    qrImage.SaveAsPng(fullPath);
-                }
-                else if (barcodeModel.Extension.ToLower().Equals("jpeg", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    qrImage.SaveAsJpeg(fullPath);
-                }
-                else if (barcodeModel.Extension.ToLower().Equals("gif", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    qrImage.SaveAsGif(fullPath);
-                }
-                else
-                {
-                    return BadRequest("Failed, extension is not correct");
-                }
-
-                if (fullPath is not null)
-                {
-                    byte[] byteArray = System.IO.File.ReadAllBytes(fullPath);
-                    return File(byteArray, $"image/{barcodeModel.Extension}");
-                }
-
-                return Ok("Success");
+                qrImage.SaveAsPng(fullPath);
             }
-            catch (Exception exception)
+            else if (barcodeModel.Extension.ToLower().Equals("jpeg", StringComparison.InvariantCultureIgnoreCase))
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} " + exception.Message);
-                return BadRequest();
+                qrImage.SaveAsJpeg(fullPath);
             }
+            else if (barcodeModel.Extension.ToLower().Equals("gif", StringComparison.InvariantCultureIgnoreCase))
+            {
+                qrImage.SaveAsGif(fullPath);
+            }
+            else
+            {
+                throw new ApplicationException("Failed, extension is not correct");
+            }
+
+            if (fullPath is not null)
+            {
+                byte[] byteArray = System.IO.File.ReadAllBytes(fullPath);
+                return File(byteArray, $"image/{barcodeModel.Extension}");
+            }
+            else
+            {
+                throw new ApplicationException("Failed to find image path");
+            }
+
         }
     }
 }
