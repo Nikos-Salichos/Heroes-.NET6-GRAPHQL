@@ -8,10 +8,15 @@
 
         public IAuthRepository UserRepository { get; }
 
-        public UnitOfWorkRepository(MsSql msSql, IHeroRepository heroRepository)
+        public IEmailSenderRepository EmailSenderRepository { get; }
+
+        public UnitOfWorkRepository(MsSql msSql, IHeroRepository heroRepository,
+            IAuthRepository userRepository, IEmailSenderRepository emailSenderRepository)
         {
             _msSql = msSql;
             HeroRepository = heroRepository;
+            UserRepository = userRepository;
+            EmailSenderRepository = emailSenderRepository;
         }
 
         public int Complete()

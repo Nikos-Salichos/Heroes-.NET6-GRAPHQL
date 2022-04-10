@@ -41,7 +41,7 @@ namespace HeroesAPI.Controllers
             }
             else
             {
-                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " " + "failed, extension is not correct");
+                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " failed, extension is not correct");
             }
 
             if (fullPath is not null)
@@ -51,7 +51,7 @@ namespace HeroesAPI.Controllers
             }
             else
             {
-                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " " + "failed to find image");
+                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " failed to find image");
             }
         }
 

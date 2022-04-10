@@ -4,6 +4,7 @@
     {
         IHeroRepository HeroRepository { get; }
         IAuthRepository UserRepository { get; }
+        IEmailSenderRepository EmailSenderRepository { get; }
         int Complete();
     }
 }

@@ -7,20 +7,21 @@ namespace HeroesAPI.Controllers
     [ApiController]
     public class EmailSenderController : ControllerBase
     {
-        readonly IEmailSenderRepository _emailSenderRepository;
+
+        private readonly IUnitOfWorkRepository _unitOfWorkRepository;
 
         private readonly ILogger<EmailSenderController> _logger;
 
-        public EmailSenderController(IEmailSenderRepository emailSenderRepository, ILogger<EmailSenderController> logger)
+        public EmailSenderController(IUnitOfWorkRepository unitOfWorkRepository, ILogger<EmailSenderController> logger)
         {
-            _emailSenderRepository = emailSenderRepository;
+            _unitOfWorkRepository = unitOfWorkRepository;
             _logger = logger;
         }
 
         [HttpPost, Route("SendEmail")]
         public async Task<IActionResult> SendEmail([FromForm] EmailModel emailModel)
         {
-            ApiResponse apiResponse = await _emailSenderRepository.SendEmailAsync(emailModel);
+            ApiResponse apiResponse = await _unitOfWorkRepository.EmailSenderRepository.SendEmailAsync(emailModel);
 
             if (apiResponse == null)
             {

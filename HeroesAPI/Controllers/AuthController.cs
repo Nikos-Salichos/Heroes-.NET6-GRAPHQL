@@ -35,27 +35,21 @@ namespace HeroesAPI.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] UserRegister userRegister)
         {
-            try
+
+            if (userRegister is null)
             {
-                if (userRegister is null)
-                {
-                    return NotFound();
-                }
-
-                var response = await _authRepository.RegisterAsync(userRegister);
-
-                if (response.Status == "999")
-                {
-                    return BadRequest(response.Message);
-                }
-
-                return Ok("Your registration is successful " + userRegister.Email);
+                throw new KeyNotFoundException(GetType().Name + " user not found");
             }
-            catch (Exception exception)
+
+            var response = await _authRepository.RegisterAsync(userRegister);
+
+            if (response.Status == "999")
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return BadRequest(response.Message);
             }
+
+            return Ok("Your registration is successful " + userRegister.Email);
+
         }
 
         [HttpPost("confirmAccount")]
