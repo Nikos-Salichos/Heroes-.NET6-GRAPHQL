@@ -1,6 +1,7 @@
 ﻿using HeroesAPI.Entitites.Models;
 using IronBarCode;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
 namespace HeroesAPI.Controllers
 {
@@ -18,8 +19,9 @@ namespace HeroesAPI.Controllers
 
         [HttpPost]
         [Route("qenerateBarcode/barcodeText")]
-        public IActionResult CreateQRCode(BarcodeModel barcodeModel)
+        public IActionResult CreateBarcode(BarcodeModel barcodeModel)
         {
+
             Guid barcodeName = Guid.NewGuid();
             string fullPath = $"{Environment.CurrentDirectory}\\{barcodeModel.Text}" + $"{barcodeName}" + $".{barcodeModel.Extension}";
 
@@ -39,7 +41,7 @@ namespace HeroesAPI.Controllers
             }
             else
             {
-                throw new ApplicationException("Failed, extension is not correct");
+                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " " + "Failed, extension is not correct");
             }
 
             if (fullPath is not null)
