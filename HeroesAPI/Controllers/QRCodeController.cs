@@ -27,7 +27,7 @@ namespace HeroesAPI.Controllers
                  && !qrCodeModel.Logo.FileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
                )
             {
-                return BadRequest(new { message = "This file is not image" });
+                throw new ApplicationException(GetType().Name + " " + "file is not an image");
             }
 
             Guid imageName = Guid.NewGuid();
@@ -72,7 +72,7 @@ namespace HeroesAPI.Controllers
             }
             else
             {
-                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " " + "failed, extension is not correct");
+                throw new ApplicationException(GetType().Name + " " + "failed, extension is not correct");
             }
 
             if (fullPath is not null)
@@ -82,7 +82,7 @@ namespace HeroesAPI.Controllers
             }
             else
             {
-                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " " + "failed to find image");
+                throw new ApplicationException(GetType().Name + " " + "failed to find image");
             }
 
         }

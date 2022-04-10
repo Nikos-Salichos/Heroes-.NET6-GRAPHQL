@@ -1,6 +1,5 @@
 ﻿using HeroesAPI.Entitites.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 
 namespace HeroesAPI.Controllers
 {
@@ -21,16 +20,15 @@ namespace HeroesAPI.Controllers
         [HttpPost, Route("SendEmail")]
         public async Task<IActionResult> SendEmail([FromForm] EmailModel emailModel)
         {
-            try
+            ApiResponse apiResponse = await _emailSenderRepository.SendEmailAsync(emailModel);
+
+            if (apiResponse == null)
             {
-                ApiResponse errorResponse = await _emailSenderRepository.SendEmailAsync(emailModel);
-                return Ok(errorResponse.Message);
+                throw new ApplicationException(GetType().Name + " " + "response failed");
             }
-            catch (Exception exception)
-            {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
-            }
+
+            return Ok(apiResponse.Message);
         }
+
     }
 }

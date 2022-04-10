@@ -2,7 +2,6 @@
 using MailKit.Net.Smtp;
 using MimeKit;
 using System.Net;
-using System.Reflection;
 
 namespace HeroesAPI.Repository
 {
@@ -64,11 +63,7 @@ namespace HeroesAPI.Repository
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-
-                errorResponse.Success = false;
-                errorResponse.Message.Add($"{MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return errorResponse;
+                throw new ApplicationException(GetType().Name + " " + exception.Message);
             }
             finally
             {

@@ -22,21 +22,15 @@ namespace HeroesAPI.Controllers
         [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> GetAllLogs()
         {
-            try
-            {
-                IEnumerable<SeriLogModel>? logs = await _seriLogRepository.GetAllLogsAsync();
+            IEnumerable<SeriLogModel>? logs = await _seriLogRepository.GetAllLogsAsync();
 
-                if (logs is null)
-                {
-                    return NotFound("Logs not found");
-                }
-
-                return Ok(logs);
-            }
-            catch (Exception exception)
+            if (logs is null)
             {
-                return BadRequest($"{MethodBase.GetCurrentMethod()} " + exception.Message);
+                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " " + "failed to get logs");
             }
+
+            return Ok(logs);
+
         }
 
     }
