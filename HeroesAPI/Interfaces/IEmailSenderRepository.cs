@@ -4,6 +4,6 @@ namespace HeroesAPI.Interfaces
 {
     public interface IEmailSenderRepository
     {
-        Task<string> SendEmailAsync(EmailModel emailModel);
+        Task<ApiResponse> SendEmailAsync(EmailModel emailModel);
     }
 }

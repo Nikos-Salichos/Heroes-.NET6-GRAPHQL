@@ -119,24 +119,17 @@ namespace HeroesAPI.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] UserLogin userLogin)
         {
-            try
-            {
-                Response? response = await _authRepository.LoginAsync(userLogin);
+            ApiResponse? response = await _authRepository.LoginAsync(userLogin);
 
-                if (response == null)
-                {
-                    return BadRequest("Response is null");
-                }
-                else
-                {
-                    return Ok(response.Message);
-                }
-            }
-            catch (Exception exception)
+            if (response == null)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return BadRequest("Response is null");
             }
+            else
+            {
+                return Ok(response.Message);
+            }
+
         }
 
         [HttpPost("validate-tfa")]
@@ -151,7 +144,7 @@ namespace HeroesAPI.Controllers
                     return NotFound("User not found");
                 }
 
-                Response? result = await _authRepository.ValidateTFAAsync(user, tfaToken);
+                ApiResponse? result = await _authRepository.ValidateTFAAsync(user, tfaToken);
 
                 return Ok(result);
             }
@@ -254,7 +247,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Response? response = await _authRepository.ForgotPasswordAsync(email);
+                ApiResponse? response = await _authRepository.ForgotPasswordAsync(email);
 
                 if (response == null)
                 {
@@ -288,7 +281,7 @@ namespace HeroesAPI.Controllers
                 byte[]? decodedToken = WebEncoders.Base64UrlDecode(code);
                 string normalToken = Encoding.UTF8.GetString(decodedToken);
 
-                Response? response = await _authRepository.ResetPasswordAsync(userExists, normalToken, newPassword);
+                ApiResponse? response = await _authRepository.ResetPasswordAsync(userExists, normalToken, newPassword);
 
                 if (response == null)
                 {
@@ -312,7 +305,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Response? response = await _authRepository.LogoutAsync();
+                ApiResponse? response = await _authRepository.LogoutAsync();
 
                 if (response == null)
                 {

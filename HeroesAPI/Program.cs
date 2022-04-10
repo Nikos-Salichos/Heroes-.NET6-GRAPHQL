@@ -7,6 +7,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Serilog;
 global using Serilog.Sinks.MSSqlServer;
 using HeroesAPI.Entitites.Models;
+using HeroesAPI.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -189,8 +190,6 @@ builder.Services.AddHttpContextAccessor();
 
 
 
-
-
 WebApplication? app = builder.Build();
 
 
@@ -202,6 +201,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 app.UseRouting();

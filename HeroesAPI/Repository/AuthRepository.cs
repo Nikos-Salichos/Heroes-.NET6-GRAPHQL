@@ -40,9 +40,9 @@ namespace HeroesAPI.Repository
             _signInManager = signInManager;
         }
 
-        public async Task<Response> RegisterAsync(UserRegister userRegister)
+        public async Task<ApiResponse> RegisterAsync(UserRegister userRegister)
         {
-            Response registrationResponse = new Response();
+            ApiResponse registrationResponse = new ApiResponse();
             try
             {
                 if (await UserExists(userRegister.Email))
@@ -111,9 +111,9 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public async Task<Response> RegisterAdminAsync(UserRegister userRegister)
+        public async Task<ApiResponse> RegisterAdminAsync(UserRegister userRegister)
         {
-            Response registrationResponse = new Response();
+            ApiResponse registrationResponse = new ApiResponse();
             try
             {
                 var userExists = await _userManager.FindByNameAsync(userRegister.Username);
@@ -177,9 +177,9 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public async Task<Response> LoginAsync(UserLogin userLogin)
+        public async Task<ApiResponse> LoginAsync(UserLogin userLogin)
         {
-            Response registrationResponse = new Response();
+            ApiResponse registrationResponse = new ApiResponse();
             try
             {
                 IdentityUser? user = await _userManager.FindByNameAsync(userLogin.Username);
@@ -255,9 +255,9 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public async Task<Response> ValidateTFAAsync(IdentityUser identityUser, string tFAToken)
+        public async Task<ApiResponse> ValidateTFAAsync(IdentityUser identityUser, string tFAToken)
         {
-            Response registrationResponse = new Response();
+            ApiResponse registrationResponse = new ApiResponse();
             try
             {
                 IList<string>? providers = await _userManager.GetValidTwoFactorProvidersAsync(identityUser);
@@ -406,9 +406,9 @@ namespace HeroesAPI.Repository
             return true;
         }
 
-        public async Task<Response> ChangePasswordAsync(IdentityUser identityUser, string oldPassword, string newPassword)
+        public async Task<ApiResponse> ChangePasswordAsync(IdentityUser identityUser, string oldPassword, string newPassword)
         {
-            Response registrationResponse = new Response();
+            ApiResponse registrationResponse = new ApiResponse();
             try
             {
                 IdentityResult result = await _userManager.ChangePasswordAsync(identityUser, oldPassword, newPassword);
@@ -438,9 +438,9 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public async Task<Response> ResetPasswordAsync(IdentityUser identityUser, string code, string newPassword)
+        public async Task<ApiResponse> ResetPasswordAsync(IdentityUser identityUser, string code, string newPassword)
         {
-            Response registrationResponse = new Response();
+            ApiResponse registrationResponse = new ApiResponse();
             try
             {
                 IdentityResult result = await _userManager.ResetPasswordAsync(identityUser, code, newPassword);
@@ -469,9 +469,9 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public async Task<Response> ForgotPasswordAsync(string email)
+        public async Task<ApiResponse> ForgotPasswordAsync(string email)
         {
-            Response registrationResponse = new Response();
+            ApiResponse registrationResponse = new ApiResponse();
             try
             {
                 IdentityUser? userExists = await _userManager.FindByEmailAsync(email);
@@ -549,9 +549,9 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public async Task<Response> LogoutAsync()
+        public async Task<ApiResponse> LogoutAsync()
         {
-            Response registrationResponse = new Response();
+            ApiResponse registrationResponse = new ApiResponse();
             try
             {
                 await _signInManager.SignOutAsync();

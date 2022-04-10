@@ -23,8 +23,8 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                string messageStatus = await _emailSenderRepository.SendEmailAsync(emailModel);
-                return Ok(messageStatus);
+                ApiResponse errorResponse = await _emailSenderRepository.SendEmailAsync(emailModel);
+                return Ok(errorResponse.Message);
             }
             catch (Exception exception)
             {

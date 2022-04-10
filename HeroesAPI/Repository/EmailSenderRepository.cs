@@ -22,9 +22,11 @@ namespace HeroesAPI.Repository
             _logger = logger;
         }
 
-        public async Task<string> SendEmailAsync(EmailModel emailModel)
+        public async Task<ApiResponse> SendEmailAsync(EmailModel emailModel)
         {
             SmtpClient smtpClient = new SmtpClient();
+
+            ApiResponse errorResponse = new ApiResponse();
             try
             {
                 MimeMessage mimeMessage = new MimeMessage();
@@ -54,12 +56,19 @@ namespace HeroesAPI.Repository
                 await smtpClient.AuthenticateAsync(new NetworkCredential(_smptSettings.SenderMail, _smptSettings.Password));
                 await smtpClient.SendAsync(mimeMessage);
                 await smtpClient.DisconnectAsync(true);
-                return "Email send Successfully";
+
+                errorResponse.Success = true;
+                errorResponse.Message.Add("Email send Successfully!");
+
+                return errorResponse;
             }
             catch (Exception exception)
             {
                 _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return null;
+
+                errorResponse.Success = false;
+                errorResponse.Message.Add($"{MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                return errorResponse;
             }
             finally
             {
