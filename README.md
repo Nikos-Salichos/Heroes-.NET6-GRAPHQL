@@ -31,4 +31,4 @@ In addition i have implement the following:
 - Web api to find hidden text in QR image.
 - Generate serial key from hardware id and online validation (only in GetAllHeroes api)
 - Two-Factor Authentication with e-mail, validating 2FA token in separate controller.
-- Global Error Handling
+- Custom global error handling in middleware.
