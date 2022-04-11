@@ -182,7 +182,7 @@ builder.Services.AddAuthentication(options =>
 
 
 #region Twilio
-builder.Services.AddHttpClient<ITwilioRestClient, TwilioRepository>();
+builder.Services.AddHttpClient<ITwilioRestClient>();
 #endregion Twilio
 
 builder.Services.AddHttpContextAccessor();

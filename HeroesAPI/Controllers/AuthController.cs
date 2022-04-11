@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel;
-using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 
@@ -41,73 +40,74 @@ namespace HeroesAPI.Controllers
                 throw new KeyNotFoundException(GetType().Name + " user not found");
             }
 
-            var response = await _authRepository.RegisterAsync(userRegister);
+            ApiResponse? response = await _authRepository.RegisterAsync(userRegister);
 
-            if (response.Status == "999")
+            if (response == null)
             {
-                return BadRequest(response.Message);
+                throw new ApplicationException(GetType().Name + " no response");
             }
 
-            return Ok("Your registration is successful " + userRegister.Email);
-
+            if (!response.Success)
+            {
+                throw new ApplicationException(GetType().Name + " " + response.Message);
+            }
+            else
+            {
+                return Ok("Your registration is successful " + userRegister.Email);
+            }
         }
 
         [HttpPost("confirmAccount")]
         public async Task<ActionResult> ConfirmEmailAsync(string userId, string code)
         {
-            try
+
+            IdentityUser? user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
             {
-                IdentityUser? user = await _userManager.FindByIdAsync(userId);
-
-                if (user == null)
-                {
-                    return BadRequest();
-                }
-
-                byte[]? decodedToken = WebEncoders.Base64UrlDecode(code);
-                string token = Encoding.UTF8.GetString(decodedToken);
-                IdentityResult? result = await _userManager.ConfirmEmailAsync(user, token);
-
-                if (result.Succeeded)
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest();
-                }
+                throw new KeyNotFoundException(GetType().Name + " user not found");
             }
-            catch (Exception exception)
+
+            byte[]? decodedToken = WebEncoders.Base64UrlDecode(code);
+            string token = Encoding.UTF8.GetString(decodedToken);
+            IdentityResult? result = await _userManager.ConfirmEmailAsync(user, token);
+
+            if (result.Succeeded)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return Ok("Account confirmed");
             }
+            else
+            {
+                throw new ApplicationException(GetType().Name + " no response");
+            }
+
         }
 
         [HttpPost("registerAdmin")]
         public async Task<ActionResult> RegisterAdmin([FromBody] UserRegister userRegister)
         {
-            try
+
+            if (userRegister is null)
             {
-                if (userRegister is null)
-                {
-                    return NotFound();
-                }
+                return NotFound();
+            }
 
-                var response = await _authRepository.RegisterAdminAsync(userRegister);
+            ApiResponse? response = await _authRepository.RegisterAdminAsync(userRegister);
 
-                if (response.Status == "999")
-                {
-                    return BadRequest(response.Message);
-                }
+            if (response == null)
+            {
+                throw new ApplicationException(GetType().Name + " no response");
+            }
 
+            if (!response.Success)
+            {
+                throw new ApplicationException(GetType().Name + " " + response.Message);
+            }
+            else
+            {
                 return Ok("Your registration as admin is successful " + userRegister.Email);
             }
-            catch (Exception exception)
-            {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
-            }
+
         }
 
         [HttpPost("login")]
@@ -119,95 +119,101 @@ namespace HeroesAPI.Controllers
             {
                 return BadRequest("Response is null");
             }
+
+            if (!response.Success)
+            {
+                throw new ApplicationException(GetType().Name + " " + response.Message);
+            }
             else
             {
                 return Ok(response.Message);
             }
-
         }
 
         [HttpPost("validate-tfa")]
         public async Task<ActionResult> ValidateTFA(string userName, string tfaToken)
         {
-            try
+            IdentityUser? user = await _userManager.FindByNameAsync(userName);
+
+            if (user is null)
             {
-                IdentityUser? user = await _userManager.FindByNameAsync(userName);
-
-                if (user is null)
-                {
-                    return NotFound("User not found");
-                }
-
-                ApiResponse? result = await _authRepository.ValidateTFAAsync(user, tfaToken);
-
-                return Ok(result);
+                throw new ApplicationException(GetType().Name + " user not found");
             }
-            catch (Exception exception)
+
+            ApiResponse? apiResponse = await _authRepository.ValidateTFAAsync(user, tfaToken);
+
+            if (apiResponse == null)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return BadRequest("Response is null");
             }
+
+            if (!apiResponse.Success)
+            {
+                throw new ApplicationException(GetType().Name + " " + apiResponse.Message);
+            }
+            else
+            {
+                return Ok(apiResponse.Message);
+            }
+
         }
 
         [HttpPost("two-factor authentication-enable"), Authorize]
         public async Task<ActionResult> EnableTFA()
         {
-            try
+
+            string? userName = User.FindFirstValue(ClaimTypes.Name);
+            IdentityUser? user = await _userManager.FindByNameAsync(userName);
+
+            if (user is null)
             {
-                string? userName = User.FindFirstValue(ClaimTypes.Name);
-                IdentityUser? user = await _userManager.FindByNameAsync(userName);
-
-                if (user is null)
-                {
-                    return NotFound("User not found");
-                }
-
-                IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, true);
-
-                if (userEnableTFA.Succeeded)
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest();
-                }
+                throw new ApplicationException(GetType().Name + " user not found");
             }
-            catch (Exception exception)
+
+            IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, true);
+
+            if (userEnableTFA == null)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return BadRequest("Response is null");
             }
+
+            if (!userEnableTFA.Succeeded)
+            {
+                throw new ApplicationException(GetType().Name);
+            }
+            else
+            {
+                return Ok("2FA enabled");
+            }
+
         }
 
         [HttpPost("two-factor authentication-disable"), Authorize]
         public async Task<ActionResult> DisableTFA()
         {
-            try
+
+            string? userName = User.FindFirstValue(ClaimTypes.Name);
+            IdentityUser? user = await _userManager.FindByNameAsync(userName);
+
+            if (user is null)
             {
-                string? userName = User.FindFirstValue(ClaimTypes.Name);
-                IdentityUser? user = await _userManager.FindByNameAsync(userName);
-
-                if (user is null)
-                {
-                    return NotFound("User not found");
-                }
-
-                IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, false);
-
-                if (userEnableTFA.Succeeded)
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest();
-                }
+                throw new ApplicationException(GetType().Name + " user not found");
             }
-            catch (Exception exception)
+
+            IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, false);
+
+            if (userEnableTFA == null)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return BadRequest("Response is null");
+            }
+
+            if (!userEnableTFA.Succeeded)
+            {
+                throw new ApplicationException(GetType().Name);
+            }
+            else
+            {
+                return Ok("2FA enabled");
             }
         }
 
@@ -215,106 +221,102 @@ namespace HeroesAPI.Controllers
         [HttpPost("change-password"), Authorize]
         public async Task<ActionResult> ChangePassword([FromBody] string oldPassword, string newPassword)
         {
-            try
+            string? userName = User.FindFirstValue(ClaimTypes.Name);
+
+            IdentityUser? user = await _userManager.FindByNameAsync(userName);
+
+            if (user is null)
             {
-                string? userName = User.FindFirstValue(ClaimTypes.Name);
-
-                IdentityUser? user = await _userManager.FindByNameAsync(userName);
-
-                if (user is null)
-                {
-                    return NotFound("User not found");
-                }
-
-                await _authRepository.ChangePasswordAsync(user, oldPassword, newPassword);
-                return Ok("Password has been changed successfully");
+                throw new ApplicationException(GetType().Name + " user not found");
             }
-            catch (Exception exception)
+
+            ApiResponse? apiResponse = await _authRepository.ChangePasswordAsync(user, oldPassword, newPassword);
+
+            if (apiResponse == null)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return BadRequest("Response is null");
+            }
+
+            if (!apiResponse.Success)
+            {
+                throw new ApplicationException(GetType().Name + " " + apiResponse.Message);
+            }
+            else
+            {
+                return Ok("Password has been changed successfully");
             }
         }
 
         [HttpPost("forgot-password")]
         public async Task<ActionResult> ForgotPassword([FromForm] string email)
         {
-            try
+
+            ApiResponse? apiResponse = await _authRepository.ForgotPasswordAsync(email);
+
+            if (apiResponse == null)
             {
-                ApiResponse? response = await _authRepository.ForgotPasswordAsync(email);
-
-                if (response == null)
-                {
-                    return BadRequest("Response is null");
-                }
-                else
-                {
-                    return Ok($"Successful");
-                }
-
+                throw new ApplicationException(GetType().Name + " no response ");
             }
-            catch (Exception exception)
+
+            if (!apiResponse.Success)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                throw new ApplicationException(GetType().Name + " " + apiResponse.Message);
+            }
+            else
+            {
+                return Ok(apiResponse.Message);
             }
         }
 
         [HttpPost("reset-password")]
         public async Task<ActionResult> ResetPassword([FromForm] string email, string code, string newPassword)
         {
-            try
+            IdentityUser? userExists = await _userManager.FindByEmailAsync(email);
+
+            if (userExists == null)
             {
-                IdentityUser? userExists = await _userManager.FindByEmailAsync(email);
-
-                if (userExists == null)
-                {
-                    return BadRequest("User do not exist");
-                }
-
-                byte[]? decodedToken = WebEncoders.Base64UrlDecode(code);
-                string normalToken = Encoding.UTF8.GetString(decodedToken);
-
-                ApiResponse? response = await _authRepository.ResetPasswordAsync(userExists, normalToken, newPassword);
-
-                if (response == null)
-                {
-                    return BadRequest("Response is null");
-                }
-                else
-                {
-                    return Ok($"Response is successful");
-                }
-
+                throw new ApplicationException(GetType().Name + " user not Found ");
             }
-            catch (Exception exception)
+
+            byte[]? decodedToken = WebEncoders.Base64UrlDecode(code);
+            string normalToken = Encoding.UTF8.GetString(decodedToken);
+
+            ApiResponse? apiResponse = await _authRepository.ResetPasswordAsync(userExists, normalToken, newPassword);
+
+            if (apiResponse == null)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                throw new ApplicationException(GetType().Name + " no response ");
+            }
+
+            if (!apiResponse.Success)
+            {
+                throw new ApplicationException(GetType().Name + " " + apiResponse.Message);
+            }
+            else
+            {
+                return Ok(apiResponse.Message);
             }
         }
 
         [HttpPost("logout-all-users")]
         public async Task<ActionResult> Logout()
         {
-            try
-            {
-                ApiResponse? response = await _authRepository.LogoutAsync();
+            ApiResponse? apiResponse = await _authRepository.LogoutAsync();
 
-                if (response == null)
-                {
-                    return BadRequest("Response is null");
-                }
-                else
-                {
-                    return Ok($"Response is successful");
-                }
-            }
-            catch (Exception exception)
+            if (apiResponse == null)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                throw new ApplicationException(GetType().Name + " no response ");
             }
+
+            if (!apiResponse.Success)
+            {
+                throw new ApplicationException(GetType().Name + " " + apiResponse.Message);
+            }
+            else
+            {
+                return Ok(apiResponse.Message);
+            }
+
         }
 
     }
