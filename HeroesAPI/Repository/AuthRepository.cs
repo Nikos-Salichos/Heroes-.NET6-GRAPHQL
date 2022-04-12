@@ -233,10 +233,11 @@ namespace HeroesAPI.Repository
 
                     JwtSecurityToken? jwtSecurityToken = GetToken(authClaims);
 
-                    var lala = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+                    var jwtToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
+                    registrationResponse.Success = true;
                     registrationResponse.Status = "200";
-                    registrationResponse.Message.Add(lala);
+                    registrationResponse.Message.Add(jwtToken);
                     return registrationResponse;
                 }
                 else

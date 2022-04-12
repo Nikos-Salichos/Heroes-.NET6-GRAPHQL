@@ -37,19 +37,19 @@ namespace HeroesAPI.Controllers
 
             if (userRegister is null)
             {
-                throw new KeyNotFoundException(GetType().Name + " user not found");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + response.Message.FirstOrDefault());
             }
 
             ApiResponse? response = await _authRepository.RegisterAsync(userRegister);
 
             if (response == null)
             {
-                throw new ApplicationException(GetType().Name + " no response");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " no response");
             }
 
             if (!response.Success)
             {
-                throw new ApplicationException(GetType().Name + " " + response.Message);
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + response.Message.FirstOrDefault());
             }
             else
             {
@@ -65,7 +65,7 @@ namespace HeroesAPI.Controllers
 
             if (user == null)
             {
-                throw new KeyNotFoundException(GetType().Name + " user not found");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + response.Message.FirstOrDefault());
             }
 
             byte[]? decodedToken = WebEncoders.Base64UrlDecode(code);
@@ -78,7 +78,7 @@ namespace HeroesAPI.Controllers
             }
             else
             {
-                throw new ApplicationException(GetType().Name + " no response");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " no response");
             }
 
         }
@@ -89,19 +89,19 @@ namespace HeroesAPI.Controllers
 
             if (userRegister is null)
             {
-                return NotFound();
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + "user not found"));
             }
 
             ApiResponse? response = await _authRepository.RegisterAdminAsync(userRegister);
 
             if (response == null)
             {
-                throw new ApplicationException(GetType().Name + " no response");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " no response");
             }
 
             if (!response.Success)
             {
-                throw new ApplicationException(GetType().Name + " " + response.Message);
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + response.Message.FirstOrDefault());
             }
             else
             {
@@ -117,12 +117,12 @@ namespace HeroesAPI.Controllers
 
             if (response == null)
             {
-                return BadRequest("Response is null");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " no response");
             }
 
             if (!response.Success)
             {
-                throw new ApplicationException(GetType().Name + " " + response.Message);
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + response.Message.FirstOrDefault());
             }
             else
             {
@@ -137,19 +137,19 @@ namespace HeroesAPI.Controllers
 
             if (user is null)
             {
-                throw new ApplicationException(GetType().Name + " user not found");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + response.Message.FirstOrDefault());
             }
 
             ApiResponse? apiResponse = await _authRepository.ValidateTFAAsync(user, tfaToken);
 
             if (apiResponse == null)
             {
-                return BadRequest("Response is null");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " no response");
             }
 
             if (!apiResponse.Success)
             {
-                throw new ApplicationException(GetType().Name + " " + apiResponse.Message);
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + apiResponse.Message);
             }
             else
             {
@@ -167,19 +167,19 @@ namespace HeroesAPI.Controllers
 
             if (user is null)
             {
-                throw new ApplicationException(GetType().Name + " user not found");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " user not found");
             }
 
             IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, true);
 
             if (userEnableTFA == null)
             {
-                return BadRequest("Response is null");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " no response");
             }
 
             if (!userEnableTFA.Succeeded)
             {
-                throw new ApplicationException(GetType().Name);
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name);
             }
             else
             {
@@ -197,7 +197,7 @@ namespace HeroesAPI.Controllers
 
             if (user is null)
             {
-                throw new ApplicationException(GetType().Name + " user not found");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " user not found");
             }
 
             IdentityResult? userEnableTFA = await _userManager.SetTwoFactorEnabledAsync(user, false);
@@ -209,7 +209,7 @@ namespace HeroesAPI.Controllers
 
             if (!userEnableTFA.Succeeded)
             {
-                throw new ApplicationException(GetType().Name);
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name);
             }
             else
             {
@@ -227,7 +227,7 @@ namespace HeroesAPI.Controllers
 
             if (user is null)
             {
-                throw new ApplicationException(GetType().Name + " user not found");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " user not found");
             }
 
             ApiResponse? apiResponse = await _authRepository.ChangePasswordAsync(user, oldPassword, newPassword);
@@ -239,7 +239,7 @@ namespace HeroesAPI.Controllers
 
             if (!apiResponse.Success)
             {
-                throw new ApplicationException(GetType().Name + " " + apiResponse.Message);
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + apiResponse.Message);
             }
             else
             {
@@ -255,12 +255,12 @@ namespace HeroesAPI.Controllers
 
             if (apiResponse == null)
             {
-                throw new ApplicationException(GetType().Name + " no response ");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " no response ");
             }
 
             if (!apiResponse.Success)
             {
-                throw new ApplicationException(GetType().Name + " " + apiResponse.Message);
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + apiResponse.Message);
             }
             else
             {
@@ -275,7 +275,7 @@ namespace HeroesAPI.Controllers
 
             if (userExists == null)
             {
-                throw new ApplicationException(GetType().Name + " user not Found ");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " user not Found ");
             }
 
             byte[]? decodedToken = WebEncoders.Base64UrlDecode(code);
@@ -285,12 +285,12 @@ namespace HeroesAPI.Controllers
 
             if (apiResponse == null)
             {
-                throw new ApplicationException(GetType().Name + " no response ");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " no response ");
             }
 
             if (!apiResponse.Success)
             {
-                throw new ApplicationException(GetType().Name + " " + apiResponse.Message);
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + apiResponse.Message);
             }
             else
             {
@@ -305,12 +305,12 @@ namespace HeroesAPI.Controllers
 
             if (apiResponse == null)
             {
-                throw new ApplicationException(GetType().Name + " no response ");
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " no response ");
             }
 
             if (!apiResponse.Success)
             {
-                throw new ApplicationException(GetType().Name + " " + apiResponse.Message);
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + apiResponse.Message);
             }
             else
             {

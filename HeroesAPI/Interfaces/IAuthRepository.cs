@@ -1,5 +1,6 @@
 ﻿using HeroesAPI.Entitites.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Runtime.CompilerServices;
 
 namespace HeroesAPI.Interfaces
 {
@@ -25,6 +26,11 @@ namespace HeroesAPI.Interfaces
         Task<ApiResponse> LogoutAsync();
 
         Task<ApiResponse> ValidateTFAAsync(IdentityUser identityUser, string tFAToken);
+
+        public string GetCurrentMethod([CallerMemberName] string callerName = "")
+        {
+            return callerName;
+        }
 
     }
 }
