@@ -37,7 +37,7 @@ namespace HeroesAPI.Controllers
 
             if (userRegister is null)
             {
-                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + response.Message.FirstOrDefault());
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name);
             }
 
             ApiResponse? response = await _authRepository.RegisterAsync(userRegister);
@@ -65,7 +65,7 @@ namespace HeroesAPI.Controllers
 
             if (user == null)
             {
-                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + response.Message.FirstOrDefault());
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name);
             }
 
             byte[]? decodedToken = WebEncoders.Base64UrlDecode(code);
@@ -89,7 +89,7 @@ namespace HeroesAPI.Controllers
 
             if (userRegister is null)
             {
-                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + "user not found"));
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + "user not found");
             }
 
             ApiResponse? response = await _authRepository.RegisterAdminAsync(userRegister);
@@ -137,7 +137,7 @@ namespace HeroesAPI.Controllers
 
             if (user is null)
             {
-                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name + " " + response.Message.FirstOrDefault());
+                throw new ApplicationException(_authRepository.GetCurrentMethod() + " " + GetType().Name);
             }
 
             ApiResponse? apiResponse = await _authRepository.ValidateTFAAsync(user, tfaToken);
