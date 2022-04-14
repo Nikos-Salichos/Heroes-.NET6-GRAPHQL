@@ -135,6 +135,7 @@ builder.Services.AddTransient<IHeroRepository, HeroRepository>();
 builder.Services.AddTransient<ISeriLogRepository, SeriLogRepository>();
 builder.Services.AddTransient<IUnitOfWorkRepository, UnitOfWorkRepository>();
 builder.Services.AddTransient<IAuthRepository, AuthRepository>();
+builder.Services.AddTransient<IBarcodeRepository, BarcodeRepository>();
 builder.Services.AddSingleton<IEmailSenderRepository, EmailSenderRepository>();
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>(); // Configuration (resolvers, counter key builders)
 #endregion Repositories

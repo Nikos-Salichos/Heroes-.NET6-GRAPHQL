@@ -1,0 +1,1 @@
+2022-04-13 20:58:16.382 +03:00 [ERR] GenerateBarcode BarcodeRepository failed, extension is not correct

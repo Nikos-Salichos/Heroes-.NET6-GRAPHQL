@@ -1,4 +1,6 @@
-﻿namespace HeroesAPI.Repository
+﻿using System.Runtime.CompilerServices;
+
+namespace HeroesAPI.Repository
 {
     public class UnitOfWorkRepository : IUnitOfWorkRepository
     {
@@ -10,13 +12,19 @@
 
         public IEmailSenderRepository EmailSenderRepository { get; }
 
-        public UnitOfWorkRepository(MsSql msSql, IHeroRepository heroRepository,
-            IAuthRepository userRepository, IEmailSenderRepository emailSenderRepository)
+        public IBarcodeRepository BarcodeRepository { get; }
+
+        public UnitOfWorkRepository(MsSql msSql,
+            IHeroRepository heroRepository,
+            IAuthRepository userRepository,
+            IEmailSenderRepository emailSenderRepository,
+            IBarcodeRepository barcodeRepository)
         {
             _msSql = msSql;
             HeroRepository = heroRepository;
             UserRepository = userRepository;
             EmailSenderRepository = emailSenderRepository;
+            BarcodeRepository = barcodeRepository;
         }
 
         public int Complete()
@@ -35,6 +43,11 @@
             {
                 _msSql.Dispose();
             }
+        }
+
+        public string GetCurrentMethod([CallerMemberName] string callerName = "")
+        {
+            return callerName;
         }
     }
 }

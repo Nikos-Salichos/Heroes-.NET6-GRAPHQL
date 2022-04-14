@@ -1,7 +1,5 @@
 ﻿using HeroesAPI.Entitites.Models;
-using IronBarCode;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 
 namespace HeroesAPI.Controllers
 {
@@ -12,47 +10,27 @@ namespace HeroesAPI.Controllers
 
         private readonly ILogger<QRCodeController> _logger;
 
-        public BarcodeController(ILogger<QRCodeController> logger)
+        private readonly IBarcodeRepository _barcodeRepository;
+
+        public BarcodeController(ILogger<QRCodeController> logger, IBarcodeRepository barcodeRepository)
         {
             _logger = logger;
+            _barcodeRepository = barcodeRepository;
         }
 
         [HttpPost]
         [Route("qenerateBarcode/barcodeText")]
         public IActionResult CreateBarcode(BarcodeModel barcodeModel)
         {
+            byte[]? byteArray = _barcodeRepository.GenerateBarcode(barcodeModel);
 
-            Guid barcodeName = Guid.NewGuid();
-            string fullPath = $"{Environment.CurrentDirectory}\\{barcodeModel.Text}" + $"{barcodeName}" + $".{barcodeModel.Extension}";
-
-            GeneratedBarcode? qrImage = BarcodeWriter.CreateBarcode(barcodeModel.Text, BarcodeEncoding.Code128, barcodeModel.MaxWidth, barcodeModel.MaxHeight);
-
-            if (barcodeModel.Extension.ToLower().Equals("png", StringComparison.InvariantCultureIgnoreCase))
+            if (byteArray == null)
             {
-                qrImage.SaveAsPng(fullPath);
-            }
-            else if (barcodeModel.Extension.ToLower().Equals("jpeg", StringComparison.InvariantCultureIgnoreCase))
-            {
-                qrImage.SaveAsJpeg(fullPath);
-            }
-            else if (barcodeModel.Extension.ToLower().Equals("gif", StringComparison.InvariantCultureIgnoreCase))
-            {
-                qrImage.SaveAsGif(fullPath);
-            }
-            else
-            {
-                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " failed, extension is not correct");
+                throw new KeyNotFoundException(_barcodeRepository.GetCurrentMethod() + " " + GetType().Name + " failed, extension is not correct");
             }
 
-            if (fullPath is not null)
-            {
-                byte[] byteArray = System.IO.File.ReadAllBytes(fullPath);
-                return File(byteArray, $"image/{barcodeModel.Extension}");
-            }
-            else
-            {
-                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " failed to find image");
-            }
+            return File(byteArray, $"image/{barcodeModel.Extension}");
+
         }
 
 
