@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace HeroesAPI.Repository
+﻿namespace HeroesAPI.Repository
 {
     public class UnitOfWorkRepository : IUnitOfWorkRepository
     {
@@ -45,9 +43,6 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public string GetCurrentMethod([CallerMemberName] string callerName = "")
-        {
-            return callerName;
-        }
+
     }
 }

@@ -10,23 +10,24 @@ namespace HeroesAPI.Controllers
 
         private readonly ILogger<QRCodeController> _logger;
 
-        private readonly IBarcodeRepository _barcodeRepository;
 
-        public BarcodeController(ILogger<QRCodeController> logger, IBarcodeRepository barcodeRepository)
+        private readonly IUnitOfWorkRepository _unitOfWorkRepository;
+
+        public BarcodeController(ILogger<QRCodeController> logger, IUnitOfWorkRepository unitOfWorkRepository)
         {
             _logger = logger;
-            _barcodeRepository = barcodeRepository;
+            _unitOfWorkRepository = unitOfWorkRepository;
         }
 
         [HttpPost]
         [Route("qenerateBarcode/barcodeText")]
         public IActionResult CreateBarcode(BarcodeModel barcodeModel)
         {
-            byte[]? byteArray = _barcodeRepository.GenerateBarcode(barcodeModel);
+            byte[]? byteArray = _unitOfWorkRepository.BarcodeRepository.GenerateBarcode(barcodeModel);
 
             if (byteArray == null)
             {
-                throw new KeyNotFoundException(_barcodeRepository.GetCurrentMethod() + " " + GetType().Name + " failed, extension is not correct");
+                throw new KeyNotFoundException(_unitOfWorkRepository.GetCurrentMethod() + " " + GetType().Name + " failed, extension is not correct");
             }
 
             return File(byteArray, $"image/{barcodeModel.Extension}");
