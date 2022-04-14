@@ -23,14 +23,22 @@ namespace HeroesAPI.Controllers
         [Route("qenerateBarcode/barcodeText")]
         public IActionResult CreateBarcode(BarcodeModel barcodeModel)
         {
-            byte[]? byteArray = _unitOfWorkRepository.BarcodeRepository.GenerateBarcode(barcodeModel);
-
-            if (byteArray == null)
+            try
             {
-                throw new KeyNotFoundException(_unitOfWorkRepository.GetCurrentMethod() + " " + GetType().Name + " failed, extension is not correct");
-            }
+                byte[]? byteArray = _unitOfWorkRepository.BarcodeRepository.GenerateBarcode(barcodeModel);
 
-            return File(byteArray, $"image/{barcodeModel.Extension}");
+                if (byteArray == null)
+                {
+                    throw new KeyNotFoundException(_unitOfWorkRepository.GetCurrentMethod() + " " + GetType().Name + " failed, extension is not correct");
+                }
+
+                return File(byteArray, $"image/{barcodeModel.Extension}");
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(_unitOfWorkRepository.GetCurrentMethod() + " " + GetType().Name + " " + exception.Message);
+                throw new ApplicationException(_unitOfWorkRepository.GetCurrentMethod() + " " + GetType().Name + " " + exception.Message);
+            }
 
         }
 

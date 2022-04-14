@@ -12,9 +12,12 @@ namespace HeroesAPI.Controllers
     {
         private readonly ILogger<QRCodeController> _logger;
 
-        public QRCodeController(ILogger<QRCodeController> logger)
+        private readonly IUnitOfWorkRepository _unitOfWorkRepository;
+
+        public QRCodeController(ILogger<QRCodeController> logger, IUnitOfWorkRepository unitOfWorkRepository)
         {
             _logger = logger;
+            _unitOfWorkRepository = unitOfWorkRepository;
         }
 
         [HttpPost]
