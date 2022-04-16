@@ -14,6 +14,8 @@ In addition i have implement the following:
     - Registration with email confirmation
     - Login
     - Change / Forget / Reset Password
+    - Email confirmation
+    - 2FA with email
 - Pagination.
 - Web Api sorting based on property (using dynamic LINQ).
 - Web Api filtering.
