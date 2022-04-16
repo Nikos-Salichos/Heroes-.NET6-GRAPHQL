@@ -10,6 +10,8 @@
 		<PackageReference Include="AspNetCoreRateLimit" Version="4.0.2" />
 		<PackageReference Include="BarCode" Version="2022.3.0" />
 		<PackageReference Include="GoogleAuthenticator" Version="2.4.0" />
+		<PackageReference Include="graphiql" Version="2.0.0" />
+		<PackageReference Include="GraphQL.Server.Transports.AspNetCore.SystemTextJson" Version="5.2.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="6.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" />
