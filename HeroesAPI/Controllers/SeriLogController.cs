@@ -1,7 +1,6 @@
 ﻿using HeroesAPI.Entitites.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 
 namespace HeroesAPI.Controllers
 {
@@ -10,11 +9,12 @@ namespace HeroesAPI.Controllers
     public class SeriLogController : ControllerBase
     {
 
-        private readonly ISeriLogRepository _seriLogRepository;
+        private readonly IUnitOfWorkRepository _unitOfWorkRepository;
 
-        public SeriLogController(ISeriLogRepository seriLogRepository)
+
+        public SeriLogController(IUnitOfWorkRepository unitOfWorkRepository)
         {
-            _seriLogRepository = seriLogRepository;
+            _unitOfWorkRepository = unitOfWorkRepository;
         }
 
         [Route("GetAllLogs")]
@@ -22,11 +22,11 @@ namespace HeroesAPI.Controllers
         [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> GetAllLogs()
         {
-            IEnumerable<SeriLogModel>? logs = await _seriLogRepository.GetAllLogsAsync();
+            IEnumerable<SeriLogModel>? logs = await _unitOfWorkRepository.SeriLogRepository.GetAllLogsAsync();
 
             if (logs is null)
             {
-                throw new ApplicationException(MethodBase.GetCurrentMethod() + " " + GetType().Name + " " + "failed to get logs");
+                throw new ApplicationException(_unitOfWorkRepository.GetCurrentMethod() + " " + GetType().Name + " " + "failed to get logs");
             }
 
             return Ok(logs);
