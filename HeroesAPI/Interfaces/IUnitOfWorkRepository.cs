@@ -9,8 +9,8 @@ namespace HeroesAPI.Interfaces
         IEmailSenderRepository EmailSenderRepository { get; }
         IBarcodeRepository BarcodeRepository { get; }
         IQRCodeRepository QRCodeRepository { get; }
-
         ISeriLogRepository SeriLogRepository { get; }
+        IAuthRepository AuthRepository { get; }
 
         public string GetCurrentMethod([CallerMemberName] string callerName = "")
         {

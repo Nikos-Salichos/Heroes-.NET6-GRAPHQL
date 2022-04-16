@@ -16,13 +16,16 @@
 
         public ISeriLogRepository SeriLogRepository { get; }
 
+        public IAuthRepository AuthRepository { get; }
+
         public UnitOfWorkRepository(MsSql msSql,
             IHeroRepository heroRepository,
             IAuthRepository userRepository,
             IEmailSenderRepository emailSenderRepository,
             IBarcodeRepository barcodeRepository,
             IQRCodeRepository qRCodeRepository,
-            ISeriLogRepository seriLogRepository)
+            ISeriLogRepository seriLogRepository,
+            IAuthRepository authRepository)
         {
             _msSql = msSql;
             HeroRepository = heroRepository;
@@ -31,6 +34,7 @@
             BarcodeRepository = barcodeRepository;
             QRCodeRepository = qRCodeRepository;
             SeriLogRepository = seriLogRepository;
+            AuthRepository = authRepository;
         }
 
         public int Complete()
