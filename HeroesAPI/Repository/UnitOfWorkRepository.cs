@@ -12,17 +12,21 @@
 
         public IBarcodeRepository BarcodeRepository { get; }
 
+        public IQRCodeRepository QRCodeRepository { get; }
+
         public UnitOfWorkRepository(MsSql msSql,
             IHeroRepository heroRepository,
             IAuthRepository userRepository,
             IEmailSenderRepository emailSenderRepository,
-            IBarcodeRepository barcodeRepository)
+            IBarcodeRepository barcodeRepository,
+            IQRCodeRepository qRCodeRepository)
         {
             _msSql = msSql;
             HeroRepository = heroRepository;
             UserRepository = userRepository;
             EmailSenderRepository = emailSenderRepository;
             BarcodeRepository = barcodeRepository;
+            QRCodeRepository = qRCodeRepository;
         }
 
         public int Complete()
