@@ -6,6 +6,7 @@ global using HeroesAPI.Repository.GenericRepository;
 global using Microsoft.EntityFrameworkCore;
 global using Serilog;
 global using Serilog.Sinks.MSSqlServer;
+using GraphQL.Server;
 using HeroesAPI.Entitites.Models;
 using HeroesAPI.GraphQL;
 using HeroesAPI.Middlewares;
@@ -142,6 +143,13 @@ builder.Services.AddTransient<IEmailSenderRepository, EmailSenderRepository>();
 builder.Services.AddTransient<IRateLimitConfiguration, RateLimitConfiguration>(); // Configuration (resolvers, counter key builders)
 #endregion Repositories
 
+builder.Services.AddScoped<HeroDataSchema>();
+builder.Services.AddGraphQL(options =>
+{
+    options.EnableMetrics = true;
+})
+    .AddSystemTextJson()
+    .AddGraphTypes(typeof(HeroDataSchema), ServiceLifetime.Scoped);
 
 //Authentication Settings
 builder.Services.AddAuthentication(options =>
