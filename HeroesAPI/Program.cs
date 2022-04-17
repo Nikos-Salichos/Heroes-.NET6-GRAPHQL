@@ -7,6 +7,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Serilog;
 global using Serilog.Sinks.MSSqlServer;
 using HeroesAPI.Entitites.Models;
+using HeroesAPI.GraphQL;
 using HeroesAPI.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -149,38 +150,19 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-    /*.AddGoogle(options =>
-    {
-        IConfigurationSection googleAuthNSection =
-        builder.Configuration.GetSection("Authentication:Google");
-        options.ClientId = googleAuthNSection["ClientId"];
-        options.ClientSecret = googleAuthNSection["ClientSecret"];
-    })
-    .AddFacebook(options =>
-    {
-        IConfigurationSection FBAuthNSection =
-        builder.Configuration.GetSection("Authentication:FB");
-        options.ClientId = FBAuthNSection["ClientId"];
-        options.ClientSecret = FBAuthNSection["ClientSecret"];
-    })
-    .AddMicrosoftAccount(microsoftOptions =>
-    {
-        microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
-        microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
-    })*/
     .AddJwtBearer(options =>                // JWT Settings
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
     {
-        options.SaveToken = true;
-        options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters = new TokenValidationParameters()
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidAudience = configuration["JWT:ValidAudience"],
-            ValidIssuer = configuration["JWT:ValidIssuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = configuration["JWT:ValidAudience"],
+        ValidIssuer = configuration["JWT:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+    };
+});
 
 
 #region Twilio
@@ -219,6 +201,9 @@ app.UseResponseCaching();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseGraphQL<HeroDataSchema>();
+app.UseGraphQLPlayground(options: new GraphQL.Server.Ui.Playground.PlaygroundOptions());
 
 app.MapControllers();
 
