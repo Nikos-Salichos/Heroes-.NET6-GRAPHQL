@@ -1,6 +1,4 @@
-﻿using HeroesAPI.Wrappers;
-
-namespace HeroesAPI.Paging
+﻿namespace HeroesAPI.Wrappers
 {
     public class PagedResponse<T> : Response<T>
     {

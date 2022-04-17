@@ -1,5 +1,4 @@
-﻿using HeroesAPI.Entities.Models;
-using HeroesAPI.Entitites.Models;
+﻿using HeroesAPI.Entitites.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace HeroesAPI.DataContext

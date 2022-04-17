@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace HeroesAPI.Repository.GenericRepository
+namespace HeroesAPI.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {

@@ -1,5 +1,4 @@
-﻿using HeroesAPI.Entities.Models;
-using HeroesAPI.Entitites.Models;
+﻿using HeroesAPI.Entitites.Models;
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Authorization;

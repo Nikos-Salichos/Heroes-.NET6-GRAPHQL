@@ -1,5 +1,5 @@
 ﻿using GraphQL.Types;
-using HeroesAPI.Entities.Models;
+using HeroesAPI.Entitites.Models;
 
 namespace HeroesAPI.GraphQL
 {
