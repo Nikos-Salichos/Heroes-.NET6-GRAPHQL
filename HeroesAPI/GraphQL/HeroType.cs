@@ -7,9 +7,9 @@ namespace HeroesAPI.GraphQL
     {
         public HeroType()
         {
-            Field(h => h.Id);
-            Field(h => h.Name);
-            Field(h => h.Place);
+            Field(h => h.Id).Description("The id of the Hero");
+            Field(h => h.Name).Description("The name of the product");
+            Field(h => h.Place).Description("The place of the Hero");
         }
     }
 }
