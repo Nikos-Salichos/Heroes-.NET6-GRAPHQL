@@ -25,19 +25,20 @@ namespace HeroesAPI.Controllers
             _unitOfWorkRepository = unitOfWorkRepository;
         }
 
-        [HttpGet("GetAllHeroes"), Authorize]
+        [HttpGet("GetAllHeroes")]
         [ResponseCache(CacheProfileName = "60SecondsDuration")]
         public async Task<IActionResult> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
             {
-                string hwid = CreateSerialFromHWID();
-                string HWIDList = await ValidateSerial(hwid);
+                //Create hardware id and validate license
+                /*                string hwid = CreateSerialFromHWID();
+                                string HWIDList = await ValidateSerial(hwid);
 
-                if (HWIDList.Contains(hwid))
-                {
-                    return BadRequest();
-                }
+                                if (HWIDList.Contains(hwid))
+                                {
+                                    return BadRequest();
+                                }*/
 
                 PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
                 if (sortBy is not null)
@@ -150,7 +151,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = UserRole.Admin)]
+        // [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> AddHero([FromForm] Hero newHero)
         {
             try
