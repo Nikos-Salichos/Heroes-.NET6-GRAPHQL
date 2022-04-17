@@ -7,6 +7,7 @@ I have use the following technologies and packages:
 - Entity Framework Core.
 - Microsoft SQL Server.
 - Serilog.
+- GraphQL.
 
 In addition i have implement the following:
 - Generic Repository Pattern.
