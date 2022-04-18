@@ -7,7 +7,7 @@ I have use the following technologies and packages:
 - Entity Framework Core.
 - Microsoft SQL Server.
 - Serilog.
-- GraphQL.
+- GraphQL (navigate in localhost/12345/ui/playground to test it)
 
 In addition i have implement the following:
 - Generic Repository Pattern.
