@@ -1,6 +1,7 @@
 ﻿using HeroesAPI.Entitites.Models;
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
+using HeroesAPI.Wrappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;

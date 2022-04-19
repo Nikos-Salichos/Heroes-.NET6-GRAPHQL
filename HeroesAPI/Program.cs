@@ -2,7 +2,6 @@ global using AspNetCoreRateLimit;
 global using HeroesAPI.DataContext;
 global using HeroesAPI.Interfaces;
 global using HeroesAPI.Repository;
-global using HeroesAPI.Repository.GenericRepository;
 global using Microsoft.EntityFrameworkCore;
 global using Serilog;
 global using Serilog.Sinks.MSSqlServer;
