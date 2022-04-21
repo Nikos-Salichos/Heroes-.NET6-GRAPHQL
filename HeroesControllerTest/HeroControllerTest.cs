@@ -47,7 +47,8 @@ namespace HeroesControllerTest
             // Act
             ActionResult<Hero>? getOneHero = await heroController.GetOneHero(1);
 
-
+            // Assert
+            Assert.Contains(newHero.Name, "Ironman");
         }
     }
 
