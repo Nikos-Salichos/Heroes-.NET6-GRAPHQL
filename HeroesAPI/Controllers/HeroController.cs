@@ -289,6 +289,7 @@ namespace HeroesAPI.Controllers
 
             return pathToSave;
         }
+
         private async Task<List<Hero>> GetHeroesPagination(PaginationFilter paginationFilter)
         {
             IEnumerable<Hero>? allHeroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
