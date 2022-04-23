@@ -7,6 +7,7 @@ I have use the following technologies and packages:
 - Entity Framework Core.
 - Microsoft SQL Server.
 - Serilog.
+- RESTful API.
 - GraphQL (navigate in localhost/portNumber/ui/playground to test it)
 
 In addition i have implement the following:
