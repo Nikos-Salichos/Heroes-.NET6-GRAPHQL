@@ -25,7 +25,7 @@ namespace HeroesAPI.Controllers
             _unitOfWorkRepository = unitOfWorkRepository;
         }
 
-        [HttpGet("GetAllHeroes")]
+        [HttpGet("AllHeroes")]
         [ResponseCache(CacheProfileName = "60SecondsDuration")]
         public async Task<IActionResult> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
@@ -100,7 +100,7 @@ namespace HeroesAPI.Controllers
             return hwid;
         }
 
-        [HttpGet("/heroDetails", Name = "HeroById")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Hero>> GetOneHero(int heroId)
         {
             try
@@ -122,7 +122,7 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpGet("/heroImage", Name = "HeroByIdImage")]
+        [HttpGet("HeroImage/{id:int}")]
         public async Task<ActionResult<Hero>> GetHeroImage(int heroId)
         {
             try
@@ -193,7 +193,7 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("ChangeHeroImage/{id:int}")]
         [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> UpdateHero([FromForm] Hero requestedHero)
         {
@@ -233,7 +233,7 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpDelete("{heroId}")]
+        [HttpDelete("DeleteHeroImage/{id:int}")]
         [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> DeleteHero(int heroId)
         {
