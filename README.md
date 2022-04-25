@@ -1,4 +1,4 @@
-# Heroes-API-EFC-.NET6
+# Heroes-.NET6-GraphQL
 .NET 6 Full CRUD with Entity Framework Core and web API.
 
 I have use the following technologies and packages:
@@ -7,6 +7,7 @@ I have use the following technologies and packages:
 - Entity Framework Core.
 - Microsoft SQL Server.
 - Serilog.
+- RESTful API.
 - GraphQL (navigate in localhost/portNumber/ui/playground to test it)
 
 In addition i have implement the following:
@@ -35,3 +36,4 @@ In addition i have implement the following:
 - Generate serial key from hardware id and online validation (only in GetAllHeroes api)
 - Two-Factor Authentication with e-mail, validating 2FA token in separate controller.
 - Custom global error handling in middleware.
+- Unit Testing (XUnit & Moq).
