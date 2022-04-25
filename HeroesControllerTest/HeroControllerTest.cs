@@ -1,6 +1,7 @@
 using HeroesAPI.Controllers;
 using HeroesAPI.Entitites.Models;
 using HeroesAPI.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Collections.Generic;
@@ -43,16 +44,16 @@ namespace HeroesControllerTest
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(1)).Returns(Task.FromResult(newHero));
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
 
-            /*  // Act
-              ActionResult<Hero>? getOneHero = await heroController.GetOneHero(1);
-              Assert.NotNull(getOneHero);
-              Assert.NotNull(getOneHero.Result);
+            // Act
+            ActionResult<Hero>? getOneHero = await heroController.GetOneHero(1);
+            Assert.NotNull(getOneHero);
+            Assert.NotNull(getOneHero.Result);
 
-              var okResult = (OkObjectResult)getOneHero.Result;
-              var actualHero = okResult.Value as Hero;
+            var okResult = (OkObjectResult)getOneHero.Result;
+            var actualHero = okResult.Value as Hero;
 
-              // Assert
-              Assert.Contains(newHero.Name, actualHero.Name);*/
+            // Assert
+            Assert.Contains(newHero.Name, actualHero.Name);
         }
 
 
