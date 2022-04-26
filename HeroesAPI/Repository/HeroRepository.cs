@@ -8,7 +8,7 @@ namespace HeroesAPI.Repository
         {
         }
 
-        public async Task<IEnumerable<Hero>> GetAllHeroesAsync()
+        public async Task<List<Hero>> GetAllHeroesAsync()
         {
             return await FindAll().ToListAsync();
         }

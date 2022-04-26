@@ -27,7 +27,7 @@ namespace HeroesAPI.Controllers
 
         [HttpGet("AllHeroes")]
         [ResponseCache(CacheProfileName = "60SecondsDuration")]
-        public async Task<IActionResult> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
+        public async Task<ActionResult> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
             {
@@ -300,7 +300,7 @@ namespace HeroesAPI.Controllers
             return allHeroesByPageSizeAndNumber;
         }
 
-        private async Task<IActionResult> HeroesWithSorting(string? searchString, string sortBy, PaginationFilter validFilter)
+        private async Task<ActionResult> HeroesWithSorting(string? searchString, string sortBy, PaginationFilter validFilter)
         {
             List<Hero> allHeroesByPageSizeAndNumber = await GetHeroesPagination(validFilter);
 
@@ -325,7 +325,7 @@ namespace HeroesAPI.Controllers
             return allHeroes;
         }
 
-        private async Task<IActionResult> HeroesWithoutSorting(string? searchString, PaginationFilter validFilter)
+        private async Task<ActionResult> HeroesWithoutSorting(string? searchString, PaginationFilter validFilter)
         {
             List<Hero> allHeroesByPageSizeAndNumber = await GetHeroesPagination(validFilter);
 

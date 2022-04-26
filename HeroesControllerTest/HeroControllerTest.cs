@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,9 +13,7 @@ namespace HeroesControllerTest
 {
     public class HeroControllerTest
     {
-        private readonly HeroController _heroController;
         private readonly ILogger<HeroController> _logger;
-        private readonly IUnitOfWorkRepository _unitOfWorkRepository;
 
         private readonly List<Hero> _heroes = new List<Hero>();
 
@@ -25,23 +24,48 @@ namespace HeroesControllerTest
         public HeroControllerTest()
         {
             _mockHeroRepository = new Mock<IHeroRepository>();
-            // _heroController = new HeroController(_logger, _unitOfWorkRepository);
+            _mockUnitOfWorkRepository = new Mock<IUnitOfWorkRepository>();
+        }
 
-            _mockUnitOfWorkRepository = new Mock<IUnitOfWorkRepository> { CallBase = true };
+        [Fact]
+        public async Task GetHeroes_ReturnsSuccess()
+        {
+            FillHeroes();
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
+
+            // Act
+            OkObjectResult? okResult = await heroController.GetAllHeroes(string.Empty, "10", new HeroesAPI.Paging.PaginationFilter()) as OkObjectResult;
+
+            // Assert
+            Assert.Equal(okResult.StatusCode, 200);
+        }
+
+        private void FillHeroes()
+        {
+            _heroes.Add(new Hero()
+            {
+                Id = 1,
+                Name = "Ironman",
+                FirstName = "Tony",
+                LastName = "Stark",
+                Place = "Long Island",
+            });
+            _heroes.Add(new Hero()
+            {
+                Id = 2,
+                Name = "Superman",
+                FirstName = "Clark",
+                LastName = "Clark",
+                Place = "Village",
+            });
         }
 
         [Fact]
         public async Task GetHeroById_ReturnsSuccess()
         {
-            Hero? newHero = new Hero();
-            newHero.Id = 1;
-            newHero.Name = "Ironman";
-            newHero.FirstName = "Tony";
-            newHero.LastName = "Stark";
-            newHero.Place = "Long island";
-
-            //  _mockHeroRepository.Setup(repo => repo.GetHeroByIdAsync(1)).Retus(Task.FromResult(newHero));
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(1)).Returns(Task.FromResult(newHero));
+            FillHeroes();
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(1)).Returns(Task.FromResult(_heroes.FirstOrDefault()));
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
 
             // Act
@@ -53,8 +77,12 @@ namespace HeroesControllerTest
             var actualHero = okResult.Value as Hero;
 
             // Assert
-            Assert.Contains(newHero.Name, actualHero.Name);
+            Assert.NotNull(actualHero);
+            Assert.Contains(_heroes.FirstOrDefault().Name, actualHero.Name);
+            Assert.Equal(okResult.StatusCode, 200);
         }
+
+
 
 
 
