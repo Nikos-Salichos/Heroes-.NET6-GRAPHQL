@@ -27,7 +27,7 @@ namespace HeroesAPI.Controllers
 
         [HttpGet("AllHeroes")]
         [ResponseCache(CacheProfileName = "60SecondsDuration")]
-        public async Task<ActionResult> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
+        public async Task<ActionResult<Hero>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
             {
