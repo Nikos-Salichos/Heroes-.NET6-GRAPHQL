@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Management;
-using System.Reflection;
 using System.Text;
 
 namespace HeroesAPI.Controllers
@@ -32,7 +31,7 @@ namespace HeroesAPI.Controllers
             try
             {
                 //Create hardware id and validate license
-                /*                string hwid = CreateSerialFromHWID();
+                /*              string hwid = CreateSerialFromHWID();
                                 string HWIDList = await ValidateSerial(hwid);
 
                                 if (HWIDList.Contains(hwid))
@@ -53,7 +52,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
@@ -117,7 +116,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
@@ -145,7 +144,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
@@ -188,7 +187,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
@@ -228,7 +227,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
@@ -253,7 +252,7 @@ namespace HeroesAPI.Controllers
             }
             catch (Exception exception)
             {
-                _logger.LogError($"Logging {MethodBase.GetCurrentMethod()} {GetType().Name}" + exception.Message);
+                _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
                 return BadRequest();
             }
         }
