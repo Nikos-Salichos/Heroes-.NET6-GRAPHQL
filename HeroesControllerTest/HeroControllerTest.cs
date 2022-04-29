@@ -42,13 +42,21 @@ namespace HeroesControllerTest
                 Id = 2,
                 Name = "Superman",
                 FirstName = "Clark",
-                LastName = "Clark",
-                Place = "Village",
+                LastName = "Kent",
+                Place = "Krypton",
+            });
+            _heroes.Add(new Hero()
+            {
+                Id = 3,
+                Name = "Thor",
+                FirstName = "Thor",
+                LastName = "Odinson",
+                Place = "Asgard",
             });
         }
 
         [Fact]
-        public async Task GetHeroesNoSearching_ReturnsSuccess()
+        public async Task GetHeroesSortingNoSearch_ReturnsSuccess()
         {
             FillHeroes();
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
@@ -62,17 +70,18 @@ namespace HeroesControllerTest
 
             object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
             List<Hero>? heroesList = data as List<Hero>;
+            Assert.NotNull(heroesList);
             Assert.True(heroesList?.Count > 1, "Expected count is over 2");
         }
 
         [Fact]
-        public async Task GetHeroesSearching_ReturnsSuccess()
+        public async Task GetHeroesNoSortingNoSearch_ReturnsSuccess()
         {
             FillHeroes();
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
 
-            ActionResult<Hero>? actionResult = await heroController.GetAllHeroes(string.Empty, "10", new HeroesAPI.Paging.PaginationFilter());
+            ActionResult<Hero>? actionResult = await heroController.GetAllHeroes(string.Empty, null, new HeroesAPI.Paging.PaginationFilter());
             Assert.NotNull(actionResult);
 
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
@@ -80,6 +89,7 @@ namespace HeroesControllerTest
 
             object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
             List<Hero>? heroesList = data as List<Hero>;
+            Assert.NotNull(heroesList);
             Assert.True(heroesList?.Count > 1, "Expected count is over 2");
         }
 
