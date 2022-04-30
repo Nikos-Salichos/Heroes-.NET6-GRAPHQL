@@ -35,7 +35,10 @@ builder.Host.UseSerilog((ctx, lc) => lc.MinimumLevel.Error()
                                         }));
 #endregion Serilog Logging
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.ReturnHttpNotAcceptable = true;
+}).AddXmlDataContractSerializerFormatters();
 
 
 builder.Services.AddDbContext<MsSql>(options =>
@@ -182,8 +185,6 @@ builder.Services.AddHttpClient<ITwilioRestClient>();
 #endregion Twilio
 
 builder.Services.AddHttpContextAccessor();
-
-
 
 
 WebApplication? app = builder.Build();

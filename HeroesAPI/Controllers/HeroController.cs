@@ -99,7 +99,7 @@ namespace HeroesAPI.Controllers
             return hwid;
         }
 
-        [HttpGet]
+        [HttpGet("{heroId}")]
         public async Task<ActionResult<Hero>> GetOneHero(int heroId)
         {
             try
@@ -121,7 +121,7 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpGet("HeroImage")]
+        [HttpGet("HeroImage/{heroId}")]
         public async Task<ActionResult<Hero>> GetHeroImage(int heroId)
         {
             try
@@ -150,7 +150,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpPost]
-        // [Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> AddHero([FromForm] Hero newHero)
         {
             try
@@ -173,8 +173,8 @@ namespace HeroesAPI.Controllers
                         return BadRequest(new { message = "This file is not image" });
                     }
 
-                    string pathToSave = CreateImageDirectory();
-                    SaveImageInDir(newHero, pathToSave, out string fullPath, out string extension);
+                    string pathToSave = _unitOfWorkRepository.HeroRepository.CreateImageDirectory();
+                    _unitOfWorkRepository.HeroRepository.SaveImageInDir(newHero, pathToSave, out string fullPath, out string extension);
                     newHero.ImageUrl = fullPath + extension;
 
                 }
@@ -215,8 +215,8 @@ namespace HeroesAPI.Controllers
                         return BadRequest(new { message = "This file is not image" });
                     }
 
-                    string pathToSave = CreateImageDirectory();
-                    SaveImageInDir(requestedHero, pathToSave, out string fullPath, out string extension);
+                    string pathToSave = _unitOfWorkRepository.HeroRepository.CreateImageDirectory();
+                    _unitOfWorkRepository.HeroRepository.SaveImageInDir(requestedHero, pathToSave, out string fullPath, out string extension);
                     requestedHero.ImageUrl = fullPath + extension;
                 }
 
@@ -259,35 +259,8 @@ namespace HeroesAPI.Controllers
 
 
         #region Helper Methods
-        private static void SaveImageInDir(Hero hero, string pathToSave, out string fullPath, out string extension)
-        {
-            string imageName = Guid.NewGuid().ToString();
-            fullPath = Path.Combine(pathToSave, imageName);
-            if (hero.Image is not null)
-            {
-                extension = Path.GetExtension(hero.Image.FileName);
-                using (FileStream fileStream = System.IO.File.Create(fullPath + imageName + extension))
-                {
-                    hero.Image.CopyTo(fileStream);
-                    fileStream.Flush();
-                }
-            }
-            else
-            {
-                extension = string.Empty;
-            }
-        }
 
-        private static string CreateImageDirectory()
-        {
-            string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Resources", "Images"));
-            if (!Directory.Exists(pathToSave))
-            {
-                Directory.CreateDirectory(pathToSave);
-            }
 
-            return pathToSave;
-        }
 
         private async Task<List<Hero>> GetHeroesPagination(PaginationFilter paginationFilter)
         {

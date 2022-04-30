@@ -9,5 +9,7 @@ namespace HeroesAPI.Interfaces
         void CreateHero(Hero hero);
         void UpdateHero(Hero hero);
         void DeleteHero(Hero hero);
+        string CreateImageDirectory();
+        void SaveImageInDir(Hero newHero, string pathToSave, out string fullPath, out string extension);
     }
 }

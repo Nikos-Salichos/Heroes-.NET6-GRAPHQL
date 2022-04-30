@@ -33,5 +33,36 @@ namespace HeroesAPI.Repository
             Delete(hero);
         }
 
+        public string CreateImageDirectory()
+        {
+            string pathToSave = Path.Combine(Directory.GetCurrentDirectory(), Path.Combine("Resources", "Images"));
+            if (!Directory.Exists(pathToSave))
+            {
+                Directory.CreateDirectory(pathToSave);
+            }
+
+            return pathToSave;
+        }
+
+        public void SaveImageInDir(Hero hero, string pathToSave, out string fullPath, out string extension)
+        {
+            string imageName = Guid.NewGuid().ToString();
+            fullPath = Path.Combine(pathToSave, imageName);
+            if (hero.Image is not null)
+            {
+                extension = Path.GetExtension(hero.Image.FileName);
+                using (FileStream fileStream = System.IO.File.Create(fullPath + imageName + extension))
+                {
+                    hero.Image.CopyTo(fileStream);
+                    fileStream.Flush();
+                }
+            }
+            else
+            {
+                extension = string.Empty;
+            }
+        }
+
+
     }
 }
