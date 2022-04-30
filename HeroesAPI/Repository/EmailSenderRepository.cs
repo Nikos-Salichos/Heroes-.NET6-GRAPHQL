@@ -1,4 +1,4 @@
-﻿using HeroesAPI.Entitites.Models;
+﻿using HeroesAPI.Models;
 using MailKit.Net.Smtp;
 using MimeKit;
 using System.Net;

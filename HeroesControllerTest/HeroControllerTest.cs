@@ -1,6 +1,6 @@
 using HeroesAPI.Controllers;
-using HeroesAPI.Entitites.Models;
 using HeroesAPI.Interfaces;
+using HeroesAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HeroesControllerTest
+namespace HeroesController.Test
 {
     public class HeroControllerTest
     {

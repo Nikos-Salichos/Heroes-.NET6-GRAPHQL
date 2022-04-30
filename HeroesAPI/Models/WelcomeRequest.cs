@@ -1,4 +1,4 @@
-﻿namespace HeroesAPI.Entitites.Models
+﻿namespace HeroesAPI.Models
 {
     public class WelcomeRequest
     {

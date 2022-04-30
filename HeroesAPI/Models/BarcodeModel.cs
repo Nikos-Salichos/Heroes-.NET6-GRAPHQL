@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HeroesAPI.Entitites.Models
+namespace HeroesAPI.Models
 {
     public class BarcodeModel
     {

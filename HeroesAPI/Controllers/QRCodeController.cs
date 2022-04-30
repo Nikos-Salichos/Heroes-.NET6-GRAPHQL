@@ -1,4 +1,4 @@
-﻿using HeroesAPI.Entitites.Models;
+﻿using HeroesAPI.Models;
 using IronBarCode;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing;

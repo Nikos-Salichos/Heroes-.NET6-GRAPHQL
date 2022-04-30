@@ -1,6 +1,12 @@
-﻿namespace HeroesAPI.Profiles
+﻿using AutoMapper;
+
+namespace HeroesAPI.Profiles
 {
-    public class HeroProfile
+    public class HeroProfile : Profile
     {
+        public HeroProfile()
+        {
+
+        }
     }
 }

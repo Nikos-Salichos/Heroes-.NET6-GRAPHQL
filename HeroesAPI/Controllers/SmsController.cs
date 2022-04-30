@@ -1,4 +1,4 @@
-﻿using HeroesAPI.Entitites.Models;
+﻿using HeroesAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using Twilio.Clients;
