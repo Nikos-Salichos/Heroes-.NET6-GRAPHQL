@@ -71,6 +71,7 @@ namespace HeroesController.Test
             object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
             List<Hero>? heroesList = data as List<Hero>;
             Assert.NotNull(heroesList);
+            Assert.NotEmpty(heroesList);
             Assert.True(heroesList?.Count > 1, "Expected count is over 2");
         }
 
@@ -90,6 +91,7 @@ namespace HeroesController.Test
             object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
             List<Hero>? heroesList = data as List<Hero>;
             Assert.NotNull(heroesList);
+            Assert.NotEmpty(heroesList);
             Assert.True(heroesList?.Count > 1, "Expected count is over 2");
         }
 
@@ -109,6 +111,7 @@ namespace HeroesController.Test
             object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
             List<Hero>? heroesList = data as List<Hero>;
             Assert.NotNull(heroesList);
+            Assert.NotEmpty(heroesList);
         }
 
         [Fact]
@@ -127,6 +130,7 @@ namespace HeroesController.Test
             object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
             List<Hero>? heroesList = data as List<Hero>;
             Assert.NotNull(heroesList);
+            Assert.NotEmpty(heroesList);
         }
 
         [Fact]
