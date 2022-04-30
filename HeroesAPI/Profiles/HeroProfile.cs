@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using HeroesAPI.DTOs;
+using HeroesAPI.Models;
 
 namespace HeroesAPI.Profiles
 {
@@ -6,7 +8,7 @@ namespace HeroesAPI.Profiles
     {
         public HeroProfile()
         {
-
+            CreateMap<Hero, HeroDTO>();
         }
     }
 }
