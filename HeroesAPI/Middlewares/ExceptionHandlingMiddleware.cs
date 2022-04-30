@@ -1,4 +1,4 @@
-﻿using HeroesAPI.Entitites.Models;
+﻿using HeroesAPI.Models;
 using System.Net;
 using System.Text.Json;
 
