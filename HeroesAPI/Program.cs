@@ -130,6 +130,11 @@ builder.Services.AddInMemoryRateLimiting();
 // Load SmtpSettings
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
+//Load Data Protector
+builder.Services.AddDataProtection();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 #region Repositories
 builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddTransient<IHeroRepository, HeroRepository>();

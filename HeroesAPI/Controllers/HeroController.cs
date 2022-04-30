@@ -40,10 +40,10 @@ namespace HeroesAPI.Controllers
                                 }*/
 
                 PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
+
                 if (sortBy is not null)
                 {
                     return await HeroesWithSorting(searchString, sortBy, validFilter);
-
                 }
                 else
                 {
@@ -99,7 +99,7 @@ namespace HeroesAPI.Controllers
             return hwid;
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet]
         public async Task<ActionResult<Hero>> GetOneHero(int heroId)
         {
             try
@@ -121,7 +121,7 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpGet("HeroImage/{id:int}")]
+        [HttpGet("HeroImage")]
         public async Task<ActionResult<Hero>> GetHeroImage(int heroId)
         {
             try
