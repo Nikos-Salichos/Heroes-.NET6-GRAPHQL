@@ -56,7 +56,7 @@ namespace HeroesControllerTest
         }
 
         [Fact]
-        public async Task GetHeroesNoSortingNoSearch_ReturnsSuccess()
+        public async Task GetHeroesNoSearchNoSorting_ReturnsSuccess()
         {
             FillHeroes();
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
@@ -75,7 +75,7 @@ namespace HeroesControllerTest
         }
 
         [Fact]
-        public async Task GetHeroesSortingNoSearch_ReturnsSuccess()
+        public async Task GetHeroesNoSearchSorting_ReturnsSuccess()
         {
             FillHeroes();
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
@@ -94,7 +94,7 @@ namespace HeroesControllerTest
         }
 
         [Fact]
-        public async Task GetHeroesSortingSearch_ReturnsSuccess()
+        public async Task GetHeroesSearchSorting_ReturnsSuccess()
         {
             FillHeroes();
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
