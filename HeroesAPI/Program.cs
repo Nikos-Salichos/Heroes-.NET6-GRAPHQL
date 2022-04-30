@@ -11,6 +11,7 @@ using HeroesAPI.Middlewares;
 using HeroesAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -136,7 +137,11 @@ builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpS
 //Load Data Protector
 builder.Services.AddDataProtection();
 
+//Load Automapper 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+//Add File Extension Content Type Provider
+builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
 
 #region Repositories
 builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
