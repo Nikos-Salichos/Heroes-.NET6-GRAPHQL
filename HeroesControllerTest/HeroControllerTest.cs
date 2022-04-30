@@ -112,6 +112,24 @@ namespace HeroesControllerTest
         }
 
         [Fact]
+        public async Task GetHeroesSearchNoSorting_ReturnsSuccess()
+        {
+            FillHeroes();
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
+
+            ActionResult<Hero>? actionResult = await heroController.GetAllHeroes("thor", null, new HeroesAPI.Paging.PaginationFilter());
+            Assert.NotNull(actionResult);
+
+            OkObjectResult? result = actionResult?.Result as OkObjectResult;
+            Assert.Equal(200, result?.StatusCode);
+
+            object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
+            List<Hero>? heroesList = data as List<Hero>;
+            Assert.NotNull(heroesList);
+        }
+
+        [Fact]
         public async Task GetHeroById_ReturnsSuccess()
         {
             FillHeroes();
