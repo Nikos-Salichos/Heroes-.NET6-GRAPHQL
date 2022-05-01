@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using HeroesAPI.DTOs;
 using HeroesAPI.Models;
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
-using HeroesAPI.Wrappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -30,7 +30,7 @@ namespace HeroesAPI.Controllers
 
         [HttpGet("AllHeroes")]
         [ResponseCache(CacheProfileName = "60SecondsDuration")]
-        public async Task<ActionResult<Hero>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
+        public async Task<ActionResult<IEnumerable<HeroDTO>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
             {
@@ -47,11 +47,13 @@ namespace HeroesAPI.Controllers
 
                 if (sortBy is not null)
                 {
-                    return await HeroesWithSorting(searchString, sortBy, validFilter);
+                    List<Hero>? heroes = await HeroesWithSorting(searchString, sortBy, validFilter);
+                    return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroes));
                 }
                 else
                 {
-                    return await HeroesWithoutSorting(searchString, validFilter);
+                    List<Hero>? heroes = await HeroesWithoutSorting(searchString, validFilter);
+                    return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroes));
                 }
             }
             catch (Exception exception)
@@ -281,7 +283,7 @@ namespace HeroesAPI.Controllers
             return allHeroesByPageSizeAndNumber;
         }
 
-        private async Task<ActionResult> HeroesWithSorting(string? searchString, string sortBy, PaginationFilter validFilter)
+        private async Task<List<Hero>> HeroesWithSorting(string? searchString, string sortBy, PaginationFilter validFilter)
         {
             List<Hero> allHeroesByPageSizeAndNumber = await GetHeroesPagination(validFilter);
 
@@ -291,8 +293,7 @@ namespace HeroesAPI.Controllers
             {
                 allHeroesSortBy = HeroesFiltering(searchString, allHeroesSortBy);
             }
-
-            return Ok(new PagedResponse<IEnumerable<Hero>>(allHeroesSortBy, validFilter.PageNumber, validFilter.PageSize));
+            return allHeroesSortBy;
         }
 
         private static List<Hero> HeroesFiltering(string? searchString, List<Hero> allHeroes)
@@ -306,12 +307,13 @@ namespace HeroesAPI.Controllers
             return allHeroes;
         }
 
-        private async Task<ActionResult> HeroesWithoutSorting(string? searchString, PaginationFilter validFilter)
+        private async Task<List<Hero>> HeroesWithoutSorting(string? searchString, PaginationFilter validFilter)
         {
             List<Hero> allHeroesByPageSizeAndNumber = await GetHeroesPagination(validFilter);
 
             allHeroesByPageSizeAndNumber = HeroesFiltering(searchString, allHeroesByPageSizeAndNumber);
-            return Ok(new PagedResponse<List<Hero>>(allHeroesByPageSizeAndNumber, validFilter.PageNumber, validFilter.PageSize));
+
+            return allHeroesByPageSizeAndNumber;
         }
 
 

@@ -1,4 +1,6 @@
+using AutoMapper;
 using HeroesAPI.Controllers;
+using HeroesAPI.DTOs;
 using HeroesAPI.Interfaces;
 using HeroesAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +11,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HeroController.Test
+namespace HeroTests
 {
-    public class HeroControllerTest
+    public class HeroControllerTests
     {
         private readonly ILogger<HeroController> _logger;
 
@@ -21,10 +23,13 @@ namespace HeroController.Test
 
         private readonly Mock<IUnitOfWorkRepository> _mockUnitOfWorkRepository;
 
-        public HeroControllerTest()
+        private readonly Mock<IMapper> _mapper;
+
+        public HeroControllerTests()
         {
             _mockHeroRepository = new Mock<IHeroRepository>();
             _mockUnitOfWorkRepository = new Mock<IUnitOfWorkRepository>();
+            _mapper = new Mock<IMapper>();
         }
 
         private void FillHeroes()
@@ -59,8 +64,10 @@ namespace HeroController.Test
         public async Task GetHeroesNoSearchNoSorting_ReturnsSuccess()
         {
             FillHeroes();
+            var mapperMock = new Mock<IMapper>();
+            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
 
             ActionResult<Hero>? actionResult = await heroController.GetAllHeroes(string.Empty, null, new HeroesAPI.Paging.PaginationFilter());
             Assert.NotNull(actionResult);
@@ -79,8 +86,10 @@ namespace HeroController.Test
         public async Task GetHeroesNoSearchSorting_ReturnsSuccess()
         {
             FillHeroes();
+            var mapperMock = new Mock<IMapper>();
+            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
 
             ActionResult<Hero>? actionResult = await heroController.GetAllHeroes(string.Empty, "10", new HeroesAPI.Paging.PaginationFilter());
             Assert.NotNull(actionResult);
@@ -99,8 +108,10 @@ namespace HeroController.Test
         public async Task GetHeroesSearchSorting_ReturnsSuccess()
         {
             FillHeroes();
+            var mapperMock = new Mock<IMapper>();
+            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
 
             ActionResult<Hero>? actionResult = await heroController.GetAllHeroes("thor", "10", new HeroesAPI.Paging.PaginationFilter());
             Assert.NotNull(actionResult);
@@ -118,8 +129,10 @@ namespace HeroController.Test
         public async Task GetHeroesSearchNoSorting_ReturnsSuccess()
         {
             FillHeroes();
+            var mapperMock = new Mock<IMapper>();
+            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
 
             ActionResult<Hero>? actionResult = await heroController.GetAllHeroes("thor", null, new HeroesAPI.Paging.PaginationFilter());
             Assert.NotNull(actionResult);
@@ -137,9 +150,10 @@ namespace HeroController.Test
         public async Task GetHeroById_ReturnsSuccess()
         {
             FillHeroes();
-            //  _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(1)).Returns(Task.FromResult(_heroes.FirstOrDefault()));
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(1)).ReturnsAsync(_heroes[0]);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
+            var mapperMock = new Mock<IMapper>();
+            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
 
             ActionResult<Hero>? actionResult = await heroController.GetOneHero(1);
             Assert.NotNull(actionResult);
@@ -158,8 +172,10 @@ namespace HeroController.Test
         public async Task GetHeroById_ReturnsFail()
         {
             FillHeroes();
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(2)).ReturnsAsync(_heroes[0]);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object);
+            var mapperMock = new Mock<IMapper>();
+            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
 
             ActionResult<Hero>? actionResult = await heroController.GetOneHero(1);
 

@@ -1,0 +1,6 @@
+2022-05-01 08:55:40.660 +03:00 [ERR] Logging GetAllHeroes HeroControllerMissing type map configuration or unsupported mapping.
+
+Mapping types:
+OkObjectResult -> Hero
+Microsoft.AspNetCore.Mvc.OkObjectResult -> HeroesAPI.Models.Hero
+2022-05-01 09:08:34.472 +03:00 [ERR] Logging GetAllHeroes HeroControllerValue cannot be null. (Parameter 'ordering')
