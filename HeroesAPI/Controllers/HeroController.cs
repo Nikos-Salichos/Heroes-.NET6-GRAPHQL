@@ -48,13 +48,19 @@ namespace HeroesAPI.Controllers
                 if (sortBy is not null)
                 {
                     (List<Hero> heroes, PaginationFilter pagination) = await HeroesWithSorting(searchString, sortBy, validFilter);
-                    Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(pagination));
+                    if (Response != null)
+                    {
+                        Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(pagination));
+                    }
                     return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroes));
                 }
                 else
                 {
                     (List<Hero> heroes, PaginationFilter pagination) = await HeroesWithoutSorting(searchString, validFilter);
-                    Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(pagination));
+                    if (Response != null)
+                    {
+                        Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(pagination));
+                    }
                     return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroes));
                 }
             }

@@ -3,6 +3,7 @@ using HeroesAPI.Controllers;
 using HeroesAPI.DTOs;
 using HeroesAPI.Interfaces;
 using HeroesAPI.Models;
+using HeroesAPI.Profiles;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -36,7 +37,7 @@ namespace HeroTests
         {
             _heroes.Add(new Hero()
             {
-                Id = 1,
+                Id = 10,
                 Name = "Ironman",
                 FirstName = "Tony",
                 LastName = "Stark",
@@ -44,7 +45,7 @@ namespace HeroTests
             });
             _heroes.Add(new Hero()
             {
-                Id = 2,
+                Id = 11,
                 Name = "Superman",
                 FirstName = "Clark",
                 LastName = "Kent",
@@ -52,7 +53,7 @@ namespace HeroTests
             });
             _heroes.Add(new Hero()
             {
-                Id = 3,
+                Id = 13,
                 Name = "Thor",
                 FirstName = "Thor",
                 LastName = "Odinson",
@@ -150,12 +151,16 @@ namespace HeroTests
         public async Task GetHeroById_ReturnsSuccess()
         {
             FillHeroes();
-            var mapperMock = new Mock<IMapper>();
-            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
 
-            ActionResult<Hero>? actionResult = await heroController.GetOneHero(1);
+            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
+            {
+                mapperConfiguration.AddProfile<HeroProfile>();
+            }).CreateMapper();
+
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
+
+            ActionResult<Hero>? actionResult = await heroController.GetOneHero(10);
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Result);
 
@@ -172,12 +177,15 @@ namespace HeroTests
         public async Task GetHeroById_ReturnsFail()
         {
             FillHeroes();
-            var mapperMock = new Mock<IMapper>();
-            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
+            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
+            {
+                mapperConfiguration.AddProfile<HeroProfile>();
+            }).CreateMapper();
 
-            ActionResult<Hero>? actionResult = await heroController.GetOneHero(1);
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
+
+            ActionResult<Hero>? actionResult = await heroController.GetOneHero(15);
 
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Result);

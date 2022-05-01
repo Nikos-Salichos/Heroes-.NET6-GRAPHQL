@@ -46,6 +46,7 @@ builder.Services.AddControllers(options =>
 builder.Services.AddDbContext<MainDbContextInfo>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"));
+    // options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
 });
 
 

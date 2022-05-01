@@ -13,7 +13,7 @@ namespace HeroesAPI.Repository
             return await FindAll().ToListAsync();
         }
 
-        public async Task<Hero> GetHeroByIdAsync(int heroId)
+        public async Task<Hero?> GetHeroByIdAsync(int heroId)
         {
             return await FindByCondition(hero => hero.Id.Equals(heroId))
                 .FirstOrDefaultAsync();
