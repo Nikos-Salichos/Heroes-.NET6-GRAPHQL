@@ -1,4 +1,5 @@
-﻿using HeroesAPI.Models;
+﻿using AutoMapper;
+using HeroesAPI.Models;
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
 using HeroesAPI.Wrappers;
@@ -18,10 +19,13 @@ namespace HeroesAPI.Controllers
 
         private readonly IUnitOfWorkRepository _unitOfWorkRepository;
 
-        public HeroController(ILogger<HeroController> logger, IUnitOfWorkRepository unitOfWorkRepository)
+        private readonly IMapper _mapper;
+
+        public HeroController(ILogger<HeroController> logger, IUnitOfWorkRepository unitOfWorkRepository, IMapper mapper)
         {
             _logger = logger;
             _unitOfWorkRepository = unitOfWorkRepository;
+            _mapper = mapper;
         }
 
         [HttpGet("AllHeroes")]
@@ -112,7 +116,7 @@ namespace HeroesAPI.Controllers
                     return NotFound("Hero not found");
                 }
 
-                return Ok(hero);
+                return Ok(_mapper.Map<Hero>(hero));
             }
             catch (Exception exception)
             {

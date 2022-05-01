@@ -43,7 +43,7 @@ builder.Services.AddControllers(options =>
 .AddXmlDataContractSerializerFormatters();
 
 
-builder.Services.AddDbContext<MsSql>(options =>
+builder.Services.AddDbContext<MainDbContextInfo>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"));
 });
@@ -55,7 +55,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 })
-    .AddEntityFrameworkStores<MsSql>()
+    .AddEntityFrameworkStores<MainDbContextInfo>()
     .AddDefaultTokenProviders();
 
 //Identity Options

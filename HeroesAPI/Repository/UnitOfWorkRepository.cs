@@ -2,7 +2,7 @@
 {
     public class UnitOfWorkRepository : IUnitOfWorkRepository
     {
-        private readonly MsSql _msSql;
+        private readonly MainDbContextInfo _msSql;
 
         public IHeroRepository HeroRepository { get; }
 
@@ -18,7 +18,7 @@
 
         public IAuthRepository AuthRepository { get; }
 
-        public UnitOfWorkRepository(MsSql msSql,
+        public UnitOfWorkRepository(MainDbContextInfo msSql,
             IHeroRepository heroRepository,
             IAuthRepository userRepository,
             IEmailSenderRepository emailSenderRepository,

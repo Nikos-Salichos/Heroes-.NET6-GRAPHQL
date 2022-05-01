@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HeroesAPI.Migrations
 {
-    [DbContext(typeof(MsSql))]
+    [DbContext(typeof(MainDbContextInfo))]
     [Migration("20220402065643_firstandlastname")]
     partial class firstandlastname
     {

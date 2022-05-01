@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HeroesAPI.Migrations
 {
-    [DbContext(typeof(MsSql))]
+    [DbContext(typeof(MainDbContextInfo))]
     partial class MsSqlModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

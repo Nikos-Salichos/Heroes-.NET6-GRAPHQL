@@ -15,7 +15,7 @@ namespace HeroesAPI.Repository
 {
     public class AuthRepository : IAuthRepository
     {
-        private readonly MsSql _msSql;
+        private readonly MainDbContextInfo _msSql;
 
         private readonly IConfiguration _configuration;
 
@@ -28,7 +28,7 @@ namespace HeroesAPI.Repository
         private readonly RoleManager<IdentityRole> _roleManager;
 
 
-        public AuthRepository(MsSql msSql, IConfiguration configuration, ILogger<EmailSenderRepository> logger,
+        public AuthRepository(MainDbContextInfo msSql, IConfiguration configuration, ILogger<EmailSenderRepository> logger,
             UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
             RoleManager<IdentityRole> roleManager)
         {

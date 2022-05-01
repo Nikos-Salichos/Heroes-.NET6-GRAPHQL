@@ -4,9 +4,9 @@ namespace HeroesAPI.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected MsSql MsSql { get; set; }
+        protected MainDbContextInfo MsSql { get; set; }
 
-        public GenericRepository(MsSql msSql)
+        public GenericRepository(MainDbContextInfo msSql)
         {
             MsSql = msSql;
         }
