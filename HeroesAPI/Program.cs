@@ -121,7 +121,7 @@ builder.Services.AddOptions();
 // Store rate limit counters and ip rules
 builder.Services.AddResponseCaching();
 
-builder.Services.AddControllers(options => options.CacheProfiles.Add("60SecondsDuration", new Microsoft.AspNetCore.Mvc.CacheProfile { Duration = 30 }));
+builder.Services.AddControllers(options => options.CacheProfiles.Add("10SecondsDuration", new Microsoft.AspNetCore.Mvc.CacheProfile { Duration = 10 }));
 
 // Load general configuration from appsettings.json
 builder.Services.Configure<ClientRateLimitOptions>(builder.Configuration.GetSection("ClientRateLimiting"));

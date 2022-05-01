@@ -29,7 +29,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpGet("AllHeroes")]
-        [ResponseCache(CacheProfileName = "60SecondsDuration")]
+        [ResponseCache(CacheProfileName = "10SecondsDuration")]
         public async Task<ActionResult<IEnumerable<HeroDTO>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
         {
             try
@@ -52,7 +52,8 @@ namespace HeroesAPI.Controllers
                 }
                 else
                 {
-                    List<Hero>? heroes = await HeroesWithoutSorting(searchString, validFilter);
+                    var (heroes, pagination) = await HeroesWithoutSorting(searchString, validFilter);
+                    Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(pagination));
                     return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroes));
                 }
             }
@@ -156,7 +157,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpPost]
-        // [Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> AddHero([FromForm] Hero newHero)
         {
             try
@@ -204,7 +205,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpPut("ChangeHero/{id:int}")]
-        //[Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> UpdateHero([FromForm] Hero requestedHero)
         {
             try
@@ -302,19 +303,21 @@ namespace HeroesAPI.Controllers
             if (searchString is not null)
             {
                 allHeroes = allHeroes.Where(h => h.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
-                                                 .ToList();
+                                     .ToList();
             }
 
             return allHeroes;
         }
 
-        private async Task<List<Hero>> HeroesWithoutSorting(string? searchString, PaginationFilter validFilter)
+        private async Task<(List<Hero>, PaginationFilter)> HeroesWithoutSorting(string? searchString, PaginationFilter validFilter)
         {
             List<Hero> allHeroesByPageSizeAndNumber = await GetHeroesPagination(validFilter);
 
+            PaginationFilter? paginationFilter = new PaginationFilter(validFilter.PageNumber, validFilter.PageSize);
+
             allHeroesByPageSizeAndNumber = HeroesFiltering(searchString, allHeroesByPageSizeAndNumber);
 
-            return allHeroesByPageSizeAndNumber;
+            return (allHeroesByPageSizeAndNumber, paginationFilter);
         }
 
 
