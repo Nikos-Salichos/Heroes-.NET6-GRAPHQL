@@ -6,6 +6,7 @@ global using Microsoft.EntityFrameworkCore;
 global using Serilog;
 global using Serilog.Sinks.MSSqlServer;
 using GraphQL.Server;
+using GraphQL.Server.Ui.Playground;
 using HeroesAPI.GraphQL;
 using HeroesAPI.Middlewares;
 using HeroesAPI.Models;
@@ -222,7 +223,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseGraphQL<HeroDataSchema>();
-app.UseGraphQLPlayground(options: new GraphQL.Server.Ui.Playground.PlaygroundOptions());
+app.UseGraphQLPlayground(options: new PlaygroundOptions());
 
 app.MapControllers();
 

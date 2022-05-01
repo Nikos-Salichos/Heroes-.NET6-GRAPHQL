@@ -65,32 +65,39 @@ namespace HeroTests
         public async Task GetHeroesNoSearchNoSorting_ReturnsSuccess()
         {
             FillHeroes();
-            var mapperMock = new Mock<IMapper>();
-            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
 
-            var actionResult = await heroController.GetAllHeroes(string.Empty, null, new HeroesAPI.Paging.PaginationFilter());
+            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
+            {
+                mapperConfiguration.AddProfile<HeroProfile>();
+            }).CreateMapper();
+
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
+
+            ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(string.Empty, null, new HeroesAPI.Paging.PaginationFilter());
             Assert.NotNull(actionResult);
 
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
             Assert.Equal(200, result?.StatusCode);
 
-            object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
-            List<Hero>? heroesList = data as List<Hero>;
-            Assert.NotNull(heroesList);
-            Assert.NotEmpty(heroesList);
-            Assert.True(heroesList?.Count > 1, "Expected count is over 2");
+            IEnumerable<HeroDTO>? data = (IEnumerable<HeroDTO>?)(result?.Value);
+            Assert.NotNull(data);
+            Assert.NotEmpty(data);
+            Assert.True(data?.ToList().Count > 1, "Expected count is over 2");
         }
 
         [Fact]
         public async Task GetHeroesNoSearchSorting_ReturnsSuccess()
         {
             FillHeroes();
-            var mapperMock = new Mock<IMapper>();
-            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
+
+            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
+            {
+                mapperConfiguration.AddProfile<HeroProfile>();
+            }).CreateMapper();
+
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
             ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(string.Empty, "10", new HeroesAPI.Paging.PaginationFilter());
             Assert.NotNull(actionResult);
@@ -98,21 +105,24 @@ namespace HeroTests
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
             Assert.Equal(200, result?.StatusCode);
 
-            object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
-            List<Hero>? heroesList = data as List<Hero>;
-            Assert.NotNull(heroesList);
-            Assert.NotEmpty(heroesList);
-            Assert.True(heroesList?.Count > 1, "Expected count is over 2");
+            IEnumerable<HeroDTO>? data = (IEnumerable<HeroDTO>?)(result?.Value);
+            Assert.NotNull(data);
+            Assert.NotEmpty(data);
+            Assert.True(data?.ToList().Count > 1, "Expected count is over 2");
         }
 
         [Fact]
         public async Task GetHeroesSearchSorting_ReturnsSuccess()
         {
             FillHeroes();
-            var mapperMock = new Mock<IMapper>();
-            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
+
+            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
+            {
+                mapperConfiguration.AddProfile<HeroProfile>();
+            }).CreateMapper();
+
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
             var actionResult = await heroController.GetAllHeroes("thor", "10", new HeroesAPI.Paging.PaginationFilter());
             Assert.NotNull(actionResult);
@@ -120,20 +130,23 @@ namespace HeroTests
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
             Assert.Equal(200, result?.StatusCode);
 
-            object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
-            List<Hero>? heroesList = data as List<Hero>;
-            Assert.NotNull(heroesList);
-            Assert.NotEmpty(heroesList);
+            IEnumerable<HeroDTO>? data = (IEnumerable<HeroDTO>?)(result?.Value);
+            Assert.NotNull(data);
+            Assert.NotEmpty(data);
         }
 
         [Fact]
         public async Task GetHeroesSearchNoSorting_ReturnsSuccess()
         {
             FillHeroes();
-            var mapperMock = new Mock<IMapper>();
-            mapperMock.Setup(m => m.Map<Hero, HeroDTO>(It.IsAny<Hero>())).Returns(new HeroDTO());
+
+            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
+            {
+                mapperConfiguration.AddProfile<HeroProfile>();
+            }).CreateMapper();
+
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapperMock.Object);
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
             var actionResult = await heroController.GetAllHeroes("thor", null, new HeroesAPI.Paging.PaginationFilter());
             Assert.NotNull(actionResult);
@@ -141,10 +154,9 @@ namespace HeroTests
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
             Assert.Equal(200, result?.StatusCode);
 
-            object? data = result?.Value?.GetType().GetProperties().First(o => o.Name == "Data").GetValue(result.Value, null);
-            List<Hero>? heroesList = data as List<Hero>;
-            Assert.NotNull(heroesList);
-            Assert.NotEmpty(heroesList);
+            IEnumerable<HeroDTO>? data = (IEnumerable<HeroDTO>?)(result?.Value);
+            Assert.NotNull(data);
+            Assert.NotEmpty(data);
         }
 
         [Fact]
