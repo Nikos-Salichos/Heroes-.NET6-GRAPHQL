@@ -194,7 +194,7 @@ namespace HeroesAPI.Controllers
 
                 await _unitOfWorkRepository.HeroRepository.SaveAsync();
 
-                return Ok(newHero);
+                return Ok(_mapper.Map<HeroDTO>(newHero));
             }
             catch (Exception exception)
             {
