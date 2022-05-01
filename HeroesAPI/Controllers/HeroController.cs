@@ -203,8 +203,8 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpPut("ChangeHeroImage/{id:int}")]
-        [Authorize(Roles = UserRole.Admin)]
+        [HttpPut("ChangeHero/{id:int}")]
+        //[Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> UpdateHero([FromForm] Hero requestedHero)
         {
             try
@@ -234,7 +234,8 @@ namespace HeroesAPI.Controllers
                 _unitOfWorkRepository.HeroRepository.UpdateHero(requestedHero);
                 await _unitOfWorkRepository.HeroRepository.SaveAsync();
 
-                return Ok(requestedHero);
+                // return Ok(requestedHero);
+                return Ok(_mapper.Map<HeroDTO>(requestedHero));
             }
             catch (Exception exception)
             {
