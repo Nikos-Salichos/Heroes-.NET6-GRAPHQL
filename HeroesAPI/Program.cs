@@ -38,8 +38,9 @@ builder.Host.UseSerilog((ctx, lc) => lc.MinimumLevel.Error()
 
 builder.Services.AddControllers(options =>
 {
-    options.ReturnHttpNotAcceptable = true;
-}).AddXmlDataContractSerializerFormatters();
+    options.ReturnHttpNotAcceptable = false;
+}).AddNewtonsoftJson()
+.AddXmlDataContractSerializerFormatters();
 
 
 builder.Services.AddDbContext<MsSql>(options =>
@@ -193,7 +194,6 @@ builder.Services.AddHttpContextAccessor();
 
 
 WebApplication? app = builder.Build();
-
 
 app.UseClientRateLimiting();
 

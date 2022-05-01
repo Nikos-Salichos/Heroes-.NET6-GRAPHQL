@@ -53,7 +53,7 @@ namespace HeroesAPI.Controllers
             catch (Exception exception)
             {
                 _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -117,7 +117,7 @@ namespace HeroesAPI.Controllers
             catch (Exception exception)
             {
                 _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -145,16 +145,21 @@ namespace HeroesAPI.Controllers
             catch (Exception exception)
             {
                 _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
 
         [HttpPost]
-        [Authorize(Roles = UserRole.Admin)]
+        // [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> AddHero([FromForm] Hero newHero)
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest();
+                }
+
                 IEnumerable<Hero>? allheroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
                 Hero? heroExist = allheroes.AsEnumerable().FirstOrDefault(h => h.Name.Equals(newHero.Name, StringComparison.InvariantCultureIgnoreCase));
 
@@ -188,7 +193,7 @@ namespace HeroesAPI.Controllers
             catch (Exception exception)
             {
                 _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -228,7 +233,7 @@ namespace HeroesAPI.Controllers
             catch (Exception exception)
             {
                 _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -253,7 +258,7 @@ namespace HeroesAPI.Controllers
             catch (Exception exception)
             {
                 _logger.LogError($"Logging {_unitOfWorkRepository.GetCurrentMethod()} {GetType().Name}" + exception.Message);
-                return BadRequest();
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
 
