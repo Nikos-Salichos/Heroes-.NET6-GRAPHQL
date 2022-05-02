@@ -17,6 +17,12 @@ namespace HeroesAPI.GraphQL
                 "heroes",
                 resolve: context => unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(context.Source.Id)
                 );
+
+            Field<IntGraphType>("id");
+            Field<StringGraphType>("name");
+            Field<StringGraphType>("firstName");
+            Field<StringGraphType>("lastName");
+            Field<StringGraphType>("Place");
         }
     }
 }
