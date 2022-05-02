@@ -15,6 +15,7 @@ namespace HeroesAPI.GraphQL
                 { Name = "id" }),
                     resolve: context =>
                     {
+                        context.Errors.Add(new ExecutionError("Execution error in GetHeroByIdAsync"));
                         int id = context.GetArgument<int>("id");
                         return heroRepository.GetHeroByIdAsync(id);
                     });
