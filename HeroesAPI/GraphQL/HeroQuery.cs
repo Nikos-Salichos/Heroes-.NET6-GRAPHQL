@@ -1,4 +1,5 @@
-﻿using GraphQL.Types;
+﻿using GraphQL;
+using GraphQL.Types;
 
 namespace HeroesAPI.GraphQL
 {
@@ -8,7 +9,15 @@ namespace HeroesAPI.GraphQL
         {
             Field<ListGraphType<HeroType>>("heroes", resolve: context => heroRepository.GetAllHeroesAsync());
 
-
+            Field<HeroType>(
+                "hero",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IdGraphType>>
+                { Name = "id" }),
+                    resolve: context =>
+                    {
+                        int id = context.GetArgument<int>("id");
+                        return heroRepository.GetHeroByIdAsync(id);
+                    });
         }
     }
 }
