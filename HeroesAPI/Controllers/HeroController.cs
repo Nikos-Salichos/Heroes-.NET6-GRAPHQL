@@ -267,8 +267,8 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpDelete("DeleteHeroImage/{id:int}")]
-        [Authorize(Roles = UserRole.Admin)]
+        [HttpDelete("DeleteHero")]
+        // [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> DeleteHero(int heroId)
         {
             try
@@ -291,15 +291,6 @@ namespace HeroesAPI.Controllers
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
-
-
-        #region Helper Methods
-
-
-
-
-
-        #endregion Helper Methods
 
     }
 }

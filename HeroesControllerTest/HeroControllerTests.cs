@@ -184,7 +184,6 @@ namespace HeroTests
             Assert.Equal(200, okResult?.StatusCode);
         }
 
-
         [Fact]
         public async Task GetHeroById_ReturnsFail()
         {
@@ -207,6 +206,39 @@ namespace HeroTests
             Assert.Equal(404, (int?)statusCode);
         }
 
+        [Fact]
+        public async Task DeleteHero_ReturnsSuccess()
+        {
+            // Arrange
+            FillHeroes();
+
+            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
+            {
+                mapperConfiguration.AddProfile<HeroProfile>();
+            }).CreateMapper();
+
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
+
+
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(new Hero() { });
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>())).Verifiable();
+
+            // Act
+            IActionResult? actionResulta = await heroController.DeleteHero(10);
+
+            // Assert
+            _mockUnitOfWorkRepository.Verify(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>()), Times.Once);
+
+            /*            Assert.NotNull(actionResult);
+                        Assert.NotNull(actionResult.Result);
+
+                        OkObjectResult? okResult = actionResult.Result as OkObjectResult;
+                        Hero? actualHero = okResult?.Value as Hero;
+
+                        Assert.NotNull(actualHero);
+                        Assert.Contains(_heroes.FirstOrDefault()?.Name, actualHero?.Name);
+                        Assert.Equal(200, okResult?.StatusCode);*/
+        }
 
     }
 
