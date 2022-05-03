@@ -188,14 +188,9 @@ namespace HeroTests
         [Fact]
         public async Task GetHeroById_ReturnsFail()
         {
-            FillHeroes();
-            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
-            {
-                mapperConfiguration.AddProfile<HeroProfile>();
-            }).CreateMapper();
+            HeroController heroController = CreateHeroControllerAndFilIt();
 
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
             ActionResult<Hero>? actionResult = await heroController.GetOneHero(15);
 
@@ -205,6 +200,18 @@ namespace HeroTests
             object? statusCode = actionResult?.Result?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult.Result, null);
 
             Assert.Equal(404, (int?)statusCode);
+        }
+
+        private HeroController CreateHeroControllerAndFilIt()
+        {
+            FillHeroes();
+            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
+            {
+                mapperConfiguration.AddProfile<HeroProfile>();
+            }).CreateMapper();
+
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
+            return heroController;
         }
 
         [Fact]
