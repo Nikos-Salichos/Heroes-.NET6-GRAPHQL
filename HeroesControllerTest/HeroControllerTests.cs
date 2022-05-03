@@ -224,20 +224,11 @@ namespace HeroTests
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>())).Verifiable();
 
             // Act
-            IActionResult? actionResulta = await heroController.DeleteHero(10);
-
+            IActionResult? actionResult = await heroController.DeleteHero(10);
+            var statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
             // Assert
             _mockUnitOfWorkRepository.Verify(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>()), Times.Once);
-
-            /*            Assert.NotNull(actionResult);
-                        Assert.NotNull(actionResult.Result);
-
-                        OkObjectResult? okResult = actionResult.Result as OkObjectResult;
-                        Hero? actualHero = okResult?.Value as Hero;
-
-                        Assert.NotNull(actualHero);
-                        Assert.Contains(_heroes.FirstOrDefault()?.Name, actualHero?.Name);
-                        Assert.Equal(200, okResult?.StatusCode);*/
+            // Assert.Equal(200, statusCode);
         }
 
     }
