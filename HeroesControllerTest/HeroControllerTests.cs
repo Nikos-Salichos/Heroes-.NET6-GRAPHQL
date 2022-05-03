@@ -169,8 +169,9 @@ namespace HeroTests
                 mapperConfiguration.AddProfile<HeroProfile>();
             }).CreateMapper();
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
+
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
 
             ActionResult<Hero>? actionResult = await heroController.GetOneHero(10);
             Assert.NotNull(actionResult);
@@ -218,17 +219,16 @@ namespace HeroTests
             }).CreateMapper();
 
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
-
-
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(new Hero() { });
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>())).Verifiable();
 
             // Act
             IActionResult? actionResult = await heroController.DeleteHero(10);
             var statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
+
             // Assert
             _mockUnitOfWorkRepository.Verify(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>()), Times.Once);
-            // Assert.Equal(200, statusCode);
+            Assert.Equal(200, statusCode);
         }
 
     }
