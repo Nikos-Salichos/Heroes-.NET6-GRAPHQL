@@ -2,7 +2,6 @@
 using HeroesAPI.DTOs;
 using HeroesAPI.Models;
 using HeroesAPI.Paging;
-using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -44,10 +43,23 @@ namespace HeroesAPI.Controllers
                                 }*/
 
                 PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
+                IEnumerable<Hero>? allHeroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+
+                if (allHeroes is null)
+                {
+                    return NotFound("No heroes found");
+                }
 
                 if (sortBy is not null)
                 {
-                    (List<Hero> heroes, PaginationFilter pagination) = await HeroesWithSorting(searchString, sortBy, validFilter);
+                    bool propertyExists = typeof(Hero).GetProperties().Any(x => x.Name == sortBy);
+                    if (!propertyExists)
+                    {
+                        return NotFound("This property does not exist, please check it again!");
+                    }
+
+                    (List<Hero> heroes, PaginationFilter pagination) = _unitOfWorkRepository.HeroRepository.HeroesWithSorting(allHeroes, searchString, sortBy, validFilter);
+
                     if (Response != null)
                     {
                         Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(pagination));
@@ -56,11 +68,14 @@ namespace HeroesAPI.Controllers
                 }
                 else
                 {
-                    (List<Hero> heroes, PaginationFilter pagination) = await HeroesWithoutSorting(searchString, validFilter);
+
+                    (List<Hero> heroes, PaginationFilter pagination) = _unitOfWorkRepository.HeroRepository.HeroesWithoutSorting(allHeroes, searchString, validFilter);
+
                     if (Response != null)
                     {
                         Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(pagination));
                     }
+
                     return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroes));
                 }
             }
@@ -282,42 +297,7 @@ namespace HeroesAPI.Controllers
 
 
 
-        private async Task<(List<Hero>, PaginationFilter)> HeroesWithSorting(string? searchString, string sortBy, PaginationFilter paginationFilter)
-        {
-            IEnumerable<Hero>? allHeroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
 
-            List<Hero> heroesPagination = allHeroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
-                                                             .Take(paginationFilter.PageSize)
-                                                             .ToList();
-
-            heroesPagination = heroesPagination.OrderByProperty(sortBy).ToList();
-
-            if (searchString is not null)
-            {
-                heroesPagination = heroesPagination.Where(h => h.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
-                                     .ToList();
-            }
-
-            return (heroesPagination, paginationFilter);
-        }
-
-        private async Task<(List<Hero>, PaginationFilter)> HeroesWithoutSorting(string? searchString, PaginationFilter paginationFilter)
-        {
-
-            IEnumerable<Hero>? allHeroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
-
-            List<Hero> heroesPagination = allHeroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
-                                                             .Take(paginationFilter.PageSize)
-                                                             .ToList();
-
-            if (searchString is not null)
-            {
-                heroesPagination = heroesPagination.Where(h => h.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
-                                     .ToList();
-            }
-
-            return (heroesPagination, paginationFilter);
-        }
 
         #endregion Helper Methods
 

@@ -1,4 +1,6 @@
 ﻿using HeroesAPI.Models;
+using HeroesAPI.Paging;
+using HeroesAPI.Sorting;
 
 namespace HeroesAPI.Repository
 {
@@ -63,6 +65,41 @@ namespace HeroesAPI.Repository
             }
         }
 
+        public (List<Hero>, PaginationFilter) HeroesWithSorting(IEnumerable<Hero> allHeroes, string? searchString, string sortBy, PaginationFilter paginationFilter)
+        {
 
+
+            List<Hero> heroesPagination = allHeroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                                                             .Take(paginationFilter.PageSize)
+                                                             .ToList();
+
+
+            heroesPagination = heroesPagination.OrderByProperty(sortBy).ToList();
+
+
+            if (searchString is not null)
+            {
+                heroesPagination = heroesPagination.Where(h => h.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
+                                     .ToList();
+            }
+
+            return (heroesPagination, paginationFilter);
+        }
+
+        public (List<Hero>, PaginationFilter) HeroesWithoutSorting(IEnumerable<Hero> allHeroes, string? searchString, PaginationFilter paginationFilter)
+        {
+
+            List<Hero> heroesPagination = allHeroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                                                             .Take(paginationFilter.PageSize)
+                                                             .ToList();
+
+            if (searchString is not null)
+            {
+                heroesPagination = heroesPagination.Where(h => h.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
+                                     .ToList();
+            }
+
+            return (heroesPagination, paginationFilter);
+        }
     }
 }
