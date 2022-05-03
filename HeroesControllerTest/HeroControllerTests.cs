@@ -162,14 +162,7 @@ namespace HeroTests
         [Fact]
         public async Task GetHeroById_ReturnsSuccess()
         {
-            FillHeroes();
-
-            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
-            {
-                mapperConfiguration.AddProfile<HeroProfile>();
-            }).CreateMapper();
-
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
+            HeroController heroController = CreateHeroControllerAndFilIt();
 
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
 
