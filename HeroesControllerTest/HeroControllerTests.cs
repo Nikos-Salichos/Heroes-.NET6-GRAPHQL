@@ -162,7 +162,7 @@ namespace HeroTests
         [Fact]
         public async Task GetHeroById_ReturnsSuccess()
         {
-            HeroController heroController = CreateHeroControllerAndFilIt();
+            HeroController heroController = CreateHeroControllerAndFill();
 
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
 
@@ -181,7 +181,7 @@ namespace HeroTests
         [Fact]
         public async Task GetHeroById_ReturnsFail()
         {
-            HeroController heroController = CreateHeroControllerAndFilIt();
+            HeroController heroController = CreateHeroControllerAndFill();
 
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
 
@@ -195,7 +195,24 @@ namespace HeroTests
             Assert.Equal(404, (int?)statusCode);
         }
 
-        private HeroController CreateHeroControllerAndFilIt()
+        [Fact]
+        public async Task DeleteHero_ReturnsSuccess()
+        {
+            // Arrange
+            HeroController heroController = CreateHeroControllerAndFill();
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(new Hero() { });
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>())).Verifiable();
+
+            // Act
+            IActionResult? actionResult = await heroController.DeleteHero(10);
+            object? statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
+
+            // Assert
+            _mockUnitOfWorkRepository.Verify(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>()), Times.Once);
+            Assert.Equal(200, statusCode);
+        }
+
+        private HeroController CreateHeroControllerAndFill()
         {
             FillHeroes();
             IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
@@ -206,31 +223,6 @@ namespace HeroTests
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
             return heroController;
         }
-
-        [Fact]
-        public async Task DeleteHero_ReturnsSuccess()
-        {
-            // Arrange
-            FillHeroes();
-
-            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
-            {
-                mapperConfiguration.AddProfile<HeroProfile>();
-            }).CreateMapper();
-
-            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(new Hero() { });
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>())).Verifiable();
-
-            // Act
-            IActionResult? actionResult = await heroController.DeleteHero(10);
-            var statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
-
-            // Assert
-            _mockUnitOfWorkRepository.Verify(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>()), Times.Once);
-            Assert.Equal(200, statusCode);
-        }
-
     }
 
 
