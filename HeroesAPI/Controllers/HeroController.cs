@@ -2,6 +2,7 @@
 using HeroesAPI.DTOs;
 using HeroesAPI.Models;
 using HeroesAPI.Paging;
+using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -29,7 +30,7 @@ namespace HeroesAPI.Controllers
 
         [HttpGet("AllHeroes")]
         [ResponseCache(CacheProfileName = "10SecondsDuration")]
-        public async Task<ActionResult<IEnumerable<HeroDTO>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter filter)
+        public async Task<ActionResult<IEnumerable<HeroDTO>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter paginationFilter)
         {
             try
             {
@@ -42,7 +43,7 @@ namespace HeroesAPI.Controllers
                                     return BadRequest();
                                 }*/
 
-                PaginationFilter? validFilter = new(filter.PageNumber, filter.PageSize);
+                PaginationFilter? validFilter = new(paginationFilter.PageNumber, paginationFilter.PageSize);
                 IEnumerable<Hero>? allHeroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
 
                 if (allHeroes is null)
@@ -58,25 +59,45 @@ namespace HeroesAPI.Controllers
                         return NotFound("This property does not exist, please check it again!");
                     }
 
-                    (List<Hero> heroes, PaginationFilter pagination) = _unitOfWorkRepository.HeroRepository.HeroesWithSorting(allHeroes, searchString, sortBy, validFilter);
+                    List<Hero> heroesPagination = allHeroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                                                            .Take(paginationFilter.PageSize)
+                                                            .ToList();
+
+
+                    heroesPagination = heroesPagination.OrderByProperty(sortBy).ToList();
+
+
+                    if (searchString is not null)
+                    {
+                        heroesPagination = heroesPagination.Where(h => h.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
+                                                           .ToList();
+                    }
 
                     if (Response != null)
                     {
-                        Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(pagination));
+                        Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(paginationFilter));
                     }
-                    return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroes));
+                    return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroesPagination));
                 }
                 else
                 {
 
-                    (List<Hero> heroes, PaginationFilter pagination) = _unitOfWorkRepository.HeroRepository.HeroesWithoutSorting(allHeroes, searchString, validFilter);
+                    List<Hero> heroesPagination = allHeroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                                                        .Take(paginationFilter.PageSize)
+                                                        .ToList();
+
+                    if (searchString is not null)
+                    {
+                        heroesPagination = heroesPagination.Where(h => h.Name.Contains(searchString, StringComparison.InvariantCultureIgnoreCase))
+                                                           .ToList();
+                    }
 
                     if (Response != null)
                     {
-                        Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(pagination));
+                        Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(paginationFilter));
                     }
 
-                    return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroes));
+                    return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroesPagination));
                 }
             }
             catch (Exception exception)
@@ -226,7 +247,7 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpPut("ChangeHero/{id:int}")]
+        [HttpPut("ChangeHero/{heroId}")]
         [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> UpdateHero([FromForm] Hero requestedHero)
         {
@@ -268,7 +289,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpDelete("DeleteHero")]
-        // [Authorize(Roles = UserRole.Admin)]
+        [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> DeleteHero(int heroId)
         {
             try

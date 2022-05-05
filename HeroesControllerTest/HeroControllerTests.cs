@@ -3,6 +3,7 @@ using HeroesAPI.Controllers;
 using HeroesAPI.DTOs;
 using HeroesAPI.Interfaces;
 using HeroesAPI.Models;
+using HeroesAPI.Paging;
 using HeroesAPI.Profiles;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -61,20 +62,26 @@ namespace HeroTests
             });
         }
 
+        public (List<Hero>, PaginationFilter) GetTuple()
+        {
+            var filter = new PaginationFilter();
+            return (_heroes, filter);
+        }
+
         [Fact]
         public async Task GetHeroesNoSearchNoSorting_ReturnsSuccess()
         {
             FillHeroes();
-
             IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
-            {
-                mapperConfiguration.AddProfile<HeroProfile>();
-            }).CreateMapper();
-
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+             {
+                 mapperConfiguration.AddProfile<HeroProfile>();
+             }).CreateMapper();
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(string.Empty, null, new HeroesAPI.Paging.PaginationFilter());
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes); ;
+
+            ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(string.Empty, null, new PaginationFilter());
+
             Assert.NotNull(actionResult);
 
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
@@ -99,7 +106,7 @@ namespace HeroTests
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(string.Empty, "10", new HeroesAPI.Paging.PaginationFilter());
+            ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(string.Empty, "Place", new PaginationFilter());
             Assert.NotNull(actionResult);
 
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
@@ -124,7 +131,7 @@ namespace HeroTests
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            var actionResult = await heroController.GetAllHeroes("thor", "10", new HeroesAPI.Paging.PaginationFilter());
+            var actionResult = await heroController.GetAllHeroes("thor", "Place", new PaginationFilter());
             Assert.NotNull(actionResult);
 
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
