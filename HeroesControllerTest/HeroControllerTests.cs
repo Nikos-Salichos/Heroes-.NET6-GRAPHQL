@@ -237,6 +237,22 @@ namespace HeroTests
             Assert.Equal(200, statusCode);
         }
 
+        [Fact]
+        public async Task DeleteHero_HeroIsNull_ReturnsFail()
+        {
+            // Arrange
+            HeroController heroController = CreateHeroControllerAndFill();
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(0)).ReturnsAsync(new Hero() { });
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>())).Verifiable();
+
+            // Act
+            IActionResult? actionResult = await heroController.DeleteHero(111);
+            object? statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
+
+            // Assert
+            Assert.Equal(404, statusCode);
+        }
+
         private HeroController CreateHeroControllerAndFill()
         {
             FillHeroes();
