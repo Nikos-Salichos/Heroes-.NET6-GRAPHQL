@@ -8,7 +8,6 @@ using HeroesAPI.Profiles;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -95,7 +94,7 @@ namespace HeroTests
         }
 
         [Fact]
-        public async Task GetHeroesNoSearchNoSorting_AllNull_ReturnsFail()
+        public async Task GetHeroesNoSearchNoSorting_AllParametersNull_ReturnsFail()
         {
             FillHeroes();
             IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
@@ -104,19 +103,12 @@ namespace HeroTests
             }).CreateMapper();
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).Throws<NullReferenceException>();
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes); ;
 
-            ActionResult<IEnumerable<HeroDTO>>? actionResult = null;
-
-            await Assert.ThrowsAsync<NullReferenceException>(() => heroController.GetAllHeroes(null, null, null));
+            ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(null, null, null);
 
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
-            Assert.Equal(200, result?.StatusCode);
-
-            IEnumerable<HeroDTO>? data = (IEnumerable<HeroDTO>?)(result?.Value);
-            Assert.NotNull(data);
-            Assert.NotEmpty(data);
-            Assert.True(data?.ToList().Count > 1, "Expected count is over 2");
+            Assert.Null(result);
         }
 
         [Fact]
