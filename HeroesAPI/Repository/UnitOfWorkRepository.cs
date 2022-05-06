@@ -53,7 +53,17 @@
 
         protected virtual void Dispose(bool disposing)
         {
+            if (!disposing)
+            {
+                return;
+            }
 
+            if (_msSql == null)
+            {
+                return;
+            }
+
+            _msSql.Dispose();
         }
 
 
