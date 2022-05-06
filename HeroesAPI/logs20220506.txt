@@ -52,3 +52,4 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 --- End of stack trace from previous location ---
    at Microsoft.AspNetCore.Http.Features.RequestServicesFeature.<DisposeAsync>g__Awaited|9_0(RequestServicesFeature servicesFeature, ValueTask vt)
    at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.HttpProtocol.<FireOnCompleted>g__ProcessEvents|227_0(HttpProtocol protocol, Stack`1 events)
+2022-05-06 18:53:03.148 +03:00 [ERR] An error occurred using a transaction.

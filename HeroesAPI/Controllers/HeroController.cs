@@ -236,7 +236,7 @@ namespace HeroesAPI.Controllers
 
                 _unitOfWorkRepository.HeroRepository.CreateHero(newHero);
 
-                await _unitOfWorkRepository.HeroRepository.SaveAsync();
+                await _unitOfWorkRepository.Complete();
 
                 return Ok(_mapper.Map<HeroDTO>(newHero));
             }
