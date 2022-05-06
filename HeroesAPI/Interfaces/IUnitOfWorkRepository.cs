@@ -17,6 +17,6 @@ namespace HeroesAPI.Interfaces
             return callerName;
         }
 
-        Task Complete();
+        Task CommitAll();
     }
 }

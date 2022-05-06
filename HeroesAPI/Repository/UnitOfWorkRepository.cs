@@ -37,7 +37,7 @@
             AuthRepository = authRepository;
         }
 
-        public async Task Complete()
+        public async Task CommitAll()
         {
             var transaction = _msSql.Database.BeginTransaction();
             try
@@ -51,19 +51,18 @@
             }
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+
+        }
+
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _msSql.Dispose();
-            }
-        }
 
 
     }

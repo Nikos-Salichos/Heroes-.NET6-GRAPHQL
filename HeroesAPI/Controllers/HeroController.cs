@@ -236,7 +236,7 @@ namespace HeroesAPI.Controllers
 
                 _unitOfWorkRepository.HeroRepository.CreateHero(newHero);
 
-                await _unitOfWorkRepository.Complete();
+                await _unitOfWorkRepository.CommitAll();
 
                 return Ok(_mapper.Map<HeroDTO>(newHero));
             }
@@ -302,7 +302,7 @@ namespace HeroesAPI.Controllers
                 }
 
                 _unitOfWorkRepository.HeroRepository.DeleteHero(hero);
-                await _unitOfWorkRepository.Complete();
+                await _unitOfWorkRepository.CommitAll();
 
                 return Ok();
             }
