@@ -43,6 +43,7 @@ builder.Services.AddControllers(options =>
 }).AddNewtonsoftJson()
 .AddXmlDataContractSerializerFormatters();
 
+builder.Services.AddHealthChecks();
 
 builder.Services.AddDbContext<MainDbContextInfo>(options =>
 {
@@ -197,7 +198,10 @@ builder.Services.AddHttpContextAccessor();
 
 WebApplication? app = builder.Build();
 
+// Api Throttling
 app.UseClientRateLimiting();
+
+app.MapHealthChecks("/AllHeroes");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
