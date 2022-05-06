@@ -200,7 +200,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = UserRole.Admin)]
+        // [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> AddHero([FromForm] Hero newHero)
         {
             try
@@ -289,7 +289,7 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpDelete("DeleteHero")]
-        [Authorize(Roles = UserRole.Admin)]
+        // [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> DeleteHero(int heroId)
         {
             try
@@ -302,7 +302,7 @@ namespace HeroesAPI.Controllers
                 }
 
                 _unitOfWorkRepository.HeroRepository.DeleteHero(hero);
-                await _unitOfWorkRepository.HeroRepository.SaveAsync();
+                await _unitOfWorkRepository.Complete();
 
                 return Ok();
             }

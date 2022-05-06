@@ -37,9 +37,18 @@
             AuthRepository = authRepository;
         }
 
-        public int Complete()
+        public async Task Complete()
         {
-            return _msSql.SaveChanges();
+            var transaction = _msSql.Database.BeginTransaction();
+            try
+            {
+                Task<int>? saveToDb = _msSql.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                transaction?.Rollback();
+            }
         }
 
         public void Dispose()
