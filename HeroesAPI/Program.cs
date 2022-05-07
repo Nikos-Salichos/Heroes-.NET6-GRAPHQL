@@ -7,10 +7,12 @@ global using Serilog;
 global using Serilog.Sinks.MSSqlServer;
 using GraphQL.Server;
 using GraphQL.Server.Ui.Playground;
+using HealthChecks.UI.Client;
 using HeroesAPI.GraphQL;
 using HeroesAPI.Middlewares;
 using HeroesAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
@@ -18,7 +20,6 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using Twilio.Clients;
-
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
@@ -47,14 +48,19 @@ builder.Services.AddControllers(options =>
 builder.Services.AddHealthChecks().AddSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"));
 
 //HealthCheck Dashboard
-builder.Services.AddHealthChecksUI().AddInMemoryStorage();
+builder.Services.AddHealthChecksUI(options =>
+{
+    options.SetEvaluationTimeInSeconds(60); //Sets the time interval in which HealthCheck will be triggered
+    options.MaximumHistoryEntriesPerEndpoint(10); //Sets the maximum number of records displayed in history
+    options.AddHealthCheckEndpoint("Health Checks API", "/health"); //Sets the Health Check endpoint
+}).AddInMemoryStorage(); //Here is the memory bank configuration
 
+//Registered DBContext
 builder.Services.AddDbContext<MainDbContextInfo>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"));
     // options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
 });
-
 
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -205,7 +211,16 @@ WebApplication? app = builder.Build();
 // Api Throttling
 app.UseClientRateLimiting();
 
-app.MapHealthChecks("/healthcheck");
+
+//Sets Health Check dashboard options
+app.UseHealthChecks("/health", new HealthCheckOptions
+{
+    Predicate = p => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
+//Sets the Health Check dashboard configuration
+app.UseHealthChecksUI(options => { options.UIPath = "/dashboard"; });
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

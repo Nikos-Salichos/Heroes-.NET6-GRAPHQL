@@ -139,8 +139,7 @@ namespace HeroesAPI.Controllers
             StringBuilder stringBuilder = new StringBuilder();
 
             ManagementObjectSearcher processor = new ManagementObjectSearcher("select * from win32_processor");
-            ManagementObjectCollection processorList = processor.Get();
-            foreach (ManagementBaseObject? managObj in processorList)
+            foreach (ManagementBaseObject? managObj in processor.Get())
             {
                 stringBuilder.Append(managObj.Properties["processorID"].Value.ToString());
                 break;
