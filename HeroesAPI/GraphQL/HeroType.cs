@@ -22,7 +22,6 @@ namespace HeroesAPI.GraphQL
             Field<StringGraphType>("name");
             Field<StringGraphType>("firstName");
             Field<StringGraphType>("lastName");
-            Field<StringGraphType>("Place");
         }
     }
 }
