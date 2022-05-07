@@ -44,9 +44,10 @@ builder.Services.AddControllers(options =>
 .AddXmlDataContractSerializerFormatters();
 
 //Endpoint HealthChecks
-builder.Services.AddHealthChecks();
+builder.Services.AddHealthChecks().AddSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"));
 
-builder.Services.AddHealthChecks();
+//HealthCheck Dashboard
+builder.Services.AddHealthChecksUI().AddInMemoryStorage();
 
 builder.Services.AddDbContext<MainDbContextInfo>(options =>
 {
