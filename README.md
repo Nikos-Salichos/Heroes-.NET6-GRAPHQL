@@ -8,7 +8,7 @@ I have use the following technologies and packages:
 - Microsoft SQL Server.
 - Serilog.
 - RESTful API.
-- GraphQL (navigate in localhost/portNumber/ui/playground to test it)
+- GraphQL (navigate in https://localhost:7243/ui/playground to test it)
 
 In addition i have implement the following:
 - Generic Repository Pattern.
