@@ -26,8 +26,6 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-
-
                 if (qrCodeModel.Logo != null
                      && !qrCodeModel.Logo.FileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
                      && !qrCodeModel.Logo.FileName.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
@@ -89,7 +87,7 @@ namespace HeroesAPI.Controllers
                 }
                 else
                 {
-                    throw new ApplicationException(GetType().Name + " " + "failed to find image");
+                    throw new ApplicationException(GetType().Name + " failed to find image");
                 }
             }
             catch (Exception exception)

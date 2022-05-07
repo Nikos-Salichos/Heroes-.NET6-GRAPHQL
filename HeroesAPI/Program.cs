@@ -28,7 +28,7 @@ ConfigurationManager configuration = builder.Configuration;
 string fullPath = Environment.CurrentDirectory + @"\logs.txt";
 builder.Host.UseSerilog((ctx, lc) => lc.MinimumLevel.Error()
                                        .WriteTo.File(fullPath, rollingInterval: RollingInterval.Day)
-                                       .WriteTo.MSSqlServer("server=localhost\\sqlexpress;database=superherodb;trusted_connection=true",
+                                       .WriteTo.MSSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"),
                                         new MSSqlServerSinkOptions
                                         {
                                             TableName = "Logs",
@@ -42,6 +42,9 @@ builder.Services.AddControllers(options =>
     options.ReturnHttpNotAcceptable = false;
 }).AddNewtonsoftJson()
 .AddXmlDataContractSerializerFormatters();
+
+//Endpoint HealthChecks
+builder.Services.AddHealthChecks();
 
 builder.Services.AddHealthChecks();
 
@@ -174,7 +177,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-    .AddJwtBearer(options =>                // JWT Settings
+    .AddJwtBearer(options =>  // JWT Settings
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
@@ -201,7 +204,7 @@ WebApplication? app = builder.Build();
 // Api Throttling
 app.UseClientRateLimiting();
 
-app.MapHealthChecks("/AllHeroes");
+app.MapHealthChecks("/healthcheck");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
