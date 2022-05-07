@@ -37,4 +37,4 @@ In addition i have implement the following:
 - Two-Factor Authentication with e-mail, validating 2FA token in separate controller.
 - Custom global error handling in middleware.
 - Unit Testing (XUnit & Moq) for HeroController.
-- API HealthChecks (controller & dashboard)
+- API HealthChecks (controller & dashboard, navigate in https://localhost:7243/dashboard#/healthchecks)
