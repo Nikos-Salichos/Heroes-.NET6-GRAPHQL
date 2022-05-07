@@ -8,7 +8,7 @@ I have use the following technologies and packages:
 - Microsoft SQL Server.
 - Serilog.
 - RESTful API.
-- GraphQL (navigate in localhost/portNumber/ui/playground to test it)
+- GraphQL (navigate in https://localhost:7243/ui/playground to test it)
 
 In addition i have implement the following:
 - Generic Repository Pattern.
@@ -37,3 +37,4 @@ In addition i have implement the following:
 - Two-Factor Authentication with e-mail, validating 2FA token in separate controller.
 - Custom global error handling in middleware.
 - Unit Testing (XUnit & Moq) for HeroController.
+- API HealthChecks (controller & dashboard, navigate in https://localhost:7243/dashboard#/healthchecks)
