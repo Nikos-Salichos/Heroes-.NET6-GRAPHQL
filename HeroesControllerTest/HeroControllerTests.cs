@@ -220,7 +220,6 @@ namespace HeroTests
             Assert.Equal(404, (int?)statusCode);
         }
 
-
         [Fact]
         public async Task DeleteHero_ReturnsSuccess()
         {
@@ -278,6 +277,41 @@ namespace HeroTests
                 Place = "FromHeroControllerTests",
                 Image = null,
                 ImageUrl = ""
+            };
+
+            IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
+            {
+                mapperConfiguration.AddProfile<HeroProfile>();
+            }).CreateMapper();
+
+            HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
+
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHero(hero));
+
+            IActionResult? actionResult = await heroController.AddHero(hero);
+
+            Assert.NotNull(actionResult);
+
+            OkObjectResult? result = actionResult as OkObjectResult;
+
+            Assert.Equal(200, result?.StatusCode);
+            Assert.Equal("FromHeroControllerTests", hero.Name);
+            Assert.Equal("FromHeroControllerTests", hero.Place);
+        }
+
+        [Fact]
+        public async Task CreateHero_AllHeroPropertiesNull_ReturnsFails()
+        {
+            // Arrange
+            Hero hero = new Hero()
+            {
+                Name = null,
+                FirstName = null,
+                LastName = null,
+                Place = null,
+                Image = null,
+                ImageUrl = null
             };
 
             IMapper? mapper = new MapperConfiguration(mapperConfiguration =>

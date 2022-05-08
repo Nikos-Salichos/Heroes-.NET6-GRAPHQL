@@ -215,7 +215,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
+                if (newHero.Name is null)
                 {
                     return BadRequest();
                 }
