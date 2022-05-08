@@ -327,12 +327,10 @@ namespace HeroTests
             IActionResult? actionResult = await heroController.AddHero(hero);
 
             Assert.NotNull(actionResult);
+            object? statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
 
-            OkObjectResult? result = actionResult as OkObjectResult;
-
-            Assert.Equal(200, result?.StatusCode);
-            Assert.Equal("FromHeroControllerTests", hero.Name);
-            Assert.Equal("FromHeroControllerTests", hero.Place);
+            // Assert
+            Assert.Equal(404, statusCode);
         }
 
     }
