@@ -289,12 +289,12 @@ namespace HeroTests
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHero(hero));
 
+            // Act
             IActionResult? actionResult = await heroController.AddHero(hero);
 
+            // Assert
             Assert.NotNull(actionResult);
-
             OkObjectResult? result = actionResult as OkObjectResult;
-
             Assert.Equal(200, result?.StatusCode);
             Assert.Equal("FromHeroControllerTests", hero.Name);
             Assert.Equal("FromHeroControllerTests", hero.Place);
@@ -324,12 +324,12 @@ namespace HeroTests
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHero(hero));
 
+            // Act
             IActionResult? actionResult = await heroController.AddHero(hero);
 
+            // Assert
             Assert.NotNull(actionResult);
             object? statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
-
-            // Assert
             Assert.Equal(404, statusCode);
         }
 
