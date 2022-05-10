@@ -38,3 +38,14 @@ In addition i have implement the following:
 - Custom global error handling in middleware.
 - Unit Testing (XUnit & Moq) for HeroController.
 - API HealthChecks (controller & dashboard, navigate in https://localhost:7243/dashboard#/healthchecks)
+
+
+*Example of GraphQL Queries*
+"query Heroes {
+    heroes {
+        name,
+      	firstName,
+      	lastName,
+      	place
+    }
+}"
