@@ -187,17 +187,18 @@ namespace HeroTests
         [Fact]
         public async Task GetHeroById_ReturnsSuccess()
         {
+            // Arrange
             HeroController heroController = CreateHeroControllerAndFill();
-
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
 
+            // Act
             ActionResult<Hero>? actionResult = await heroController.GetOneHero(10);
+
+            // Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Result);
-
             OkObjectResult? okResult = actionResult.Result as OkObjectResult;
             Hero? actualHero = okResult?.Value as Hero;
-
             Assert.NotNull(actualHero);
             Assert.Contains(_heroes.FirstOrDefault()?.Name, actualHero?.Name);
             Assert.Equal(200, okResult?.StatusCode);
