@@ -41,11 +41,4 @@ In addition i have implement the following:
 
 
 *Example of GraphQL Queries: *
-"query Heroes {
-    heroes {
-        name,
-      	firstName,
-      	lastName,
-      	place
-    }
-}"
+query Heroes { heroes { name, firstName, lastName, place } }
