@@ -40,5 +40,5 @@ In addition i have implement the following:
 - API HealthChecks (controller & dashboard, navigate in https://localhost:7243/dashboard#/healthchecks)
 
 
-*Example of GraphQL Queries: *
+Example of GraphQL Queries:
 query Heroes { heroes { name, firstName, lastName, place } }
