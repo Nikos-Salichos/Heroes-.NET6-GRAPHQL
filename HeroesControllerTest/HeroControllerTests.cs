@@ -64,7 +64,7 @@ namespace HeroTests
 
         public (List<Hero>, PaginationFilter) GetTuple()
         {
-            var filter = new PaginationFilter();
+            PaginationFilter? filter = new PaginationFilter();
             return (_heroes, filter);
         }
 
@@ -206,17 +206,17 @@ namespace HeroTests
         [Fact]
         public async Task GetHeroById_WrongId_ReturnsFail()
         {
+            // Arrange
             HeroController heroController = CreateHeroControllerAndFill();
-
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
 
+            // Act
             ActionResult<Hero>? actionResult = await heroController.GetOneHero(15);
 
+            // Assert
             Assert.NotNull(actionResult);
             Assert.NotNull(actionResult.Result);
-
             object? statusCode = actionResult?.Result?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult.Result, null);
-
             Assert.Equal(404, (int?)statusCode);
         }
 
