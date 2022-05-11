@@ -363,7 +363,6 @@ namespace HeroTests
             Assert.Equal("Updated Long Island", hero.Place);
         }
 
-
         [Fact]
         public async Task UpdateHero_WrongId_ReturnsFail()
         {
@@ -393,7 +392,6 @@ namespace HeroTests
             object? value = actionResult?.GetType()?.GetProperty("Value")?.GetValue(actionResult, null);
             Assert.Equal("Hero not found", value);
         }
-
 
         [Fact]
         public async Task UpdateHero_NullHeroProperties_ReturnsFail()
