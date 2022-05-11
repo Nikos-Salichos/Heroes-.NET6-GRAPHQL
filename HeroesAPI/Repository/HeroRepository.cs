@@ -25,10 +25,12 @@ namespace HeroesAPI.Repository
             return true;
         }
 
-        public void UpdateHero(Hero hero)
+        public bool UpdateHero(Hero hero)
         {
             Update(hero);
+            return true;
         }
+
         public void DeleteHero(Hero hero)
         {
             Delete(hero);
