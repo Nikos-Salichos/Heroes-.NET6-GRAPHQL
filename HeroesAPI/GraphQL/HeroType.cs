@@ -12,16 +12,6 @@ namespace HeroesAPI.GraphQL
             Field(h => h.FirstName).Description("The first name of the Hero");
             Field(h => h.LastName).Description("The last name of the Hero");
             Field(h => h.Place).Description("The place of the Hero");
-
-            Field<ListGraphType<HeroType>>(
-                "heroes",
-                resolve: context => unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(context.Source.Id)
-                );
-
-            Field<IntGraphType>("id");
-            Field<StringGraphType>("name");
-            Field<StringGraphType>("firstName");
-            Field<StringGraphType>("lastName");
         }
     }
 }

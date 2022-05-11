@@ -19,9 +19,10 @@ namespace HeroesAPI.Repository
                 .FirstOrDefaultAsync();
         }
 
-        public void CreateHero(Hero hero)
+        public bool CreateHero(Hero hero)
         {
             Create(hero);
+            return true;
         }
 
         public void UpdateHero(Hero hero)

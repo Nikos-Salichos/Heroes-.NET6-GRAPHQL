@@ -331,7 +331,91 @@ namespace HeroTests
             // Assert
             Assert.NotNull(actionResult);
             object? statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
-            Assert.Equal(404, statusCode);
+            Assert.Equal(400, statusCode);
+        }
+
+        [Fact]
+        public async Task UpdateHero__ReturnsSuccess()
+        {
+            // Arrange
+            Hero hero = new Hero()
+            {
+                Id = 10,
+                Name = "Updated Ironman",
+                FirstName = "Updated Tony",
+                LastName = "Updated Stark",
+                Place = "Updated Long Island",
+            };
+
+            HeroController heroController = CreateHeroControllerAndFill();
+
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.UpdateHero(_heroes.FirstOrDefault()));
+
+            // Act
+            IActionResult? actionResult = await heroController.UpdateHero(hero);
+
+            // Assert
+            Assert.NotNull(actionResult);
+            object? statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
+            Assert.Equal(200, statusCode);
+            Assert.Equal("Updated Ironman", hero.Name);
+            Assert.Equal("Updated Long Island", hero.Place);
+        }
+
+
+        [Fact]
+        public async Task UpdateHero_WrongId_ReturnsFail()
+        {
+            // Arrange
+            Hero hero = new Hero()
+            {
+                Id = 1111,
+                Name = "Updated Ironman",
+                FirstName = "Updated Tony",
+                LastName = "Updated Stark",
+                Place = "Updated Long Island",
+            };
+
+            HeroController heroController = CreateHeroControllerAndFill();
+
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.UpdateHero(_heroes.FirstOrDefault()));
+
+            // Act
+            IActionResult? actionResult = await heroController.UpdateHero(hero);
+
+            // Assert
+            Assert.NotNull(actionResult);
+            object? statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
+            Assert.Equal(400, statusCode);
+
+            object? value = actionResult?.GetType()?.GetProperty("Value")?.GetValue(actionResult, null);
+            Assert.Equal("Hero not found", value);
+        }
+
+
+        [Fact]
+        public async Task UpdateHero_NullHeroProperties_ReturnsFail()
+        {
+            // Arrange
+            Hero hero = new Hero();
+
+            HeroController heroController = CreateHeroControllerAndFill();
+
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsync(10)).ReturnsAsync(_heroes.FirstOrDefault());
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.UpdateHero(_heroes.FirstOrDefault()));
+
+            // Act
+            IActionResult? actionResult = await heroController.UpdateHero(hero);
+
+            // Assert
+            Assert.NotNull(actionResult);
+            object? statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
+            Assert.Equal(400, statusCode);
+
+            object? value = actionResult?.GetType()?.GetProperty("Value")?.GetValue(actionResult, null);
+            Assert.Equal("Hero not found", value);
         }
 
     }

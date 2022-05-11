@@ -11,14 +11,33 @@ namespace HeroesAPI.GraphQL
 
             Field<HeroType>(
                 "hero",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IdGraphType>>
-                { Name = "id" }),
-                    resolve: context =>
-                    {
-                        context.Errors.Add(new ExecutionError("Execution error in GetHeroByIdAsync"));
-                        int id = context.GetArgument<int>("id");
-                        return heroRepository.GetHeroByIdAsync(id);
-                    });
+                arguments: new QueryArguments(new List<QueryArgument>
+                {
+                    new QueryArgument<IdGraphType> {Name = "id"},
+                }),
+               resolve: context =>
+               {
+
+                   int? id = context.GetArgument<int?>("id");
+                   if (id.HasValue)
+                   {
+                       Task<Models.Hero?>? hero = heroRepository.GetHeroByIdAsync(id.Value);
+                       if (hero.Result != null)
+                       {
+                           return hero;
+                       }
+                       else
+                       {
+                           context.Errors.Add(new ExecutionError($"Hero with {id} not found"));
+                           return context.Errors;
+                       }
+                   }
+                   else
+                   {
+                       context.Errors.Add(new ExecutionError("Id cannot be null"));
+                       return context.Errors;
+                   }
+               });
         }
     }
 }

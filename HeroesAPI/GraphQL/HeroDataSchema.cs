@@ -7,6 +7,7 @@ namespace HeroesAPI.GraphQL
         public HeroDataSchema(IServiceProvider resolver) : base(resolver)
         {
             Query = resolver.GetRequiredService<HeroQuery>();
+            Mutation = resolver.GetRequiredService<HeroMutation>();
         }
     }
 }
