@@ -47,16 +47,16 @@ namespace HeroesAPI.Repository
             return pathToSave;
         }
 
-        public void SaveImageInDir(Hero hero, string pathToSave, out string fullPath, out string extension)
+        public void SaveImageInDir(Hero newHero, string pathToSave, out string fullPath, out string extension)
         {
             string imageName = Guid.NewGuid().ToString();
             fullPath = Path.Combine(pathToSave, imageName);
-            if (hero.Image is not null)
+            if (newHero.Image is not null)
             {
-                extension = Path.GetExtension(hero.Image.FileName);
+                extension = Path.GetExtension(newHero.Image.FileName);
                 using (FileStream fileStream = System.IO.File.Create(fullPath + imageName + extension))
                 {
-                    hero.Image.CopyTo(fileStream);
+                    newHero.Image.CopyTo(fileStream);
                     fileStream.Flush();
                 }
             }
