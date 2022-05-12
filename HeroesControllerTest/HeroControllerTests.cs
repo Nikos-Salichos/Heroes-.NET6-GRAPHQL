@@ -163,6 +163,7 @@ namespace HeroTests
         [Fact]
         public async Task GetHeroesSearchNoSorting_ReturnsSuccess()
         {
+            // Arrange
             FillHeroes();
 
             IMapper? mapper = new MapperConfiguration(mapperConfiguration =>
@@ -173,12 +174,13 @@ namespace HeroTests
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
+            // Act
             var actionResult = await heroController.GetAllHeroes("thor", null, new HeroesAPI.Paging.PaginationFilter());
-            Assert.NotNull(actionResult);
 
+            // Assert
+            Assert.NotNull(actionResult);
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
             Assert.Equal(200, result?.StatusCode);
-
             IEnumerable<HeroDTO>? data = (IEnumerable<HeroDTO>?)(result?.Value);
             Assert.NotNull(data);
             Assert.NotEmpty(data);
