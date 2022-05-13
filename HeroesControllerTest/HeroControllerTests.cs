@@ -112,6 +112,7 @@ namespace HeroTests
             Assert.Null(result);
         }
 
+        [Trait("GetHeroes", "GetHeroes")]
         [Fact]
         public async Task GetHeroesNoSearchSorting_ReturnsSuccess()
         {
@@ -137,6 +138,7 @@ namespace HeroTests
             Assert.True(data?.ToList().Count > 1, "Expected count is over 2");
         }
 
+        [Trait("GetHeroes", "GetHeroes")]
         [Fact]
         public async Task GetHeroesSearchSorting_ReturnsSuccess()
         {
@@ -161,6 +163,7 @@ namespace HeroTests
             Assert.NotEmpty(data);
         }
 
+        [Trait("GetHeroes", "GetHeroes")]
         [Fact]
         public async Task GetHeroesSearchNoSorting_ReturnsSuccess()
         {
@@ -342,6 +345,7 @@ namespace HeroTests
             object? statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
             Assert.Equal(400, statusCode);
         }
+
 
         [Fact]
         public async Task UpdateHero__ReturnsSuccess()
