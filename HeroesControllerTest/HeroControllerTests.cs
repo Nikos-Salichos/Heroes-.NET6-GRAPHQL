@@ -240,6 +240,7 @@ namespace HeroTests
             Assert.Equal(200, statusCode);
         }
 
+        [Trait("DeleteHero", "DeleteHero")]
         [Fact]
         public async Task DeleteHero_HeroIsNull_ReturnsFail()
         {
@@ -268,6 +269,7 @@ namespace HeroTests
             return heroController;
         }
 
+        [Trait("CreateHero", "CreateHero")]
         [Fact]
         public async Task CreateHero_ReturnsSuccess()
         {
@@ -303,6 +305,8 @@ namespace HeroTests
             Assert.Equal("FromHeroControllerTests", hero.Place);
         }
 
+
+        [Trait("CreateHero", "CreateHero")]
         [Fact]
         public async Task CreateHero_AllHeroPropertiesNull_ReturnsFails()
         {
