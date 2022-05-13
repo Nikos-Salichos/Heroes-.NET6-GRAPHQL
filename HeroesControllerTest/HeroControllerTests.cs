@@ -415,6 +415,7 @@ namespace HeroTests
             Assert.Equal(400, statusCode);
 
             object? value = actionResult?.GetType()?.GetProperty("Value")?.GetValue(actionResult, null);
+            Assert.NotNull(value);
             Assert.Equal("Hero not found", value);
         }
 
