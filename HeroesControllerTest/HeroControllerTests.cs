@@ -68,6 +68,7 @@ namespace HeroTests
             return (_heroes, filter);
         }
 
+        [Trait("GetHeroes", "GetHeroes")]
         [Fact]
         public async Task GetHeroesNoSearchNoSorting_ReturnsSuccess()
         {
@@ -346,7 +347,7 @@ namespace HeroTests
             Assert.Equal(400, statusCode);
         }
 
-
+        [Trait("UpdateHero", "UpdateHero")]
         [Fact]
         public async Task UpdateHero__ReturnsSuccess()
         {
@@ -376,6 +377,7 @@ namespace HeroTests
             Assert.Equal("Updated Long Island", hero.Place);
         }
 
+        [Trait("UpdateHero", "UpdateHero")]
         [Fact]
         public async Task UpdateHero_WrongId_ReturnsFail()
         {
@@ -406,6 +408,7 @@ namespace HeroTests
             Assert.Equal("Hero not found", value);
         }
 
+        [Trait("UpdateHero", "UpdateHero")]
         [Fact]
         public async Task UpdateHero_NullHeroProperties_ReturnsFail()
         {
