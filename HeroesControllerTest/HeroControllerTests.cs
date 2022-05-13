@@ -186,6 +186,7 @@ namespace HeroTests
             Assert.NotEmpty(data);
         }
 
+        [Trait("GetHeroById", "GetHeroById")]
         [Fact]
         public async Task GetHeroById_ReturnsSuccess()
         {
