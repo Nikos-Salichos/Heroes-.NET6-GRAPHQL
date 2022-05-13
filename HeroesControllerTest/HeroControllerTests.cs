@@ -230,6 +230,7 @@ namespace HeroTests
             Assert.Equal(404, (int?)statusCode);
         }
 
+        [Trait("DeleteHero", "DeleteHero")]
         [Fact]
         public async Task DeleteHero_ReturnsSuccess()
         {
