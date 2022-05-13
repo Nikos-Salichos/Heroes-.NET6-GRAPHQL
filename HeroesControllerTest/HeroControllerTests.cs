@@ -93,6 +93,7 @@ namespace HeroTests
             Assert.True(data?.ToList().Count > 1, "Expected count is over 2");
         }
 
+        [Trait("GetHeroes", "GetHeroes")]
         [Fact]
         public async Task GetHeroesNoSearchNoSorting_AllParametersNull_ReturnsFail()
         {
@@ -207,6 +208,7 @@ namespace HeroTests
             Assert.Equal(200, okResult?.StatusCode);
         }
 
+        [Trait("GetHeroById", "GetHeroById")]
         [Fact]
         public async Task GetHeroById_WrongId_ReturnsFail()
         {
