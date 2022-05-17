@@ -9,14 +9,13 @@ namespace HeroesAPI.GraphQL
         public HeroMutation(IUnitOfWorkRepository unitOfWorkRepository)
         {
             Field<HeroType>(
-                "CreateHero",
-                arguments: new QueryArguments(new List<QueryArgument> {
-                    new QueryArgument<NonNullGraphType<HeroInputType>>{Name = "HeroInput"}
-                }),
+                "createHero",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<HeroInputType>> { Name = "hero" }),
                 resolve: context =>
                {
-                   Hero? component = context.GetArgument<Hero>("HeroInput");
-                   return unitOfWorkRepository.HeroRepository.CreateHero(component);
+                   Hero? hero = context.GetArgument<Hero>("hero");
+                   return unitOfWorkRepository.HeroRepository.CreateHero(hero);
+                   //return unitOfWorkRepository.HeroRepository.CreateOwner(hero);
                });
 
         }

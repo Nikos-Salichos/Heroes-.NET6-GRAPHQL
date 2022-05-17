@@ -41,7 +41,9 @@ builder.Host.UseSerilog((ctx, lc) => lc.MinimumLevel.Error()
 builder.Services.AddControllers(options =>
 {
     options.ReturnHttpNotAcceptable = false;
-}).AddNewtonsoftJson()
+    // options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+})
+.AddNewtonsoftJson()
 .AddXmlDataContractSerializerFormatters();
 
 //Endpoint HealthChecks

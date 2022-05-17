@@ -48,14 +48,7 @@ namespace HeroesAPI.Controllers
                     return BadRequest();
                 }
 
-                PaginationFilter? validFilter = new(paginationFilter.PageNumber, paginationFilter.PageSize);
-
-                if (validFilter is null)
-                {
-
-                }
-
-                IEnumerable<Hero>? allHeroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+                List<Hero> allHeroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
 
                 if (allHeroes is null)
                 {

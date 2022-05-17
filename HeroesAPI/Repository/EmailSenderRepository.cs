@@ -25,6 +25,11 @@ namespace HeroesAPI.Repository
         {
             SmtpClient smtpClient = new SmtpClient();
 
+            if (emailModel == null)
+            {
+                throw new ApplicationException("EmailModel cannot be null");
+            }
+
             ApiResponse errorResponse = new ApiResponse();
             try
             {
