@@ -22,14 +22,17 @@ namespace HeroesAPI.Repository
         public void Create(T entity)
         {
             MsSql.Set<T>().Add(entity);
+            MsSql.SaveChanges();
         }
         public void Update(T entity)
         {
             MsSql.Set<T>().Update(entity);
+            MsSql.SaveChanges();
         }
         public void Delete(T entity)
         {
             MsSql.Set<T>().Remove(entity);
+            MsSql.SaveChanges();
         }
 
         public async Task SaveAsync()

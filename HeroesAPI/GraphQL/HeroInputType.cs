@@ -7,7 +7,6 @@ namespace HeroesAPI.GraphQL
         public HeroInputType()
         {
             Name = "heroInput";
-            //  Field<IntGraphType>("Id");
             Field<StringGraphType>("Name");
             Field<StringGraphType>("FirstName");
             Field<StringGraphType>("LastName");
