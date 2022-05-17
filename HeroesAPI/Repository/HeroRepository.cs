@@ -19,9 +19,10 @@ namespace HeroesAPI.Repository
                 .FirstOrDefaultAsync();
         }
 
-        public Hero CreateHero(Hero hero)
+        public async Task<Hero?> CreateHero(Hero hero)
         {
             Create(hero);
+            await MsSql.SaveChangesAsync();
             return hero;
         }
 
