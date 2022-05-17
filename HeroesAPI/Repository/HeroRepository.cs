@@ -25,15 +25,16 @@ namespace HeroesAPI.Repository
             return hero;
         }
 
-        public bool UpdateHero(Hero hero)
+        public Hero UpdateHero(Hero hero)
         {
             Update(hero);
-            return true;
+            return hero;
         }
 
-        public void DeleteHero(Hero hero)
+        public Hero DeleteHero(Hero hero)
         {
             Delete(hero);
+            return hero;
         }
 
         public string CreateImageDirectory()

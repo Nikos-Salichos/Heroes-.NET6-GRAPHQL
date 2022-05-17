@@ -15,7 +15,6 @@ namespace HeroesAPI.GraphQL
                {
                    Hero? hero = context.GetArgument<Hero>("hero");
                    return unitOfWorkRepository.HeroRepository.CreateHero(hero);
-                   //return unitOfWorkRepository.HeroRepository.CreateOwner(hero);
                });
 
         }
