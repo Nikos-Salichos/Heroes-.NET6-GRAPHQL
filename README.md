@@ -60,9 +60,9 @@ Create Hero: mutation AddHero ($hero: heroInput!){
 and in Query variables
 {
   "hero": {
-"name": "test",
-    "firstName": "lalala",
-    "lastName": "asdasd",
-    "place": "asdadsaasd"
+    "name": "test",
+    "firstName": "test",
+    "lastName": "test",
+    "place": "test"
   }
 }
