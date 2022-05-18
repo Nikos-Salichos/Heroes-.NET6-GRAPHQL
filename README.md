@@ -42,6 +42,27 @@ In addition i have implement the following:
 
 Example of GraphQL Queries:
 
+Get All Heroes:
 { heroes { name, firstName, lastName, place } }
 
+Get Hero by Id:
 { hero(id:10){ name, place } }
+
+Create Hero: mutation AddHero ($hero: heroInput!){
+  createHero(hero:$hero) {
+		name,
+    firstName,
+    lastName,
+    place
+  }
+}
+
+and in Query variables
+{
+  "hero": {
+"name": "test",
+    "firstName": "lalala",
+    "lastName": "asdasd",
+    "place": "asdadsaasd"
+  }
+}
