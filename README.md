@@ -49,5 +49,4 @@ Get Hero by Id:
 { hero(id:10){ name, place } }
 
 Create Hero: mutation AddHero ($hero: heroInput!){ createHero(hero:$hero) { name, firstName, lastName, place } }
-
 and in Query variables { "hero": { "name": "test", "firstName": "test", "lastName": "test", "place": "test" } }
