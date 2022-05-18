@@ -35,10 +35,5 @@ namespace HeroesAPI.Repository
             MsSql.SaveChanges();
         }
 
-        public async Task SaveAsync()
-        {
-            await MsSql.SaveChangesAsync();
-        }
-
     }
 }
