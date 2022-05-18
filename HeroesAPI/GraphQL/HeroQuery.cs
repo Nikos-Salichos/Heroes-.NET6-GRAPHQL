@@ -5,9 +5,9 @@ namespace HeroesAPI.GraphQL
 {
     public class HeroQuery : ObjectGraphType
     {
-        public HeroQuery(IHeroRepository heroRepository)
+        public HeroQuery(IUnitOfWorkRepository unitOfWorkRepository)
         {
-            Field<ListGraphType<HeroType>>("heroes", resolve: context => heroRepository.GetAllHeroesAsync());
+            Field<ListGraphType<HeroType>>("heroes", resolve: context => unitOfWorkRepository.HeroRepository.GetAllHeroesAsync());
 
             Field<HeroType>(
                 "hero",
@@ -21,7 +21,7 @@ namespace HeroesAPI.GraphQL
                    int? id = context.GetArgument<int?>("id");
                    if (id.HasValue)
                    {
-                       Task<Models.Hero?>? hero = heroRepository.GetHeroByIdAsync(id.Value);
+                       Task<Models.Hero?>? hero = unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(id.Value);
                        if (hero.Result != null)
                        {
                            return hero;
