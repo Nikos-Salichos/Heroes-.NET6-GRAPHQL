@@ -31,7 +31,7 @@ namespace HeroesAPI.Repository
             return hero;
         }
 
-        public void DeleteHero(Hero hero)
+        public async Task DeleteHero(Hero hero)
         {
             Delete(hero);
         }

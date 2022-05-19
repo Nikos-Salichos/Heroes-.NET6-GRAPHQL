@@ -8,7 +8,7 @@ namespace HeroesAPI.Interfaces
         Task<Hero?> GetHeroByIdAsync(int heroId);
         Hero CreateHero(Hero hero);
         Hero UpdateHero(Hero hero);
-        void DeleteHero(Hero hero);
+        Task DeleteHero(Hero hero);
         string CreateImageDirectory();
         void SaveImageInDir(Hero newHero, string pathToSave, out string fullPath, out string extension);
     }
