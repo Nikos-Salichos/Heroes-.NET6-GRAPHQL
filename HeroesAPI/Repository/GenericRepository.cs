@@ -21,18 +21,18 @@ namespace HeroesAPI.Repository
         }
         public async void Create(T entity)
         {
-            await MsSql.Set<T>().AddAsync(entity);
+            MsSql.Set<T>().Add(entity);
             await MsSql.SaveChangesAsync();
         }
-        public void Update(T entity)
+        public async void Update(T entity)
         {
             MsSql.Set<T>().Update(entity);
-            MsSql.SaveChanges();
+            await MsSql.SaveChangesAsync();
         }
         public void Delete(T entity)
         {
             MsSql.Set<T>().Remove(entity);
-            MsSql.SaveChanges();
+            MsSql.SaveChangesAsync();
         }
     }
 }
