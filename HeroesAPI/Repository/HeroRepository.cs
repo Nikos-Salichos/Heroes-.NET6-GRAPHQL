@@ -8,24 +8,24 @@ namespace HeroesAPI.Repository
         {
         }
 
-        public async Task<List<Hero>> GetAllHeroesAsync()
+        public Task<List<Hero>> GetAllHeroesAsync()
         {
-            return await FindAll().ToListAsync();
+            return FindAll().ToListAsync();
         }
 
-        public async Task<Hero?> GetHeroByIdAsync(int heroId)
+        public Task<Hero?> GetHeroByIdAsync(int heroId)
         {
-            return await FindByCondition(hero => hero.Id.Equals(heroId))
+            return FindByCondition(hero => hero.Id.Equals(heroId))
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Hero?> CreateHero(Hero hero)
+        public Hero CreateHero(Hero hero)
         {
             Create(hero);
             return hero;
         }
 
-        public async Task<Hero?> UpdateHero(Hero hero)
+        public Hero UpdateHero(Hero hero)
         {
             Update(hero);
             return hero;

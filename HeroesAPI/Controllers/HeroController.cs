@@ -275,7 +275,7 @@ namespace HeroesAPI.Controllers
                     requestedHero.ImageUrl = fullPath + extension;
                 }
 
-                await _unitOfWorkRepository.HeroRepository.UpdateHero(requestedHero);
+                _unitOfWorkRepository.HeroRepository.UpdateHero(requestedHero);
 
                 return Ok(_mapper.Map<HeroDTO>(requestedHero));
             }
