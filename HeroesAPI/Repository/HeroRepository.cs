@@ -21,19 +21,20 @@ namespace HeroesAPI.Repository
 
         public Hero CreateHero(Hero hero)
         {
-            Create(hero);
+            _ = Create(hero);
             return hero;
         }
 
         public Hero UpdateHero(Hero hero)
         {
-            Update(hero);
+            _ = Update(hero);
             return hero;
         }
 
-        public async Task DeleteHero(Hero hero)
+        public Task DeleteHero(Hero hero)
         {
-            Delete(hero);
+            _ = Delete(hero);
+            return Task.CompletedTask;
         }
 
         public string CreateImageDirectory()
