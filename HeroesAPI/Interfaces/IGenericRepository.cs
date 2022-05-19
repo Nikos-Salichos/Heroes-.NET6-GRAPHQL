@@ -6,8 +6,8 @@ namespace HeroesAPI.Interfaces
     {
         IQueryable<T> FindAll();
         IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression);
-        Task Create(T entity);
-        Task Update(T entity);
-        Task Delete(T entity);
+        Task<bool> Create(T entity);
+        Task<bool> Update(T entity);
+        Task<bool> Delete(T entity);
     }
 }
