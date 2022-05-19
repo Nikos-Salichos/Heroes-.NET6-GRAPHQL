@@ -3,7 +3,6 @@ using HeroesAPI.DTOs;
 using HeroesAPI.Models;
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Management;
@@ -202,7 +201,7 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("CreateHero")]
         // [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> AddHero([FromForm] Hero newHero)
         {
@@ -248,8 +247,8 @@ namespace HeroesAPI.Controllers
             }
         }
 
-        [HttpPut("ChangeHero/{heroId}")]
-        [Authorize(Roles = UserRole.Admin)]
+        [HttpPut("ChangeHero")]
+        // [Authorize(Roles = UserRole.Admin)]
         public async Task<IActionResult> UpdateHero([FromForm] Hero requestedHero)
         {
             try
@@ -276,7 +275,7 @@ namespace HeroesAPI.Controllers
                     requestedHero.ImageUrl = fullPath + extension;
                 }
 
-                _unitOfWorkRepository.HeroRepository.UpdateHero(requestedHero);
+                await _unitOfWorkRepository.HeroRepository.UpdateHero(requestedHero);
 
                 return Ok(_mapper.Map<HeroDTO>(requestedHero));
             }
