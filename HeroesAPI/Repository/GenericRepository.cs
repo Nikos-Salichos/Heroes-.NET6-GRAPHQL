@@ -34,6 +34,5 @@ namespace HeroesAPI.Repository
             MsSql.Set<T>().Remove(entity);
             MsSql.SaveChanges();
         }
-
     }
 }

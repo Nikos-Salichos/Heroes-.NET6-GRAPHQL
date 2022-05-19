@@ -25,7 +25,7 @@ namespace HeroesAPI.Repository
             return hero;
         }
 
-        public Hero UpdateHero(Hero hero)
+        public async Task<Hero?> UpdateHero(Hero hero)
         {
             Update(hero);
             return hero;
