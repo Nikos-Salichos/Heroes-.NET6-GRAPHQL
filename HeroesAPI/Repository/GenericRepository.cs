@@ -19,10 +19,10 @@ namespace HeroesAPI.Repository
         {
             return MsSql.Set<T>().Where(expression).AsNoTracking();
         }
-        public void Create(T entity)
+        public async void Create(T entity)
         {
-            MsSql.Set<T>().Add(entity);
-            MsSql.SaveChanges();
+            await MsSql.Set<T>().AddAsync(entity);
+            await MsSql.SaveChangesAsync();
         }
         public void Update(T entity)
         {

@@ -68,7 +68,6 @@ namespace HeroesAPI.GraphQL
                     unitOfWorkRepository.HeroRepository.DeleteHero(hero.Result);
                     return $"The hero with the id: {heroId} has been successfully deleted from db.";
                 });
-
         }
     }
 }

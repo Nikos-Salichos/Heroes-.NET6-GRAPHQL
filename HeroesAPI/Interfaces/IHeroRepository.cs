@@ -6,7 +6,7 @@ namespace HeroesAPI.Interfaces
     {
         Task<List<Hero>> GetAllHeroesAsync();
         Task<Hero?> GetHeroByIdAsync(int heroId);
-        Hero CreateHero(Hero hero);
+        Task<Hero?> CreateHero(Hero hero);
         Hero UpdateHero(Hero hero);
         void DeleteHero(Hero hero);
         string CreateImageDirectory();

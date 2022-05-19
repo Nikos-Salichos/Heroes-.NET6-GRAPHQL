@@ -239,8 +239,6 @@ namespace HeroesAPI.Controllers
 
                 _unitOfWorkRepository.HeroRepository.CreateHero(newHero);
 
-                await _unitOfWorkRepository.CommitAll();
-
                 return Ok(_mapper.Map<HeroDTO>(newHero));
             }
             catch (Exception exception)
@@ -280,8 +278,6 @@ namespace HeroesAPI.Controllers
 
                 _unitOfWorkRepository.HeroRepository.UpdateHero(requestedHero);
 
-                await _unitOfWorkRepository.CommitAll();
-
                 return Ok(_mapper.Map<HeroDTO>(requestedHero));
             }
             catch (Exception exception)
@@ -305,7 +301,6 @@ namespace HeroesAPI.Controllers
                 }
 
                 _unitOfWorkRepository.HeroRepository.DeleteHero(hero);
-                await _unitOfWorkRepository.CommitAll();
 
                 return Ok();
             }
