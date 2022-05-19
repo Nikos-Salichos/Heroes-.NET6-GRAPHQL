@@ -22,7 +22,7 @@ namespace HeroesAPI.Repository
         public async Task<Hero?> CreateHero(Hero hero)
         {
             Create(hero);
-            return hero;
+            await return hero;
         }
 
         public async Task<Hero?> UpdateHero(Hero hero)
