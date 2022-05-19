@@ -29,7 +29,7 @@ namespace HeroesAPI.Repository
             MsSql.Set<T>().Update(entity);
             await MsSql.SaveChangesAsync();
         }
-        public void Delete(T entity)
+        public async void Delete(T entity)
         {
             MsSql.Set<T>().Remove(entity);
             await MsSql.SaveChangesAsync();
