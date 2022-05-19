@@ -31,10 +31,9 @@ namespace HeroesAPI.Repository
             return hero;
         }
 
-        public Hero DeleteHero(Hero hero)
+        public void DeleteHero(Hero hero)
         {
             Delete(hero);
-            return hero;
         }
 
         public string CreateImageDirectory()

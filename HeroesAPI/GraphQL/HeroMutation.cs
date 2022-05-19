@@ -51,6 +51,24 @@ namespace HeroesAPI.GraphQL
                      return unitOfWorkRepository.HeroRepository.UpdateHero(heroFromDb.Result);
                  });
 
+            Field<StringGraphType>(
+                "deleteHero",
+                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<IdGraphType>> { Name = "heroId" }),
+                resolve: context =>
+                {
+                    int heroId = context.GetArgument<int>("heroId");
+                    Task<Hero?>? hero = unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(heroId);
+
+                    if (hero == null || hero.Result == null)
+                    {
+                        context.Errors.Add(new ExecutionError("Couldn't find owner in db."));
+                        return null;
+                    }
+
+                    unitOfWorkRepository.HeroRepository.DeleteHero(hero.Result);
+                    return $"The hero with the id: {heroId} has been successfully deleted from db.";
+                });
+
         }
     }
 }
