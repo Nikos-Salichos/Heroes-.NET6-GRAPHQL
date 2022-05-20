@@ -62,6 +62,11 @@ builder.Services.AddDbContext<MainDbContextInfo>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"));
 });
 
+//Register SQLite
+builder.Services.AddDbContext<SqliteDataContext>(options =>
+{
+    options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
+});
 
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
