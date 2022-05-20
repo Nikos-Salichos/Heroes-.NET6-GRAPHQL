@@ -20,8 +20,8 @@ namespace HeroesAPI.DataContext
 
         //EF Commands
         // cd C:\Users\Nikos\source\repos\HeroesAPI\HeroesAPI
-        // dotnet ef migrations add HeroSeeding --context MsSql
-        // dotnet ef database update --context MsSql
+        // dotnet ef migrations add HeroSeeding --context MainDbContextInfo
+        // dotnet ef database update --context MainDbContextInfo
 
         public DbSet<Hero> Heroes { get; set; }
         public DbSet<SeriLogModel> SeriLogs { get; set; }
