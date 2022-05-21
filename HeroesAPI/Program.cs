@@ -14,6 +14,7 @@ using HeroesAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -42,8 +43,11 @@ builder.Services.AddControllers(options =>
 {
     options.ReturnHttpNotAcceptable = false;
 })
-.AddNewtonsoftJson()
-.AddXmlDataContractSerializerFormatters();
+.AddNewtonsoftJson(option => option.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+.AddXmlDataContractSerializerFormatters()
+.AddOData(option => option.Filter().OrderBy());
+
+
 
 //Endpoint HealthChecks
 builder.Services.AddHealthChecks().AddSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"));

@@ -4,6 +4,7 @@ using HeroesAPI.Models;
 using HeroesAPI.Paging;
 using HeroesAPI.Sorting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Newtonsoft.Json;
 using System.Management;
 using System.Text;
@@ -28,7 +29,8 @@ namespace HeroesAPI.Controllers
         }
 
         [HttpGet("AllHeroes")]
-        [ResponseCache(CacheProfileName = "10SecondsDuration")]
+        // [ResponseCache(CacheProfileName = "10SecondsDuration")]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<HeroDTO>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter paginationFilter)
         {
             try
