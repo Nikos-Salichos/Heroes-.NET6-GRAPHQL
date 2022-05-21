@@ -9,7 +9,7 @@ I have use the following technologies and packages:
 - Serilog.
 - RESTful API.
 - GraphQL (navigate in https://localhost:7243/ui/playground to test it)
-- Open Data Protocol (Microsoft.data.odata) filter and orderBy.
+- Open Data Protocol (Microsoft.data.odata) filter and orderBy in GetAllHeroes().
 
 In addition i have implement the following:
 - Generic Repository Pattern.
