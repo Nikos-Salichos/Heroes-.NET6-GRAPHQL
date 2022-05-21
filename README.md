@@ -50,3 +50,7 @@ Get Hero by Id:
 
 Create Hero: mutation AddHero ($hero: heroInput!){ createHero(hero:$hero) { name, firstName, lastName, place } }
 and in Query variables { "hero": { "name": "test", "firstName": "test", "lastName": "test", "place": "test" } }
+
+Update Hero: mutation UpdateHero ($hero: heroInput!, $heroId:ID!){ updateHero(hero: $hero, heroId: $heroId) { name } }
+
+Delete Hero: mutation DeleteHero($heroId: ID!){ deleteHero(heroId: $heroId) }
