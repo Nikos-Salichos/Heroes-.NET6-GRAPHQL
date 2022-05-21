@@ -47,11 +47,11 @@ namespace HeroesAPI.Controllers
                     return BadRequest();
                 }
 
-                List<Hero> allHeroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+                (bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage) result = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
 
-                if (allHeroes is null)
+                if (!result.IsSuccess)
                 {
-                    return NotFound("No heroes found");
+                    return NotFound(result.ErrorMessage);
                 }
 
                 if (sortBy is not null)
@@ -62,7 +62,7 @@ namespace HeroesAPI.Controllers
                         return NotFound("This property does not exist, please check it again!");
                     }
 
-                    List<Hero> heroesPagination = allHeroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                    List<Hero> heroesPagination = result.Heroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
                                                             .Take(paginationFilter.PageSize)
                                                             .ToList();
 
@@ -85,7 +85,7 @@ namespace HeroesAPI.Controllers
                 else
                 {
 
-                    List<Hero> heroesPagination = allHeroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                    List<Hero> heroesPagination = result.Heroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
                                                         .Take(paginationFilter.PageSize)
                                                         .ToList();
 
@@ -212,8 +212,8 @@ namespace HeroesAPI.Controllers
                     return BadRequest();
                 }
 
-                IEnumerable<Hero>? allheroes = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
-                Hero? heroExist = allheroes.AsEnumerable().FirstOrDefault(h => h.Name.Equals(newHero.Name, StringComparison.InvariantCultureIgnoreCase));
+                var result = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+                Hero? heroExist = result.Heroes.AsEnumerable().FirstOrDefault(h => h.Name.Equals(newHero.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 if (heroExist is not null)
                 {

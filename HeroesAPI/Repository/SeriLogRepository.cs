@@ -10,7 +10,8 @@ namespace HeroesAPI.Repository
 
         public async Task<IEnumerable<SeriLogModel>> GetAllLogsAsync()
         {
-            return await FindAll().ToListAsync();
+            IEnumerable<SeriLogModel>? logs = await FindAll();
+            return logs;
         }
     }
 }

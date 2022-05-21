@@ -1,2 +1,0 @@
-2022-05-20 22:22:53.606 +03:00 [ERR] An error occurred using the connection to database 'main' on server 'C:\Users\Nikos\source\repos\HeroesAPI\DbSQLite'.
-2022-05-20 22:36:42.094 +03:00 [ERR] An error occurred using the connection to database 'main' on server 'C:\Users\Nikos\source\repos\HeroesAPI\DbSQLite'.

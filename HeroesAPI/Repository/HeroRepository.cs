@@ -8,9 +8,14 @@ namespace HeroesAPI.Repository
         {
         }
 
-        public Task<List<Hero>> GetAllHeroesAsync()
+        public async Task<(bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage)> GetAllHeroesAsync()
         {
-            return FindAll().ToListAsync();
+            IEnumerable<Hero>? heroes = await FindAll();
+            if (heroes != null)
+            {
+                return (true, heroes.ToList(), null);
+            }
+            return (false, null, "Heroes not found");
         }
 
         public Task<Hero?> GetHeroByIdAsync(int heroId)

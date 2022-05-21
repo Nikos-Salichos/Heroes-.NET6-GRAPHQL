@@ -11,9 +11,9 @@ namespace HeroesAPI.Repository
             MsSql = msSql;
         }
 
-        public IQueryable<T> FindAll()
+        public async Task<IEnumerable<T>> FindAll()
         {
-            return MsSql.Set<T>().AsNoTracking();
+            return await MsSql.Set<T>().ToListAsync();
         }
 
         public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
@@ -37,5 +37,6 @@ namespace HeroesAPI.Repository
             MsSql.Set<T>().Remove(entity);
             await MsSql.SaveChangesAsync();
         }
+
     }
 }

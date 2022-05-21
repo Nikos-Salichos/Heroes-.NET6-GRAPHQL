@@ -4,7 +4,7 @@ namespace HeroesAPI.Interfaces
 {
     public interface IHeroRepository : IGenericRepository<Hero>
     {
-        Task<List<Hero>> GetAllHeroesAsync();
+        Task<(bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage)> GetAllHeroesAsync();
         Task<Hero?> GetHeroByIdAsync(int heroId);
         Hero CreateHero(Hero hero);
         Hero UpdateHero(Hero hero);

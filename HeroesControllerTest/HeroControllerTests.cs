@@ -19,7 +19,7 @@ namespace HeroTests
     {
         private readonly ILogger<HeroController> _logger;
 
-        private readonly List<Hero> _heroes = new List<Hero>();
+        private readonly List<Hero>? _heroes = new List<Hero>();
 
         private readonly Mock<IHeroRepository> _mockHeroRepository;
 
@@ -36,7 +36,7 @@ namespace HeroTests
 
         private void FillHeroes()
         {
-            _heroes.Add(new Hero()
+            _heroes?.Add(new Hero()
             {
                 Id = 10,
                 Name = "Ironman",
@@ -62,12 +62,6 @@ namespace HeroTests
             });
         }
 
-        public (List<Hero>, PaginationFilter) GetTuple()
-        {
-            PaginationFilter? filter = new PaginationFilter();
-            return (_heroes, filter);
-        }
-
         [Trait("GetHeroes", "GetHeroes")]
         [Fact]
         public async Task GetHeroesNoSearchNoSorting_ReturnsSuccess()
@@ -79,7 +73,9 @@ namespace HeroTests
              }).CreateMapper();
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes); ;
+
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+                .ReturnsAsync(() => (true, _heroes, null));
 
             ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(string.Empty, null, new PaginationFilter());
 
@@ -105,7 +101,8 @@ namespace HeroTests
             }).CreateMapper();
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes); ;
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+                .ReturnsAsync(() => (true, _heroes, null));
 
             ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(null, null, null);
 
@@ -124,7 +121,9 @@ namespace HeroTests
                 mapperConfiguration.AddProfile<HeroProfile>();
             }).CreateMapper();
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+                .ReturnsAsync(() => (true, _heroes, null));
+
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
             ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(string.Empty, "Place", new PaginationFilter());
@@ -150,7 +149,9 @@ namespace HeroTests
                 mapperConfiguration.AddProfile<HeroProfile>();
             }).CreateMapper();
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+                .ReturnsAsync(() => (true, _heroes, null));
+
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
             var actionResult = await heroController.GetAllHeroes("thor", "Place", new PaginationFilter());
@@ -176,7 +177,9 @@ namespace HeroTests
                 mapperConfiguration.AddProfile<HeroProfile>();
             }).CreateMapper();
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+                .ReturnsAsync(() => (true, _heroes, null));
+
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
             // Act
@@ -299,7 +302,9 @@ namespace HeroTests
 
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+                .ReturnsAsync(() => (true, _heroes, null));
+
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHero(hero));
 
             // Act
@@ -336,7 +341,9 @@ namespace HeroTests
 
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync()).ReturnsAsync(_heroes);
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+                .ReturnsAsync(() => (true, _heroes, null));
+
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHero(hero));
 
             // Act
