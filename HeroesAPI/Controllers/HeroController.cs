@@ -21,6 +21,8 @@ namespace HeroesAPI.Controllers
 
         private readonly IMapper _mapper;
 
+        private static readonly char[] InvalidFilenameChars = Path.GetInvalidFileNameChars();
+
         public HeroController(ILogger<HeroController> logger, IUnitOfWorkRepository unitOfWorkRepository, IMapper mapper)
         {
             _logger = logger;
@@ -54,6 +56,11 @@ namespace HeroesAPI.Controllers
                 if (!result.IsSuccess)
                 {
                     return NotFound(result.ErrorMessage);
+                }
+
+                if (result.Heroes is null)
+                {
+                    return NotFound("Not Heroes found");
                 }
 
                 if (sortBy is not null)
@@ -118,7 +125,7 @@ namespace HeroesAPI.Controllers
             string? json = JsonConvert.SerializeObject(hwid);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            string? url = "https://urlofyoursite.com"; //valid site that you keep license
+            const string? url = "https://urlofyoursite.com"; //valid site that you keep license
             HttpResponseMessage? response = await httpClient.PostAsync(url, data);
             response.EnsureSuccessStatusCode();
 
@@ -187,10 +194,20 @@ namespace HeroesAPI.Controllers
                     return NotFound("Hero not found");
                 }
 
-                string? imageUrl = hero.ImageUrl;
-                if (imageUrl != null && System.IO.File.Exists(imageUrl))
+                if (hero.ImageUrl is null)
                 {
-                    byte[] byteArray = System.IO.File.ReadAllBytes(imageUrl);
+                    return NotFound("Hero image not found");
+                }
+
+                if (hero.ImageUrl.IndexOfAny(InvalidFilenameChars) >= 0)
+                {
+                    return new BadRequestResult();
+                }
+
+                if (System.IO.File.Exists(hero.ImageUrl))
+                {
+                    byte[] byteArray = System.IO.File.ReadAllBytes(hero.ImageUrl);
+
                     return File(byteArray, "image/png");
                 }
 
@@ -214,7 +231,20 @@ namespace HeroesAPI.Controllers
                     return BadRequest();
                 }
 
+
                 var result = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+
+
+                if (!result.IsSuccess)
+                {
+                    return NotFound(result.ErrorMessage);
+                }
+
+                if (result.Heroes is null)
+                {
+                    return NotFound("Not Heroes found");
+                }
+
                 Hero? heroExist = result.Heroes.AsEnumerable().FirstOrDefault(h => h.Name.Equals(newHero.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 if (heroExist is not null)
@@ -301,7 +331,7 @@ namespace HeroesAPI.Controllers
                     return NotFound("Hero not found");
                 }
 
-                _unitOfWorkRepository.HeroRepository.DeleteHero(hero);
+                await _unitOfWorkRepository.HeroRepository.DeleteHero(hero);
 
                 return Ok();
             }
