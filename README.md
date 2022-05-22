@@ -41,6 +41,10 @@ In addition i have implement the following:
 - API HealthChecks (controller & dashboard, navigate in https://localhost:7243/dashboard#/healthchecks)
 
 
+Example of Microsoft OData:
+
+
+
 Example of GraphQL Queries:
 
 Get All Heroes:
