@@ -5,7 +5,7 @@ I have use the following technologies and packages:
 - C#.
 - .NET 6.
 - Entity Framework Core.
-- Microsoft SQL Server.
+- Multiple Databases (Microsoft SQL Server & SQLite).
 - Serilog.
 - RESTful API.
 - GraphQL (navigate in https://localhost:7243/ui/playground to test it)
