@@ -18,10 +18,10 @@ namespace HeroesAPI.Repository
             return (false, null, "Heroes not found");
         }
 
-        public Task<Hero?> GetHeroByIdAsync(int heroId)
+        public async Task<Hero?> GetHeroByIdAsync(int heroId)
         {
-            return FindByCondition(hero => hero.Id.Equals(heroId))
-                .FirstOrDefaultAsync();
+            IEnumerable<Hero>? hero = await FindById(hero => hero.Id.Equals(heroId));
+            return hero.FirstOrDefault();
         }
 
         public Hero CreateHero(Hero hero)

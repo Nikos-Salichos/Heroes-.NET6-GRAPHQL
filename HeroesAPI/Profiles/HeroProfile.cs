@@ -8,7 +8,7 @@ namespace HeroesAPI.Profiles
     {
         public HeroProfile()
         {
-            CreateMap<Hero, HeroDTO>();
+            CreateMap<Hero, HeroDto>();
         }
     }
 }

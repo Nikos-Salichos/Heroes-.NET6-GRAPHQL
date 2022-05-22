@@ -77,14 +77,14 @@ namespace HeroTests
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
                 .ReturnsAsync(() => (true, _heroes, null));
 
-            ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(string.Empty, null, new PaginationFilter());
+            ActionResult<IEnumerable<HeroDto>>? actionResult = await heroController.GetAllHeroes(string.Empty, null, new PaginationFilter());
 
             Assert.NotNull(actionResult);
 
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
             Assert.Equal(200, result?.StatusCode);
 
-            IEnumerable<HeroDTO>? data = (IEnumerable<HeroDTO>?)(result?.Value);
+            IEnumerable<HeroDto>? data = (IEnumerable<HeroDto>?)(result?.Value);
             Assert.NotNull(data);
             Assert.NotEmpty(data);
             Assert.True(data?.ToList().Count > 1, "Expected count is over 2");
@@ -104,7 +104,7 @@ namespace HeroTests
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
                 .ReturnsAsync(() => (true, _heroes, null));
 
-            ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(null, null, null);
+            ActionResult<IEnumerable<HeroDto>>? actionResult = await heroController.GetAllHeroes(null, null, null);
 
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
             Assert.Null(result);
@@ -126,13 +126,13 @@ namespace HeroTests
 
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            ActionResult<IEnumerable<HeroDTO>>? actionResult = await heroController.GetAllHeroes(string.Empty, "Place", new PaginationFilter());
+            ActionResult<IEnumerable<HeroDto>>? actionResult = await heroController.GetAllHeroes(string.Empty, "Place", new PaginationFilter());
             Assert.NotNull(actionResult);
 
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
             Assert.Equal(200, result?.StatusCode);
 
-            IEnumerable<HeroDTO>? data = (IEnumerable<HeroDTO>?)(result?.Value);
+            IEnumerable<HeroDto>? data = (IEnumerable<HeroDto>?)(result?.Value);
             Assert.NotNull(data);
             Assert.NotEmpty(data);
             Assert.True(data?.ToList().Count > 1, "Expected count is over 2");
@@ -160,7 +160,7 @@ namespace HeroTests
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
             Assert.Equal(200, result?.StatusCode);
 
-            IEnumerable<HeroDTO>? data = (IEnumerable<HeroDTO>?)(result?.Value);
+            IEnumerable<HeroDto>? data = (IEnumerable<HeroDto>?)(result?.Value);
             Assert.NotNull(data);
             Assert.NotEmpty(data);
         }
@@ -189,7 +189,7 @@ namespace HeroTests
             Assert.NotNull(actionResult);
             OkObjectResult? result = actionResult?.Result as OkObjectResult;
             Assert.Equal(200, result?.StatusCode);
-            IEnumerable<HeroDTO>? data = (IEnumerable<HeroDTO>?)(result?.Value);
+            IEnumerable<HeroDto>? data = (IEnumerable<HeroDto>?)(result?.Value);
             Assert.NotNull(data);
             Assert.NotEmpty(data);
         }

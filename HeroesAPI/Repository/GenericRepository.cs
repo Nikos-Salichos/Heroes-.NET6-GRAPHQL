@@ -16,9 +16,9 @@ namespace HeroesAPI.Repository
             return await MsSql.Set<T>().ToListAsync();
         }
 
-        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
+        public async Task<IEnumerable<T>> FindById(Expression<Func<T, bool>> expression)
         {
-            return MsSql.Set<T>().Where(expression).AsNoTracking();
+            return await MsSql.Set<T>().Where(expression).ToListAsync();
         }
 
         public async Task Create(T entity)

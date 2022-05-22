@@ -1,6 +1,6 @@
 ﻿namespace HeroesAPI.DTOs
 {
-    public class HeroDTO
+    public class HeroDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

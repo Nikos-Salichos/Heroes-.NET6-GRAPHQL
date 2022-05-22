@@ -33,7 +33,7 @@ namespace HeroesAPI.Controllers
         [HttpGet("AllHeroes")]
         // [ResponseCache(CacheProfileName = "10SecondsDuration")]
         [EnableQuery]
-        public async Task<ActionResult<IEnumerable<HeroDTO>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter paginationFilter)
+        public async Task<ActionResult<IEnumerable<HeroDto>>> GetAllHeroes(string? searchString, string? sortBy, [FromQuery] PaginationFilter paginationFilter)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace HeroesAPI.Controllers
                     {
                         Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(paginationFilter));
                     }
-                    return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroesPagination));
+                    return Ok(_mapper.Map<IEnumerable<HeroDto>>(heroesPagination));
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace HeroesAPI.Controllers
                         Response.Headers.Add("X-Pagination", System.Text.Json.JsonSerializer.Serialize(paginationFilter));
                     }
 
-                    return Ok(_mapper.Map<IEnumerable<HeroDTO>>(heroesPagination));
+                    return Ok(_mapper.Map<IEnumerable<HeroDto>>(heroesPagination));
                 }
             }
             catch (Exception exception)
@@ -270,7 +270,7 @@ namespace HeroesAPI.Controllers
 
                 _unitOfWorkRepository.HeroRepository.CreateHero(newHero);
 
-                return Ok(_mapper.Map<HeroDTO>(newHero));
+                return Ok(_mapper.Map<HeroDto>(newHero));
             }
             catch (Exception exception)
             {
@@ -309,7 +309,7 @@ namespace HeroesAPI.Controllers
 
                 _unitOfWorkRepository.HeroRepository.UpdateHero(requestedHero);
 
-                return Ok(_mapper.Map<HeroDTO>(requestedHero));
+                return Ok(_mapper.Map<HeroDto>(requestedHero));
             }
             catch (Exception exception)
             {
