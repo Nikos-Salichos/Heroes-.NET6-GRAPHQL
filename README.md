@@ -40,10 +40,8 @@ In addition i have implement the following:
 - Unit Testing (XUnit & Moq) for HeroController.
 - API HealthChecks (controller & dashboard, navigate in https://localhost:7243/dashboard#/healthchecks)
 
-
 Example of Microsoft OData:
-
-
+https://localhost:7243/api/Hero/AllHeroes?$orderby=Place
 
 Example of GraphQL Queries:
 
