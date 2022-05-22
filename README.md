@@ -12,7 +12,7 @@ I have use the following technologies and packages:
 - Open Data Protocol (Microsoft.data.odata) filter and orderBy in GetAllHeroes().
 
 In addition i have implement the following:
-- Generic Repository Pattern.
+- Asynchronous Generic Repository Pattern.
 - ASP.NET Core Identity (full membership system)
     - Registration with email confirmation
     - Login
