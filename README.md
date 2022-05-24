@@ -5,14 +5,14 @@ I have use the following technologies and packages:
 - C#.
 - .NET 6.
 - Entity Framework Core.
-- Microsoft SQL Server.
+- Multiple Databases (Microsoft SQL Server & SQLite).
 - Serilog.
 - RESTful API.
 - GraphQL (navigate in https://localhost:7243/ui/playground to test it)
-- Open Data Protocol (Microsoft.data.odata) filter and orderBy in GetAllHeroes().
+- Open Data Protocol (Microsoft.data.odata) in https://localhost:7243/api/Hero/AllHeroes.
 
 In addition i have implement the following:
-- Generic Repository Pattern.
+- Asynchronous Generic Repository Pattern.
 - ASP.NET Core Identity (full membership system)
     - Registration with email confirmation
     - Login
@@ -40,6 +40,8 @@ In addition i have implement the following:
 - Unit Testing (XUnit & Moq) for HeroController.
 - API HealthChecks (controller & dashboard, navigate in https://localhost:7243/dashboard#/healthchecks)
 
+Example of Microsoft OData:
+https://localhost:7243/api/Hero/AllHeroes?$orderby=Place
 
 Example of GraphQL Queries:
 
