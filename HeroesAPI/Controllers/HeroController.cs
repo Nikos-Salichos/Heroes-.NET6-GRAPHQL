@@ -51,14 +51,14 @@ namespace HeroesAPI.Controllers
                     return BadRequest();
                 }
 
-                (bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage) result = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+                (bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage) = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
 
-                if (!result.IsSuccess)
+                if (!IsSuccess)
                 {
-                    return NotFound(result.ErrorMessage);
+                    return NotFound(ErrorMessage);
                 }
 
-                if (result.Heroes is null)
+                if (Heroes is null)
                 {
                     return NotFound("Not Heroes found");
                 }
@@ -71,13 +71,11 @@ namespace HeroesAPI.Controllers
                         return NotFound("This property does not exist, please check it again!");
                     }
 
-                    List<Hero> heroesPagination = result.Heroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                    List<Hero> heroesPagination = Heroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
                                                             .Take(paginationFilter.PageSize)
                                                             .ToList();
 
-
                     heroesPagination = heroesPagination.OrderByProperty(sortBy).ToList();
-
 
                     if (searchString is not null)
                     {
@@ -93,8 +91,7 @@ namespace HeroesAPI.Controllers
                 }
                 else
                 {
-
-                    List<Hero> heroesPagination = result.Heroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
+                    List<Hero> heroesPagination = Heroes.Skip((paginationFilter.PageNumber - 1) * paginationFilter.PageSize)
                                                         .Take(paginationFilter.PageSize)
                                                         .ToList();
 
@@ -232,20 +229,20 @@ namespace HeroesAPI.Controllers
                 }
 
 
-                var result = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+                var (IsSuccess, Heroes, ErrorMessage) = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
 
 
-                if (!result.IsSuccess)
+                if (!IsSuccess)
                 {
-                    return NotFound(result.ErrorMessage);
+                    return NotFound(ErrorMessage);
                 }
 
-                if (result.Heroes is null)
+                if (Heroes is null)
                 {
                     return NotFound("Not Heroes found");
                 }
 
-                Hero? heroExist = result.Heroes.AsEnumerable().FirstOrDefault(h => h.Name.Equals(newHero.Name, StringComparison.InvariantCultureIgnoreCase));
+                Hero? heroExist = Heroes.AsEnumerable().FirstOrDefault(h => h.Name.Equals(newHero.Name, StringComparison.InvariantCultureIgnoreCase));
 
                 if (heroExist is not null)
                 {
