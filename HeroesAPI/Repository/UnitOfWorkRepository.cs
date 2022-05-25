@@ -30,6 +30,7 @@
             IAuthRepository authRepository)
         {
             _msSql = msqlDbContext;
+            _sqlite = sqliteContext;
             HeroRepository = heroRepository;
             UserRepository = userRepository;
             EmailSenderRepository = emailSenderRepository;
@@ -53,7 +54,22 @@
             }
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected virtual void DisposeMsql(bool disposing)
+        {
+            if (!disposing)
+            {
+                return;
+            }
+
+            if (_msSql == null)
+            {
+                return;
+            }
+
+            _msSql.Dispose();
+        }
+
+        protected virtual void DisposeSqlite(bool disposing)
         {
             if (!disposing)
             {
@@ -71,7 +87,8 @@
 
         public void Dispose()
         {
-            Dispose(true);
+            DisposeMsql(true);
+            DisposeSqlite(true);
             GC.SuppressFinalize(this);
         }
 
