@@ -61,13 +61,13 @@ builder.Services.AddHealthChecksUI(options =>
 }).AddInMemoryStorage(); //Here is the memory bank configuration
 
 //Registered DBContext
-builder.Services.AddDbContext<MainDbContextInfo>(options =>
+builder.Services.AddDbContext<MainDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConnection"));
 });
 
 //Register SQLite
-builder.Services.AddDbContext<SqliteDataContext>(options =>
+builder.Services.AddDbContext<SqliteContext>(options =>
 {
     options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
 });
@@ -78,7 +78,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 })
-    .AddEntityFrameworkStores<MainDbContextInfo>()
+    .AddEntityFrameworkStores<MainDbContext>()
     .AddDefaultTokenProviders();
 
 //Identity Options

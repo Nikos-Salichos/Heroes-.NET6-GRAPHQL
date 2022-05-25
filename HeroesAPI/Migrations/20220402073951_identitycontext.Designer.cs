@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HeroesAPI.Migrations
 {
-    [DbContext(typeof(MainDbContextInfo))]
+    [DbContext(typeof(MainDbContext))]
     [Migration("20220402073951_identitycontext")]
     partial class identitycontext
     {

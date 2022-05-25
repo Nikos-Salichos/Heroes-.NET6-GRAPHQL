@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HeroesAPI.Migrations.SqliteData
 {
-    [DbContext(typeof(SqliteDataContext))]
+    [DbContext(typeof(SqliteContext))]
     [Migration("20220520195037_HeroDBSQLite")]
     partial class HeroDBSQLite
     {

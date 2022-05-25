@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HeroesAPI.Migrations.SqliteData
 {
-    [DbContext(typeof(SqliteDataContext))]
+    [DbContext(typeof(SqliteContext))]
     partial class SqliteDataContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

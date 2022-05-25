@@ -2,7 +2,9 @@
 {
     public class UnitOfWorkRepository : IUnitOfWorkRepository
     {
-        private readonly MainDbContextInfo _msSql;
+        private readonly MainDbContext _msSql;
+
+        private readonly SqliteContext _sqlite;
 
         public IHeroRepository HeroRepository { get; }
 
@@ -18,7 +20,7 @@
 
         public IAuthRepository AuthRepository { get; }
 
-        public UnitOfWorkRepository(MainDbContextInfo msSql,
+        public UnitOfWorkRepository(MainDbContext msqlDbContext, SqliteContext sqliteContext,
             IHeroRepository heroRepository,
             IAuthRepository userRepository,
             IEmailSenderRepository emailSenderRepository,
@@ -27,7 +29,7 @@
             ISeriLogRepository seriLogRepository,
             IAuthRepository authRepository)
         {
-            _msSql = msSql;
+            _msSql = msqlDbContext;
             HeroRepository = heroRepository;
             UserRepository = userRepository;
             EmailSenderRepository = emailSenderRepository;

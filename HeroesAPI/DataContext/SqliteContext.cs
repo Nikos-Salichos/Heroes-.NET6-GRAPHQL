@@ -2,11 +2,11 @@
 
 namespace HeroesAPI.DataContext
 {
-    public class SqliteDataContext : DbContext
+    public class SqliteContext : DbContext
     {
         protected readonly IConfiguration Configuration;
 
-        public SqliteDataContext(DbContextOptions<SqliteDataContext> options, IConfiguration configuration) : base(options)
+        public SqliteContext(DbContextOptions<SqliteContext> options, IConfiguration configuration) : base(options)
         {
             Configuration = configuration;
         }

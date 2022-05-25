@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace HeroesAPI.DataContext
 {
-    public class MainDbContextInfo : IdentityDbContext
+    public class MainDbContext : IdentityDbContext
     {
-        public MainDbContextInfo(DbContextOptions<MainDbContextInfo> options) : base(options)
+        public MainDbContext(DbContextOptions<MainDbContext> options) : base(options)
         {
         }
 

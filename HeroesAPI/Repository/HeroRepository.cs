@@ -4,7 +4,7 @@ namespace HeroesAPI.Repository
 {
     public class HeroRepository : GenericRepository<Hero>, IHeroRepository
     {
-        public HeroRepository(MainDbContextInfo msSql) : base(msSql)
+        public HeroRepository(MainDbContext msSql) : base(msSql)
         {
         }
 

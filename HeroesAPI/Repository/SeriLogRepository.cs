@@ -4,7 +4,7 @@ namespace HeroesAPI.Repository
 {
     public class SeriLogRepository : GenericRepository<SeriLogModel>, ISeriLogRepository
     {
-        public SeriLogRepository(MainDbContextInfo msSql) : base(msSql)
+        public SeriLogRepository(MainDbContext msSql) : base(msSql)
         {
         }
 
