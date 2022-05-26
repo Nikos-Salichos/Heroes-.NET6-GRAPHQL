@@ -13,7 +13,7 @@ namespace HeroesAPI.Repository
             Sqlite = sqliteContext;
         }
 
-        public async Task<IEnumerable<T>> FindAll()
+        public async Task<IEnumerable<T>> FindAllMsql()
         {
             return await MsSql.Set<T>().ToListAsync();
         }
@@ -29,7 +29,7 @@ namespace HeroesAPI.Repository
             await MsSql.SaveChangesAsync();
         }
 
-        public async Task Update(T entity)
+        public async Task UpdateMsql(T entity)
         {
             MsSql.Set<T>().Update(entity);
             await MsSql.SaveChangesAsync();
