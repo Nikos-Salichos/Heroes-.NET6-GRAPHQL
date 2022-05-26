@@ -24,7 +24,7 @@ namespace HeroesAPI.Repository
             return hero.FirstOrDefault();
         }
 
-        public Hero CreateHero(Hero hero)
+        public Hero CreateHeroMsql(Hero hero)
         {
             _ = CreateMsql(hero);
             return hero;

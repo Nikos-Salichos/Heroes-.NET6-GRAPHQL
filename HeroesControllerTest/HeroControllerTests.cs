@@ -305,7 +305,7 @@ namespace HeroTests
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
                 .ReturnsAsync(() => (true, _heroes, null));
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHero(hero));
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHeroMsql(hero));
 
             // Act
             IActionResult? actionResult = await heroController.AddHero(hero);
@@ -344,7 +344,7 @@ namespace HeroTests
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
                 .ReturnsAsync(() => (true, _heroes, null));
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHero(hero));
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHeroMsql(hero));
 
             // Act
             IActionResult? actionResult = await heroController.AddHero(hero);

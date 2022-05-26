@@ -265,7 +265,7 @@ namespace HeroesAPI.Controllers
 
                 }
 
-                _unitOfWorkRepository.HeroRepository.CreateHero(newHero);
+                _unitOfWorkRepository.HeroRepository.CreateHeroMsql(newHero);
 
                 return Ok(_mapper.Map<HeroDto>(newHero));
             }

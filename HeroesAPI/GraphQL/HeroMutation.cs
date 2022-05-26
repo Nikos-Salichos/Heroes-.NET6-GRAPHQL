@@ -21,7 +21,7 @@ namespace HeroesAPI.GraphQL
                        return null;
                    }
 
-                   return unitOfWorkRepository.HeroRepository.CreateHero(hero);
+                   return unitOfWorkRepository.HeroRepository.CreateHeroMsql(hero);
                });
 
 
