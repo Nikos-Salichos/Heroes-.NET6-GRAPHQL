@@ -240,14 +240,14 @@ namespace HeroTests
             // Arrange
             HeroController heroController = CreateHeroControllerAndFill();
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsyncMsql(10)).ReturnsAsync(new Hero() { });
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>())).Verifiable();
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.DeleteHeroMsql(It.IsAny<Hero>())).Verifiable();
 
             // Act
             IActionResult? actionResult = await heroController.DeleteHero(10);
             object? statusCode = actionResult?.GetType()?.GetProperty("StatusCode")?.GetValue(actionResult, null);
 
             // Assert
-            _mockUnitOfWorkRepository.Verify(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>()), Times.Once);
+            _mockUnitOfWorkRepository.Verify(repo => repo.HeroRepository.DeleteHeroMsql(It.IsAny<Hero>()), Times.Once);
             Assert.Equal(200, statusCode);
         }
 
@@ -258,7 +258,7 @@ namespace HeroTests
             // Arrange
             HeroController heroController = CreateHeroControllerAndFill();
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsyncMsql(0)).ReturnsAsync(new Hero() { });
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.DeleteHero(It.IsAny<Hero>())).Verifiable();
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.DeleteHeroMsql(It.IsAny<Hero>())).Verifiable();
 
             // Act
             IActionResult? actionResult = await heroController.DeleteHero(111);

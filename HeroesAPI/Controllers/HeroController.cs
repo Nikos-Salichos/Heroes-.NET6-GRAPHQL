@@ -328,7 +328,7 @@ namespace HeroesAPI.Controllers
                     return NotFound("Hero not found");
                 }
 
-                await _unitOfWorkRepository.HeroRepository.DeleteHero(hero);
+                await _unitOfWorkRepository.HeroRepository.DeleteHeroMsql(hero);
 
                 return Ok();
             }
