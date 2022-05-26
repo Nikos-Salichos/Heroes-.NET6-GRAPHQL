@@ -20,7 +20,7 @@ namespace HeroesAPI.Repository
 
         public async Task<Hero?> GetHeroByIdAsync(int heroId)
         {
-            IEnumerable<Hero>? hero = await FindById(hero => hero.Id.Equals(heroId));
+            IEnumerable<Hero>? hero = await FindByIdMsql(hero => hero.Id.Equals(heroId));
             return hero.FirstOrDefault();
         }
 

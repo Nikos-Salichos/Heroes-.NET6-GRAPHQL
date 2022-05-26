@@ -18,7 +18,7 @@ namespace HeroesAPI.Repository
             return await MsSql.Set<T>().ToListAsync();
         }
 
-        public async Task<IEnumerable<T>> FindById(Expression<Func<T, bool>> expression)
+        public async Task<IEnumerable<T>> FindByIdMsql(Expression<Func<T, bool>> expression)
         {
             return await MsSql.Set<T>().Where(expression).ToListAsync();
         }
