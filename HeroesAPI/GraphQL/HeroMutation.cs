@@ -48,7 +48,7 @@ namespace HeroesAPI.GraphQL
                      heroFromDb.Result.LastName = hero.LastName;
                      heroFromDb.Result.Place = hero.Place;
 
-                     return unitOfWorkRepository.HeroRepository.UpdateHero(heroFromDb.Result);
+                     return unitOfWorkRepository.HeroRepository.UpdateHeroMsql(heroFromDb.Result);
                  });
 
             Field<StringGraphType>(

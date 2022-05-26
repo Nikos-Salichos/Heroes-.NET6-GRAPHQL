@@ -372,7 +372,7 @@ namespace HeroTests
             HeroController heroController = CreateHeroControllerAndFill();
 
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsyncMsql(10)).ReturnsAsync(_heroes.FirstOrDefault());
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.UpdateHero(_heroes.FirstOrDefault()));
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.UpdateHeroMsql(_heroes.FirstOrDefault()));
 
             // Act
             IActionResult? actionResult = await heroController.UpdateHero(hero);
@@ -402,7 +402,7 @@ namespace HeroTests
             HeroController heroController = CreateHeroControllerAndFill();
 
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsyncMsql(10)).ReturnsAsync(_heroes.FirstOrDefault());
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.UpdateHero(_heroes.FirstOrDefault()));
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.UpdateHeroMsql(_heroes.FirstOrDefault()));
 
             // Act
             IActionResult? actionResult = await heroController.UpdateHero(hero);
@@ -426,7 +426,7 @@ namespace HeroTests
             HeroController heroController = CreateHeroControllerAndFill();
 
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetHeroByIdAsyncMsql(10)).ReturnsAsync(_heroes.FirstOrDefault());
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.UpdateHero(_heroes.FirstOrDefault()));
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.UpdateHeroMsql(_heroes.FirstOrDefault()));
 
             // Act
             IActionResult? actionResult = await heroController.UpdateHero(hero);

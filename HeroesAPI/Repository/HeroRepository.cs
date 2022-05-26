@@ -30,7 +30,7 @@ namespace HeroesAPI.Repository
             return hero;
         }
 
-        public Hero UpdateHero(Hero hero)
+        public Hero UpdateHeroMsql(Hero hero)
         {
             _ = UpdateMsql(hero);
             return hero;
