@@ -18,7 +18,7 @@ namespace HeroesAPI.Repository
             return (false, null, "Heroes not found");
         }
 
-        public async Task<Hero?> GetHeroByIdAsync(int heroId)
+        public async Task<Hero?> GetHeroByIdAsyncMsql(int heroId)
         {
             IEnumerable<Hero>? hero = await FindByIdMsql(hero => hero.Id.Equals(heroId));
             return hero.FirstOrDefault();

@@ -21,7 +21,7 @@ namespace HeroesAPI.GraphQL
                    int? id = context.GetArgument<int?>("id");
                    if (id.HasValue)
                    {
-                       Task<Models.Hero?>? hero = unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(id.Value);
+                       Task<Models.Hero?>? hero = unitOfWorkRepository.HeroRepository.GetHeroByIdAsyncMsql(id.Value);
                        if (hero.Result != null)
                        {
                            return hero;

@@ -163,7 +163,7 @@ namespace HeroesAPI.Controllers
             try
             {
 
-                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(heroId);
+                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsyncMsql(heroId);
 
                 if (hero is null)
                 {
@@ -184,7 +184,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(heroId);
+                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsyncMsql(heroId);
 
                 if (hero is null)
                 {
@@ -282,7 +282,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(requestedHero.Id);
+                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsyncMsql(requestedHero.Id);
 
                 if (hero is null)
                 {
@@ -321,7 +321,7 @@ namespace HeroesAPI.Controllers
         {
             try
             {
-                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(heroId);
+                Hero? hero = await _unitOfWorkRepository.HeroRepository.GetHeroByIdAsyncMsql(heroId);
 
                 if (hero is null)
                 {

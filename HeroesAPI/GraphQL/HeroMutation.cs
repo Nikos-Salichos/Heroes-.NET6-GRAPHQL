@@ -35,7 +35,7 @@ namespace HeroesAPI.GraphQL
                      Hero? hero = context.GetArgument<Hero>("hero");
                      int heroId = context.GetArgument<int>("heroId");
 
-                     Task<Hero?>? heroFromDb = unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(heroId);
+                     Task<Hero?>? heroFromDb = unitOfWorkRepository.HeroRepository.GetHeroByIdAsyncMsql(heroId);
 
                      if (heroFromDb.Result == null)
                      {
@@ -57,7 +57,7 @@ namespace HeroesAPI.GraphQL
                 resolve: context =>
                 {
                     int heroId = context.GetArgument<int>("heroId");
-                    Task<Hero?>? hero = unitOfWorkRepository.HeroRepository.GetHeroByIdAsync(heroId);
+                    Task<Hero?>? hero = unitOfWorkRepository.HeroRepository.GetHeroByIdAsyncMsql(heroId);
 
                     if (hero == null || hero.Result == null)
                     {
