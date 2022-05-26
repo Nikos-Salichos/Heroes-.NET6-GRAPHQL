@@ -6,7 +6,7 @@ namespace HeroesAPI.Interfaces
     {
         Task<IEnumerable<T>> FindAllMsql();
         Task<IEnumerable<T>> FindByIdMsql(Expression<Func<T, bool>> expression);
-        Task Create(T entity);
+        Task CreateMsql(T entity);
         Task Update(T entity);
         Task Delete(T entity);
     }

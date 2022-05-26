@@ -26,7 +26,7 @@ namespace HeroesAPI.Repository
 
         public Hero CreateHero(Hero hero)
         {
-            _ = Create(hero);
+            _ = CreateMsql(hero);
             return hero;
         }
 

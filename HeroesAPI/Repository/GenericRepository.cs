@@ -23,7 +23,7 @@ namespace HeroesAPI.Repository
             return await MsSql.Set<T>().Where(expression).ToListAsync();
         }
 
-        public async Task Create(T entity)
+        public async Task CreateMsql(T entity)
         {
             MsSql.Set<T>().Add(entity);
             await MsSql.SaveChangesAsync();
