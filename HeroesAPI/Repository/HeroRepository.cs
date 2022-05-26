@@ -38,7 +38,7 @@ namespace HeroesAPI.Repository
 
         public Task DeleteHero(Hero hero)
         {
-            _ = Delete(hero);
+            _ = DeleteMsql(hero);
             return Task.CompletedTask;
         }
 
