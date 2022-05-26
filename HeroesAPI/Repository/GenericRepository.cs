@@ -29,7 +29,7 @@ namespace HeroesAPI.Repository
             await MsSql.SaveChangesAsync();
         }
 
-        public async Task UpdateMsql(T entity)
+        public async Task Update(T entity)
         {
             MsSql.Set<T>().Update(entity);
             await MsSql.SaveChangesAsync();

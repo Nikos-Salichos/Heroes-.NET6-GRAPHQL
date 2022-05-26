@@ -4,7 +4,7 @@ namespace HeroesAPI.Repository
 {
     public class HeroRepository : GenericRepository<Hero>, IHeroRepository
     {
-        public HeroRepository(MainDbContext msSql) : base(msSql)
+        public HeroRepository(MainDbContext msSql, SqliteContext sqliteContext) : base(msSql, sqliteContext)
         {
         }
 
