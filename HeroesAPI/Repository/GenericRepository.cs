@@ -5,10 +5,12 @@ namespace HeroesAPI.Repository
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected MainDbContext MsSql { get; set; }
+        protected SqliteContext Sqlite { get; set; }
 
-        public GenericRepository(MainDbContext msSql)
+        public GenericRepository(MainDbContext msSql, SqliteContext sqliteContext)
         {
             MsSql = msSql;
+            Sqlite = sqliteContext;
         }
 
         public async Task<IEnumerable<T>> FindAll()
