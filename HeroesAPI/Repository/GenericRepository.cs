@@ -40,5 +40,12 @@ namespace HeroesAPI.Repository
             await MsSql.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<T>> FindAllSqlite()
+        {
+            return await Sqlite.Set<T>().ToListAsync();
+        }
+
+
+
     }
 }
