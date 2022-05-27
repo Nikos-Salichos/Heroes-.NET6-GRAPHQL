@@ -84,7 +84,8 @@ namespace HeroesAPI.Repository
 
         public Hero CreateHeroSqlite(Hero hero)
         {
-            throw new NotImplementedException();
+            _ = CreateSqlite(hero);
+            return hero;
         }
     }
 }
