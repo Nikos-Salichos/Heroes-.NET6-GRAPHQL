@@ -11,6 +11,7 @@ namespace HeroesAPI.Interfaces
         Task DeleteHeroMsql(Hero hero);
 
         Task<(bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage)> GetAllHeroesAsyncSqlite();
+        Hero CreateHeroSqlite(Hero hero);
 
         string CreateImageDirectory();
         void SaveImageInDir(Hero newHero, string pathToSave, out string fullPath, out string extension);
