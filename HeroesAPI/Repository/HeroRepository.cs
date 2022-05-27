@@ -72,9 +72,14 @@ namespace HeroesAPI.Repository
             }
         }
 
-        public Task<(bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage)> GetAllHeroesAsyncSqlite()
+        public async Task<(bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage)> GetAllHeroesAsyncSqlite()
         {
-            throw new NotImplementedException();
+            IEnumerable<Hero>? heroes = await FindAllSqlite();
+            if (heroes != null)
+            {
+                return (true, heroes.ToList(), null);
+            }
+            return (false, null, "Heroes not found");
         }
 
         public Hero CreateHeroSqlite(Hero hero)
