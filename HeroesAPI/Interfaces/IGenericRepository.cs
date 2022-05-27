@@ -9,5 +9,7 @@ namespace HeroesAPI.Interfaces
         Task CreateMsql(T entity);
         Task UpdateMsql(T entity);
         Task DeleteMsql(T entity);
+
+        Task<IEnumerable<T>> FindAllSqlite();
     }
 }
