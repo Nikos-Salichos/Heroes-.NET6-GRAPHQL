@@ -11,5 +11,7 @@ namespace HeroesAPI.Interfaces
         Task DeleteMsql(T entity);
 
         Task<IEnumerable<T>> FindAllSqlite();
+        Task CreateSqlite(T entity);
+
     }
 }
