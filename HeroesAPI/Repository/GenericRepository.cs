@@ -45,7 +45,11 @@ namespace HeroesAPI.Repository
             return await Sqlite.Set<T>().ToListAsync();
         }
 
-
+        public async Task CreateSqlite(T entity)
+        {
+            Sqlite.Set<T>().Add(entity);
+            await Sqlite.SaveChangesAsync();
+        }
 
     }
 }
