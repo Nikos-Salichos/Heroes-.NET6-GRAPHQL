@@ -71,5 +71,10 @@ namespace HeroesAPI.Repository
                 extension = string.Empty;
             }
         }
+
+        public Task<(bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage)> GetAllHeroesAsyncSqlite()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
