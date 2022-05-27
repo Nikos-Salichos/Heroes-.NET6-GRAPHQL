@@ -74,7 +74,7 @@ namespace HeroTests
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsyncMsql())
                 .ReturnsAsync(() => (true, _heroes, null));
 
             ActionResult<IEnumerable<HeroDto>>? actionResult = await heroController.GetAllHeroes(string.Empty, null, new PaginationFilter());
@@ -101,7 +101,7 @@ namespace HeroTests
             }).CreateMapper();
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsyncMsql())
                 .ReturnsAsync(() => (true, _heroes, null));
 
             ActionResult<IEnumerable<HeroDto>>? actionResult = await heroController.GetAllHeroes(null, null, null);
@@ -121,7 +121,7 @@ namespace HeroTests
                 mapperConfiguration.AddProfile<HeroProfile>();
             }).CreateMapper();
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsyncMsql())
                 .ReturnsAsync(() => (true, _heroes, null));
 
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
@@ -149,7 +149,7 @@ namespace HeroTests
                 mapperConfiguration.AddProfile<HeroProfile>();
             }).CreateMapper();
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsyncMsql())
                 .ReturnsAsync(() => (true, _heroes, null));
 
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
@@ -177,7 +177,7 @@ namespace HeroTests
                 mapperConfiguration.AddProfile<HeroProfile>();
             }).CreateMapper();
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsyncMsql())
                 .ReturnsAsync(() => (true, _heroes, null));
 
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
@@ -302,7 +302,7 @@ namespace HeroTests
 
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsyncMsql())
                 .ReturnsAsync(() => (true, _heroes, null));
 
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHeroMsql(hero));
@@ -341,7 +341,7 @@ namespace HeroTests
 
             HeroController? heroController = new HeroController(_logger, _mockUnitOfWorkRepository.Object, mapper);
 
-            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsync())
+            _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.GetAllHeroesAsyncMsql())
                 .ReturnsAsync(() => (true, _heroes, null));
 
             _mockUnitOfWorkRepository.Setup(repo => repo.HeroRepository.CreateHeroMsql(hero));

@@ -8,7 +8,7 @@ namespace HeroesAPI.Repository
         {
         }
 
-        public async Task<(bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage)> GetAllHeroesAsync()
+        public async Task<(bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage)> GetAllHeroesAsyncMsql()
         {
             IEnumerable<Hero>? heroes = await FindAllMsql();
             if (heroes != null)

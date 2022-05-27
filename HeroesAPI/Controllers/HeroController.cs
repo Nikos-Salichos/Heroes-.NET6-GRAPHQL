@@ -51,7 +51,7 @@ namespace HeroesAPI.Controllers
                     return BadRequest();
                 }
 
-                (bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage) = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+                (bool IsSuccess, List<Hero>? Heroes, string? ErrorMessage) = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsyncMsql();
 
                 if (!IsSuccess)
                 {
@@ -229,7 +229,7 @@ namespace HeroesAPI.Controllers
                 }
 
 
-                var (IsSuccess, Heroes, ErrorMessage) = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsync();
+                var (IsSuccess, Heroes, ErrorMessage) = await _unitOfWorkRepository.HeroRepository.GetAllHeroesAsyncMsql();
 
 
                 if (!IsSuccess)

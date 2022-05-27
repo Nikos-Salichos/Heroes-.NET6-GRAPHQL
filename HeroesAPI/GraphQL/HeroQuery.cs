@@ -7,7 +7,7 @@ namespace HeroesAPI.GraphQL
     {
         public HeroQuery(IUnitOfWorkRepository unitOfWorkRepository)
         {
-            Field<ListGraphType<HeroType>>("heroes", resolve: context => unitOfWorkRepository.HeroRepository.GetAllHeroesAsync());
+            Field<ListGraphType<HeroType>>("heroes", resolve: context => unitOfWorkRepository.HeroRepository.GetAllHeroesAsyncMsql());
 
             Field<HeroType>(
                 "hero",
