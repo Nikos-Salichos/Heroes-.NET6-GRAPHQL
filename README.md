@@ -7,7 +7,7 @@ I have use the following technologies and packages:
 - Entity Framework Core.
 - Multiple Databases (Microsoft SQL Server & SQLite).
 - Serilog.
-- RESTful API.
+- RESTful APIs.
 - GraphQL (navigate in https://localhost:7243/ui/playground to test it)
 - Open Data Protocol (Microsoft.data.odata) in https://localhost:7243/api/Hero/AllHeroes.
 
